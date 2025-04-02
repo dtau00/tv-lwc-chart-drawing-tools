@@ -50,6 +50,15 @@ This is a very early preview build; the architecture and structure is still bein
 * Synced toolbar control between charts
 * Synced drawings of the same symbol (buggy)
 
+Things to finish for v1 Release
+---------------------------------
+- Implement remaining basic drawing funtionality (modify styling, move, drag, etc...)
+- Implement a couple more basic drawings (extended rectangle, line, extended, line)
+- Implement drawing projection (drawings beyond available chart data)
+- More OOP modularization of the ChartDrawing (breaking down example from Rectangle plugin tutorial)
+- Verify handlers are properly disposed (mem leak)
+- Add test cases
+
 See /docs for a mini-roadmap of whats to come.
 
 

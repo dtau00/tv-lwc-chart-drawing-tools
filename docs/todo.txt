@@ -1,0 +1,54 @@
+v1
+--
+sub-tool bar to allow additional customization of drawing 
+rclick on subtool open color wheel
+allow users to modify styling
+allow user to modify drawing size and position
+  - adjust shape
+  - move
+  - add text
+allow selected drawing tool to persist between charts
+support drawings beyond availalbe data / projection
+We have a drawing object, that applies the drawing, but then we have to apply it to multiple charts
+    whenever a drawing is updated, we have apply 
+    that to all relevant charts (add, update, remove).  We dont need to do this for every drawing.
+deselect selected drawing on rclick
+more drawings to get a feel of how to further break down drawing class and views
+check dispsol of all event handlers (tools, subtools, charts, etc..)
+the plumbing of primaties is not right.  charts is still messing with it
+do i even need to track primatives?  can i apply the same primitive to different charts?  add, modify, remove?  and it
+will be internally handled by chart
+
+v2
+--
+more drawings!
+new context menu when r-clicking a drawing, to allow additional functions
+    - change styling (colors, opacity, )
+  - text
+  - delete / duplicate drawing
+rclick to cancel drawing selection / creation
+clear all by filter (symbol, group, userid)
+support mutiplie charts.  change to one drawing will adjust drawing on all other charts at the same time
+  - by symbolName, group, userId
+toggle visibility of drawing
+decouple toolbar from chart (so you can have a singular toolbar to control all charts)
+allow user to define which buttons
+
+v3
+--
+allow users to put in custom buttons, that may replicate a certain drawing, but also have callbacks for additional processing
+  - user can directly add/edit/remove drawings for a symbol / tag
+  - plugin will send back events regarding drawing actions
+create api for communication of drawings between user and plugin
+more performant saving/loading, different options other than localstorage
+
+
+
+
+
+
+
+
+
+
+

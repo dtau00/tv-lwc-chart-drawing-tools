@@ -1,0 +1,21 @@
+{
+  "name": "tv-lwc-chart-drawing-tools",
+  "version": "1.0.0",
+  "description": "Drawing tools plugin for Lightweight Charts",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "start": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "fancy-canvas": "^2.1.0",
+    "lightweight-charts": "^5.0.4"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.17",
+    "typescript": "^5.3.3",
+    "vite": "^5.1.4"
+  }
+}

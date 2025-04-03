@@ -36,6 +36,14 @@ allow user to define which buttons
 
 v3
 --
+More styling configuration options
+pass in own tool image
+maybe expose the tools / subtools  so users can drop them into their own containers
+expose toolbar styling
+
+
+v4
+--
 allow users to put in custom buttons, that may replicate a certain drawing, but also have callbacks for additional processing
   - user can directly add/edit/remove drawings for a symbol / tag
   - plugin will send back events regarding drawing actions

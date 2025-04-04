@@ -181,6 +181,40 @@ export class ChartDrawingsManager {
         this.unselectDrawing();
     }
 
+    private _addPrimativeToChartContainers(symbolName: string, primative: PluginBase): void {
+        const containers = Array.from(this._chartContainers.values()).filter(c => c.symbolName === symbolName);
+        for(const container of containers){
+            container.addDrawingPrimative(primative);
+        }
+    }
+
+    // Event Bus Handlers ------------------------------------------------------------  
+
+    private _emitCloseToolbarEvent(chartId: string): void {
+        eventBus.dispatchEvent(new CustomEvent(ChartEvents.UnsetToolbar, { detail: {chartId: chartId} }));
+    }
+
+    private _emitOpenToolbarEvent(chartId: string, toolType: DrawingToolType): void {
+        eventBus.dispatchEvent(new CustomEvent(ChartEvents.SetToolbar, { detail: {chartId: chartId, toolType: toolType} }));
+    }
+
+    private _listenForChartEvents=()=> {
+        eventBus.addEventListener(ChartEvents.NewDrawingCompleted, (event: Event) => {
+            const customEvent = event as CustomEvent<string>;
+            console.log(`Chart Manager: Chart ${customEvent.detail} has finished rendering.`);
+            if(this._selectedDrawing){  
+                const drawings = this._drawings.get(this._selectedDrawing.symbolName) || [];
+                this._drawings.set(this._selectedDrawing.symbolName, [...drawings, this._selectedDrawing]);
+                this.saveDrawings(this._selectedDrawing.symbolName);
+                this._addPrimativeToChartContainers(this._selectedDrawing.symbolName, this._selectedDrawing.primative as PluginBase);
+            }
+            this._creatingNewDrawingFromToolbar = false;
+            this.unselectDrawing();
+        });
+    }
+
+    // Chart Event Handlers ------------------------------------------------------------
+
     public onChartClick(param: MouseEventParams, chartContainer: ChartContainer){
         // Ceating a new drawing
         this.checkCurrentChartContainer(chartContainer);
@@ -217,41 +251,6 @@ export class ChartDrawingsManager {
             alert('unknown state')
         }
     }
-
-    private _addPrimativeToChartContainers(symbolName: string, primative: PluginBase): void {
-        const containers = Array.from(this._chartContainers.values()).filter(c => c.symbolName === symbolName);
-        for(const container of containers){
-            container.addDrawingPrimative(primative);
-        }
-    }
-
-
-    // Event Bus Handlers ------------------------------------------------------------  
-
-    private _emitCloseToolbarEvent(chartId: string): void {
-        eventBus.dispatchEvent(new CustomEvent(ChartEvents.UnsetToolbar, { detail: {chartId: chartId} }));
-    }
-
-    private _emitOpenToolbarEvent(chartId: string, toolType: DrawingToolType): void {
-        eventBus.dispatchEvent(new CustomEvent(ChartEvents.SetToolbar, { detail: {chartId: chartId, toolType: toolType} }));
-    }
-
-    private _listenForChartEvents=()=> {
-        eventBus.addEventListener(ChartEvents.NewDrawingCompleted, (event: Event) => {
-            const customEvent = event as CustomEvent<string>;
-            console.log(`Chart Manager: Chart ${customEvent.detail} has finished rendering.`);
-            if(this._selectedDrawing){  
-                const drawings = this._drawings.get(this._selectedDrawing.symbolName) || [];
-                this._drawings.set(this._selectedDrawing.symbolName, [...drawings, this._selectedDrawing]);
-                this.saveDrawings(this._selectedDrawing.symbolName);
-                this._addPrimativeToChartContainers(this._selectedDrawing.symbolName, this._selectedDrawing.primative as PluginBase);
-            }
-            this._creatingNewDrawingFromToolbar = false;
-            this.unselectDrawing();
-        });
-    }
-
-    // Chart Event Handlers ------------------------------------------------------------
 
     public onMouseDown(evt: MouseEvent, chart: IChartApi): boolean {
         if(!this._selectedDrawing) // only check if a drawing is selected
@@ -293,6 +292,8 @@ export class ChartDrawingsManager {
             this.removeSelectedDrawing();
         }
     }
+
+    // mouse event hander functions ------------------------------------------------------------
 
     private _mouseHoldTimeout =(chart: IChartApi) =>{
         if(this._hasMouseMoved())

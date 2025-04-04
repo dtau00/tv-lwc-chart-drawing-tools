@@ -40,7 +40,7 @@ export class ChartContainer {
         this._chart = chart;
         this._series = series;
 
-        this.initializeListeners();
+        this._initializeListeners();
     }
 
     public get chart(): IChartApi { return this._chart;}
@@ -126,7 +126,7 @@ export class ChartContainer {
     // we will initialize the listeners here, but the chart manager will control it for the most part
     // makes it cleaner to dispose the listeners
 
-    private initializeListeners(){
+    private _initializeListeners(){
         this._chart.subscribeClick(this._onClickChartHandler);
        this._chart.subscribeCrosshairMove(this._onCrosshairMoveChartHandler);
 

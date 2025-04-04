@@ -1,5 +1,5 @@
-import { DrawingPoint } from '../../common/common';
-import { PluginBase } from '../../../plugin-base';
+import { DrawingPoint } from '../../../common/common';
+import { PluginBase } from '../../../../plugin-base';
 import { RectangleDrawingToolOptions, defaultOptions } from './rectangle-options';
 import { RectanglePaneView, } from './view/rectangle-pane-view';
 import {     

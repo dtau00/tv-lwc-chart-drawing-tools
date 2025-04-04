@@ -1,5 +1,5 @@
 import { IChartApi, ISeriesApi, SeriesType } from "lightweight-charts";
-import { RectangleDrawing } from "../../../drawings/rectangle/rectangle-drawing";
+import { RectangleDrawing } from "../../drawings/rectangle/rectangle-drawing";
 interface ITool {
     button: HTMLDivElement;
     name: string;

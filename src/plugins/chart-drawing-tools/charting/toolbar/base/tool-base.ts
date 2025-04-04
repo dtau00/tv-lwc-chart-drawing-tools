@@ -1,6 +1,6 @@
 
 import { IChartApi, ISeriesApi, SeriesType } from "lightweight-charts";
-import { RectangleDrawing } from "../../../drawings/rectangle/rectangle-drawing";
+import { RectangleDrawing } from "../../drawings/rectangle/rectangle-drawing";
 import ITool from "./tool-interface";
 import { createToolbarButton } from "../helper";
 import SubTool from "./sub-tool-base";

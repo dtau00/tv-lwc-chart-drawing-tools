@@ -1,13 +1,13 @@
 import { IChartApi, ISeriesApi, MouseEventParams, SeriesType, } from 'lightweight-charts';
-import { ChartDrawing, ChartDrawingBaseProps } from '../../drawings/base/chart-drawing-base.ts';
-import { DrawingToolType } from '../toolbar/drawing-tools.ts';
-import { RectangleDrawing } from '../../drawings/rectangle/rectangle-drawing.ts';
-import { DataStorage } from '../../data/data.ts';
-import { eventBus } from '../../common/common.ts';
-import { ChartContainer } from '../chart/chart-container.ts';
-import Tool from '../toolbar/base/tool-base.ts';
-import { ChartEvents } from '../../enums/events.ts';
-import { PluginBase } from '../../../plugin-base.ts';
+import { ChartDrawing, ChartDrawingBaseProps } from './drawings/base/chart-drawing-base.ts';
+import { DrawingToolType } from './toolbar/drawing-tools.ts';
+import { RectangleDrawing } from './drawings/rectangle/rectangle-drawing.ts';
+import { DataStorage } from '../data/data.ts';
+import { eventBus } from '../common/common.ts';
+import { ChartContainer } from './chart-container.ts';
+import Tool from './toolbar/base/tool-base.ts';
+import { ChartEvents } from '../enums/events.ts';
+import { PluginBase } from '../../plugin-base.ts';
 
 // manage charts
     // when chart is created, register it with ChartManager

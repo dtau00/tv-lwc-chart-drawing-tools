@@ -5,10 +5,10 @@ import {
     SeriesType,
 } from 'lightweight-charts';
 
-import { DrawingPoint } from '../../common/common';
-import { ensureDefined } from '../../../../helpers/assertions';
+import { DrawingPoint } from '../../../common/common';
+import { ensureDefined } from '../../../../../helpers/assertions';
 import { ChartDrawing, ChartDrawingBaseProps } from '../base/chart-drawing-base';
-import { DrawingToolType } from '../../components/toolbar/drawing-tools';
+import { DrawingToolType } from '../../toolbar/drawing-tools';
 import { PreviewRectangle } from './rectangle-preview';
 import { Rectangle } from './rectangle';
 import { defaultOptions, RectangleDrawingToolOptions } from './rectangle-options';

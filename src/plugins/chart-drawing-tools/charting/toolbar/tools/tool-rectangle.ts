@@ -1,5 +1,5 @@
 import { IChartApi, ISeriesApi, SeriesType } from "lightweight-charts";
-import { RectangleDrawing } from "../../../drawings/rectangle/rectangle-drawing";
+import { RectangleDrawing } from "../../drawings/rectangle/rectangle-drawing";
 import Tool from "../base/tool-base";
 import { SubToolColor } from "../sub-tools/sub-tool-color";
 import { SubToolOpacity } from "../sub-tools/sub-tool-opacity"

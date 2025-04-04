@@ -1,4 +1,4 @@
-import { ChartDrawingsManager } from '../manager/chart-drawings-manager.ts';
+import { ChartDrawingsManager } from '../chart-drawings-manager.ts';
 import { DrawingToolType, AVAILABLE_TOOLS, DrawingToolInfo } from './drawing-tools.ts';
 import { clearToolbar, selectButtonForGroup, unselectAllButtonForGroup } from './helper.ts';
 import { ToolRectangle } from './tools/tool-rectangle.ts';

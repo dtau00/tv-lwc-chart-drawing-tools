@@ -1,10 +1,10 @@
 import { ISeriesApi, MouseEventParams, SeriesType } from "lightweight-charts";
 
 import { IChartApi } from "lightweight-charts";
-import { PluginBase } from "../../../plugin-base.ts";
-import { ChartDrawing } from "../../drawings/base/chart-drawing-base.ts";
-import { ensureDefined } from "../../../../helpers/assertions";
-import { ChartDrawingsManager } from "../manager/chart-drawings-manager.ts";
+import { PluginBase } from "../../plugin-base.ts";
+import { ChartDrawing } from "./drawings/base/chart-drawing-base.ts";
+import { ensureDefined } from "../../../helpers/assertions";
+import { ChartDrawingsManager } from "./chart-drawings-manager.ts";
 
 // container of IChartApi and ISeriesApi, extends to include some additional properties
 // The main purpose of this is to track the drawing primatives on a chart, 

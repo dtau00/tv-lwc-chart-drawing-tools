@@ -6,7 +6,7 @@ import {
 	PrimitivePaneViewZOrder,
 } from 'lightweight-charts';
 
-import { DrawingPoint } from '../../../common/common';
+import { DrawingPoint } from '../../../../common/common';
 import { Rectangle } from '../rectangle';
 import { RectangleAxisPaneRenderer } from './rectangle-axis-pane-renderer';
 

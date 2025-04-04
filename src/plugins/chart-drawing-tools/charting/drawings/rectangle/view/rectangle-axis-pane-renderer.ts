@@ -2,7 +2,7 @@ import { CanvasRenderingTarget2D } from 'fancy-canvas';
 import {
 	IPrimitivePaneRenderer,
 } from 'lightweight-charts';
-import { positionsBox } from '../../../../../helpers/dimensions/positions';
+import { positionsBox } from '../../../../../../helpers/dimensions/positions';
 
 export class RectangleAxisPaneRenderer implements IPrimitivePaneRenderer {
 	_p1: number | null;

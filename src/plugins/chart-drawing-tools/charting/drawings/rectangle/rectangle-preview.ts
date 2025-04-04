@@ -1,5 +1,5 @@
 
-import { DrawingPoint } from '../../common/common';
+import { DrawingPoint } from '../../../common/common';
 import { Rectangle } from './rectangle';
 import { RectangleDrawingToolOptions } from './rectangle-options';
 

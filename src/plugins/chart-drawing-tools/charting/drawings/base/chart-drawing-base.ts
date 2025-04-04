@@ -1,13 +1,13 @@
 import { IChartApi, ISeriesApi, SeriesType, MouseEventParams, Point, Time } from 'lightweight-charts';
-import { DrawingToolType, DrawingStyle } from '../../components/toolbar/drawing-tools';
+import { DrawingToolType, DrawingStyle } from '../../toolbar/drawing-tools';
 import { IChartDrawing } from './chart-drawing-interface';
-import { generateUniqueId } from '../../../../helpers/id-generator';
-import { PluginBase } from '../../../plugin-base';
-import { ensureDefined } from '../../../../helpers/assertions';
-import { eventBus, DrawingPoint, toolKeyName, mergeOpacityIntoRgba } from '../../common/common';
-import { ChartEvents } from '../../enums/events';
-import { containsPoints, leftRightPoints, topBottomPoints } from '../../common/points';
-import { ConfigStorage } from '../../data/data';
+import { generateUniqueId } from '../../../../../helpers/id-generator';
+import { PluginBase } from '../../../../plugin-base';
+import { ensureDefined } from '../../../../../helpers/assertions';
+import { eventBus, DrawingPoint, toolKeyName, mergeOpacityIntoRgba } from '../../../common/common';
+import { ChartEvents } from '../../../enums/events';
+import { containsPoints, leftRightPoints, topBottomPoints } from '../../../common/points';
+import { ConfigStorage } from '../../../data/data';
 
     // base properties that are common to all drawings, to make it cleaner to serialize and save/load
 export interface ChartDrawingBaseProps{

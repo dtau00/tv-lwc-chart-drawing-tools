@@ -126,24 +126,6 @@ export class ChartDrawingsManager {
         }
         console.log("all loaded drawings ", this._drawings);
     }
-    /*
-    public loadDrawings(chart: IChartApi, series: ISeriesApi<SeriesType>, symbolName: string): void {
-        const data = DataStorage.loadData<BaseChartDrawingData[]>('test', []);
-        for(const item of data){
-            if(item.symbolName === symbolName){
-                if(!this._drawings.has(symbolName)){
-                    this._drawings.set(symbolName, []);
-                }
-                console.log("loading drawing", item);
-                // TODO clean this up
-                if(item.type === DrawingToolType.Rectangle){
-                    const drawing = new RectangleDrawing(chart, series, symbolName, item);
-                    this._drawings.get(symbolName)?.push(drawing);
-                    drawing.draw(chart, series);
-                }
-            }
-        }
-    }*/
 
     public removeSelectedDrawing(): void {
        if(!this._selectedDrawing)
@@ -232,17 +214,8 @@ export class ChartDrawingsManager {
             }
         }
         else{ 
-            //mgr.selectedDrawing?.onClick(param);
             alert('unknown state')
-            //console.log('else');
-            /*
-            const drawing =this._chartManager.currentDrawingTool?.getNewDrawingObject(this._chart, this._series, this._symbolName);
-            if(drawing){
-                this._chartManager.selectDrawing(drawing);
-                mgr.selectedDrawing?.onClick(param);
-            }*/
         }
-         // TODO handle modifications (moving, resizing, etc)
     }
 
     private _addPrimativeToChartContainers(symbolName: string, primative: PluginBase): void {
@@ -252,22 +225,8 @@ export class ChartDrawingsManager {
         }
     }
 
-    private _setChartDragging(chart: IChartApi, enable: boolean): void {
-        chart.applyOptions({
-            handleScroll: enable,  // Toggle scroll behavior
-        });
-    }
 
-    private _resetMouseControls(): void {
-        document.body.style.cursor = 'default';
-        this._mouseDownStartPoint = null;
-        this._isMouseDragging = false;
-        if(this._mouseHoldTimer)
-            clearTimeout(this._mouseHoldTimer);
-
-        if(this._currentChartContainer?.chart)
-            this._setChartDragging(this._currentChartContainer.chart, true);
-    }
+    // Event Bus Handlers ------------------------------------------------------------  
 
     private _emitCloseToolbarEvent(chartId: string): void {
         eventBus.dispatchEvent(new CustomEvent(ChartEvents.UnsetToolbar, { detail: {chartId: chartId} }));
@@ -292,31 +251,7 @@ export class ChartDrawingsManager {
         });
     }
 
-    private _onKeyDown = (evt: KeyboardEvent): void => {
-        if (evt.key === 'Delete' || evt.key === 'Backspace') {
-            this.removeSelectedDrawing();
-        }
-    }
-
-    private _mouseHoldTimeout =(chart: IChartApi) =>{
-        if(this._hasMouseMoved())
-            return;
-        this._isMouseDragging = true;
-        this._setChartDragging(chart, false);
-        document.body.style.cursor = 'move';
-    }
-
-    // check if mouse is being held, allow for some movement before starting drag (if the mouse jitters due to high dpi)
-    private _hasMouseMoved(): boolean{
-        if(!this._mousePosition || !this._mouseDownStartPoint)
-            return false;
-
-        // TODO there's a conversion issue since we use MouseEvent for mousedown and MouseEventParams for mousemove, on y
-        const yDiff = 0//Math.abs(this._mousePosition.y - this._mouseDownStartPoint.y);
-        const xDiff = Math.abs(this._mousePosition.x - this._mouseDownStartPoint.x);
-        const offset = ChartDrawingsManager.MouseHoldMaxOffsetPoints;
-        return (xDiff > offset || yDiff > offset)
-    }
+    // Chart Event Handlers ------------------------------------------------------------
 
     public onMouseDown(evt: MouseEvent, chart: IChartApi): boolean {
         if(!this._selectedDrawing) // only check if a drawing is selected
@@ -351,6 +286,49 @@ export class ChartDrawingsManager {
         if(point && !containsPoints(this._currentChartContainer?.chart, this._currentChartContainer?.series, point, this._selectedDrawing.drawingPoints)){
             this.unselectDrawing();
         }
+    }
+
+    private _onKeyDown = (evt: KeyboardEvent): void => {
+        if (evt.key === 'Delete' || evt.key === 'Backspace') {
+            this.removeSelectedDrawing();
+        }
+    }
+
+    private _mouseHoldTimeout =(chart: IChartApi) =>{
+        if(this._hasMouseMoved())
+            return;
+        this._isMouseDragging = true;
+        this._setChartDragging(chart, false);
+        document.body.style.cursor = 'move';
+    }
+
+    // check if mouse is being held, allow for some movement before starting drag (if the mouse jitters due to high dpi)
+    private _hasMouseMoved(): boolean{
+        if(!this._mousePosition || !this._mouseDownStartPoint)
+            return false;
+
+        // TODO there's a conversion issue since we use MouseEvent for mousedown and MouseEventParams for mousemove, on y
+        const yDiff = 0//Math.abs(this._mousePosition.y - this._mouseDownStartPoint.y);
+        const xDiff = Math.abs(this._mousePosition.x - this._mouseDownStartPoint.x);
+        const offset = ChartDrawingsManager.MouseHoldMaxOffsetPoints;
+        return (xDiff > offset || yDiff > offset)
+    }
+
+    private _setChartDragging(chart: IChartApi, enable: boolean): void {
+        chart.applyOptions({
+            handleScroll: enable,  // Toggle scroll behavior
+        });
+    }
+
+    private _resetMouseControls(): void {
+        document.body.style.cursor = 'default';
+        this._mouseDownStartPoint = null;
+        this._isMouseDragging = false;
+        if(this._mouseHoldTimer)
+            clearTimeout(this._mouseHoldTimer);
+
+        if(this._currentChartContainer?.chart)
+            this._setChartDragging(this._currentChartContainer.chart, true);
     }
 }
 

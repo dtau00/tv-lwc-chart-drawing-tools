@@ -123,6 +123,19 @@ export class ChartContainer {
     }
 
     // event handlers coordinated by the ChartDrawingsManager-----------------------------------------------
+    // we will initialize the listeners here, but the chart manager will control it for the most part
+    // makes it cleaner to dispose the listeners
+
+    private initializeListeners(){
+        this._chart.subscribeClick(this._onClickChartHandler);
+       this._chart.subscribeCrosshairMove(this._onCrosshairMoveChartHandler);
+
+        this._chartDivContainer .addEventListener('mousedown', this._onMouseDownChartHandler);
+        this._chartDivContainer .addEventListener('mouseup', this._onMouseUpChartHandler);
+        this._chartDivContainer .addEventListener('contextmenu', this._rightClickHandler);
+       this._chartDivContainer .addEventListener('wheel', this._onWheelChart);
+   }
+
     private _removeListeners(){
         this._chart.unsubscribeClick(this._onClickChartHandler)
         this._chart.unsubscribeCrosshairMove(this._onCrosshairMoveChartHandler)    
@@ -130,37 +143,8 @@ export class ChartContainer {
         this._chartDivContainer.removeEventListener('mousedown', this._onMouseDownChartHandler);
         this._chartDivContainer.removeEventListener('mouseup', this._onMouseUpChartHandler);
         this._chartDivContainer.removeEventListener('contextmenu', this._rightClickHandler);
-
-        /*
-
-        this._chartDivContainer.removeEventListener('wheel', this._onWheelChart);*/
+        this._chartDivContainer.removeEventListener('wheel', this._onWheelChart);
     }
-
-    private initializeListeners(){
-        // I'm going back and forth on this, I think we should have the handlers here in the manager for individual charts, 
-        // because we need to coordinate the right behaviors between the charts
-        // It seems cleaner to have handlers here, with a bit of coordinating with manager
-        // code in manager is more focused on manager stuff, not chart specific stuff
-         this._chart.subscribeClick(this._onClickChartHandler);
-        this._chart.subscribeCrosshairMove(this._onCrosshairMoveChartHandler);
-
-         this._chartDivContainer .addEventListener('mousedown', this._onMouseDownChartHandler);
-         this._chartDivContainer .addEventListener('mouseup', this._onMouseUpChartHandler);
-         this._chartDivContainer .addEventListener('contextmenu', this._rightClickHandler);
-        // this._chartDivContainer .addEventListener('mousemove', this._onMouseMoveChart);
-        /*
-        // we have the handlers here in the manager for individual charts, because we need to coordinate 
-        // the right behaviors between the charts
-
-
-
-
-        this._chartDivContainer .addEventListener('mousemove', this._onMouseMoveChart);
-
-        this._chartDivContainer .addEventListener('wheel', this._onWheelChart);
-*/
-    }
-
     
     private _onCrosshairMoveChartHandler = (param: MouseEventParams) => {
         this._chartManager.onMouseMove(param);

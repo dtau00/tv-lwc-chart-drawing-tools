@@ -52,17 +52,7 @@ export class ChartContainer {
     public get tags(): string[] { return this._tags;}
 
     dispose(){
-        this._chart.unsubscribeClick(this._onClickChartHandler)
-        this._chart.unsubscribeCrosshairMove(this._onCrosshairMoveChart)    
-         /*
-                 this._chartDivContainer.removeEventListener('contextmenu', this._disableRightClick);
-                 this._chartDivContainer.removeEventListener('mousedown', this._onMouseDownChart);
-                 this._chartDivContainer.removeEventListener('mousemove', this._onMouseMoveChart);
-                 this._chartDivContainer.removeEventListener('mouseup', this._onMouseUpChart);
-                 this._chartDivContainer.removeEventListener('wheel', this._onWheelChart);
-                 this._chartDivContainer.removeEventListener('keypress', this._onKeyPressChart);
-                 this._chartDivContainer.removeEventListener('mouseleave', this._onMouseLeaveChart);
-                 this._chartDivContainer.removeEventListener('mouseover', this._onMouseOverChart);*/
+        this._removeListeners();
         this._chart.remove();
     }
 
@@ -133,6 +123,18 @@ export class ChartContainer {
     }
 
     // event handlers coordinated by the ChartDrawingsManager-----------------------------------------------
+    private _removeListeners(){
+        this._chart.unsubscribeClick(this._onClickChartHandler)
+        this._chart.unsubscribeCrosshairMove(this._onCrosshairMoveChartHandler)    
+
+        this._chartDivContainer.removeEventListener('mousedown', this._onMouseDownChartHandler);
+        this._chartDivContainer.removeEventListener('mouseup', this._onMouseUpChartHandler);
+        this._chartDivContainer.removeEventListener('contextmenu', this._rightClickHandler);
+
+        /*
+
+        this._chartDivContainer.removeEventListener('wheel', this._onWheelChart);*/
+    }
 
     private initializeListeners(){
         // I'm going back and forth on this, I think we should have the handlers here in the manager for individual charts, 
@@ -140,63 +142,52 @@ export class ChartContainer {
         // It seems cleaner to have handlers here, with a bit of coordinating with manager
         // code in manager is more focused on manager stuff, not chart specific stuff
          this._chart.subscribeClick(this._onClickChartHandler);
-         this._chart.subscribeCrosshairMove(this._onCrosshairMoveChart);
+        this._chart.subscribeCrosshairMove(this._onCrosshairMoveChartHandler);
+
+         this._chartDivContainer .addEventListener('mousedown', this._onMouseDownChartHandler);
+         this._chartDivContainer .addEventListener('mouseup', this._onMouseUpChartHandler);
+         this._chartDivContainer .addEventListener('contextmenu', this._rightClickHandler);
+        // this._chartDivContainer .addEventListener('mousemove', this._onMouseMoveChart);
         /*
         // we have the handlers here in the manager for individual charts, because we need to coordinate 
         // the right behaviors between the charts
 
 
-        this._chartDivContainer .addEventListener('contextmenu', this._disableRightClick);
-        this._chartDivContainer .addEventListener('mousedown', this._onMouseDownChart);
+
+
         this._chartDivContainer .addEventListener('mousemove', this._onMouseMoveChart);
-        this._chartDivContainer .addEventListener('mouseup', this._onMouseUpChart);
+
         this._chartDivContainer .addEventListener('wheel', this._onWheelChart);
-        this._chartDivContainer .addEventListener('keypress', this._onKeyPressChart);
-        this._chartDivContainer .addEventListener('mouseleave', this._onMouseLeaveChart);
-        this._chartDivContainer .addEventListener('mouseover', this._onMouseOverChart);*/
+*/
     }
 
-    private _onCrosshairMoveChart = (param: MouseEventParams) => {
+    
+    private _onCrosshairMoveChartHandler = (param: MouseEventParams) => {
+        this._chartManager.onMouseMove(param);
         this._chartManager.checkCurrentChartContainer(this);
         this._chartManager.selectedDrawing?.onMouseMove(param);
     }
 
     private _onClickChartHandler = (param: MouseEventParams) => {
-        // we let the chart manager handle this
        this._chartManager.handleOnClickChart(param, this);
 	}
 
-    private _disableRightClick(evt: MouseEvent): void {
-        evt.preventDefault();
+    private _rightClickHandler=(evt: MouseEvent): void => {
+        evt.preventDefault()
+        this._chartManager.onRightClick(evt, this._chartDivContainer)
     }
 
     // mouse down, we want to detect if its dragging
-    private _onMouseDownChart(evt: MouseEvent): void {
-        console.log('onMouseDownChart', evt);
+    private _onMouseDownChartHandler=(evt: MouseEvent): void => {
+        this._chartManager.onMouseDown(evt, this._chart);
     }       
 
-    private _onMouseMoveChart(evt: MouseEvent): void {
-        console.log('onMouseMoveChart', evt);
+    private _onMouseUpChartHandler=(evt: MouseEvent): void => {
+        this._chartManager.onMouseUp(evt);
     }
 
-    private _onMouseUpChart(evt: MouseEvent): void {
-        console.log('onMouseUpChart', evt);
-    }
-
-    private _onWheelChart(evt: WheelEvent): void {
+    private _onWheelChart=(evt: WheelEvent): void => {
         console.log('onWheelChart', evt);
     }
-    
-    private _onKeyPressChart(evt: KeyboardEvent): void {
-        console.log('onKeyPressChart', evt);
-    }
-
-    private _onMouseLeaveChart(evt: MouseEvent): void {
-        console.log('onFocusOutChart', evt);
-    }
-
-    private _onMouseOverChart(evt: MouseEvent): void {
-        console.log('onInputChart', evt);
-    }   
 }
 

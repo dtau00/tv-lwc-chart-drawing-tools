@@ -80,8 +80,22 @@ export class RectangleDrawing extends ChartDrawing{
 	}
 
 	onMouseMove(param: MouseEventParams) {
-		if (this._isDrawing || !param.point || !param.time || !this._series) 
+		if (!this._chart || this._isDrawing || !this._series || !param.point) 
 			return;
+/*
+		const point = getChartPointFromMouseEvent(evt, this._chart);
+		if(!point) return;
+		
+		const price = this._series.coordinateToPrice(point.y);
+		const time = this._chart.timeScale().coordinateToTime(point.x);
+		if (price === null || !time) 
+			return;
+
+		(this._previewDrawing as PreviewRectangle)?.updateEndPoint({
+			time: time,
+			price,
+		});
+		*/
 
 		const price = this._series.coordinateToPrice(param.point.y);
 		if (price === null || param.time === undefined) 

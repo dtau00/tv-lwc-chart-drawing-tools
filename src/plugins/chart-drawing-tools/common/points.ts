@@ -1,5 +1,14 @@
-import { IChartApi, ISeriesApi, Point, SeriesType, Time } from "lightweight-charts";
+import { Coordinate, IChartApi, ISeriesApi, Point, SeriesType, Time } from "lightweight-charts";
 import { DrawingPoint } from "./common";
+
+export function getPointFromMouseEvent(evt: MouseEvent): Point | null{
+    return  { x: evt.clientX as Coordinate, y: evt.clientY as Coordinate};
+}
+
+export function getChartPointFromMouseEvent(evt: MouseEvent, chartDivContainer: HTMLDivElement): Point | null{
+    const rect = chartDivContainer.getBoundingClientRect();
+    return  { x: evt.clientX - rect.left as Coordinate, y: evt.clientY - rect.top as Coordinate};
+}
 
 export function containsPoints(chart: IChartApi, series: ISeriesApi<SeriesType>, point: Point, points: DrawingPoint[], offset: number = 0){
     const len = points.length;

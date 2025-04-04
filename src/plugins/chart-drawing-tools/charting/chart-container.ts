@@ -50,6 +50,7 @@ export class ChartContainer {
     public get primatives(): PluginBase[] { return this._primatives;}
     public get chartId(): string { return this._chartId;}
     public get tags(): string[] { return this._tags;}
+    public get chartDivContainer(): HTMLDivElement { return this._chartDivContainer;}
 
     dispose(){
         this._removeListeners();
@@ -158,12 +159,12 @@ export class ChartContainer {
 
     private _rightClickHandler=(evt: MouseEvent): void => {
         evt.preventDefault()
-        this._chartManager.onRightClick(evt, this._chartDivContainer)
+        this._chartManager.onRightClick(evt, this)
     }
 
     // mouse down, we want to detect if its dragging
     private _onMouseDownChartHandler=(evt: MouseEvent): void => {
-        this._chartManager.onMouseDown(evt, this._chart);
+        this._chartManager.onMouseDown(evt, this);
     }       
 
     private _onMouseUpChartHandler=(evt: MouseEvent): void => {

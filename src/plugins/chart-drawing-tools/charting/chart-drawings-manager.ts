@@ -252,17 +252,21 @@ export class ChartDrawingsManager {
         }
     }
 
-    public onMouseDown(evt: MouseEvent, chart: IChartApi): boolean {
+    public onMouseDown(evt: MouseEvent, chartContainer: ChartContainer): boolean {
         if(!this._selectedDrawing) // only check if a drawing is selected
             return false;
 
-        this._mouseDownStartPoint = getPointFromMouseEvent(evt); // set original mouse down position
-        this._mouseHoldTimer = setTimeout(() => this._mouseHoldTimeout(chart), ChartDrawingsManager.MouseHoldTimeMs);
+        this._mouseDownStartPoint = getChartPointFromMouseEvent(evt, chartContainer.chartDivContainer); // set original mouse down position
+        this._mouseHoldTimer = setTimeout(() => this._mouseHoldTimeout(chartContainer.chart), ChartDrawingsManager.MouseHoldTimeMs);
         return true;
     }
 
     public onMouseUp(evt: MouseEvent): void {
-       this._resetMouseControls();
+        if(this._isMouseDragging){
+            this._selectedDrawing?.setTmpToNewDrawingPoints();
+            this.saveDrawings(this._selectedDrawing?.symbolName || '');
+        }
+        this._resetMouseControls();
     }
 
     public onMouseMove(param: MouseEventParams): void {
@@ -270,19 +274,19 @@ export class ChartDrawingsManager {
             return;
 
         this._mousePosition = param.point || null; 
-        if(this._isMouseDragging){
-            // TODO implement moving drawing
-           //this._selectedDrawing?.updatePosition(param.point);  
+        if(this._isMouseDragging && this._mouseDownStartPoint && this._selectedDrawing){
+            // move drawing
+            this._selectedDrawing?.updatePosition(this._mouseDownStartPoint, param.point);
         }
     }
 
-    public onRightClick(evt: MouseEvent, chartDivContainer: HTMLDivElement): void {
-        if(!this._selectedDrawing || !this._currentChartContainer?.chart || !this._currentChartContainer?.series)
+    public onRightClick(evt: MouseEvent, chartContainer: ChartContainer): void {
+        if(!this._selectedDrawing || !chartContainer.chart || !chartContainer.series)
             return;
 
         // Deselect if right click is outside of drawing
-        const point = getChartPointFromMouseEvent(evt, chartDivContainer);  
-        if(point && !containsPoints(this._currentChartContainer?.chart, this._currentChartContainer?.series, point, this._selectedDrawing.drawingPoints)){
+        const point = getChartPointFromMouseEvent(evt, chartContainer.chartDivContainer);  
+        if(point && !containsPoints(chartContainer.chart, chartContainer.series, point, this._selectedDrawing.drawingPoints)){
             this.unselectDrawing();
         }
     }

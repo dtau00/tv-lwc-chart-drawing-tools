@@ -40,6 +40,8 @@ export abstract class ChartDrawing implements IChartDrawing {
     protected _totalDrawingPoints: number; // setting this allows for some default handling of drawing points for 1 and 2, most common cases
     protected _previewDrawingType: any;
 
+    public tmpDrawingPoints: DrawingPoint[] = [];
+
     constructor(
         type: DrawingToolType,
         chart: IChartApi,
@@ -106,7 +108,13 @@ export abstract class ChartDrawing implements IChartDrawing {
     //abstract getBounds(): { top: number; bottom: number; left: number; right: number };
     abstract onClick(event: MouseEventParams): void;
     abstract onMouseMove(event: MouseEventParams): void;
+    abstract updatePosition(startPoint: Point, endPoint: Point): void;
     
+	setTmpToNewDrawingPoints(): void {
+		this.drawingPoints[0] = this.tmpDrawingPoints[0];
+		this.drawingPoints[1] = this.tmpDrawingPoints[1];
+	}
+
     containsPoint(chart: IChartApi, series: ISeriesApi<SeriesType>, point: Point, points: DrawingPoint[]): boolean {
 		return containsPoints(chart, series, point, points);
 	}

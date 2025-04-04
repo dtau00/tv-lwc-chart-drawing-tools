@@ -1,6 +1,6 @@
 import { IChartApi, ISeriesApi, SeriesType } from "lightweight-charts";
-import { RectangleDrawing } from "../../drawings/rectangle/rectangle-drawing";
-import Tool from "../base/tool-base";
+import { RectangleDrawing } from "../../../drawings/rectangle/rectangle-drawing";
+import Tool from "../tool-base";
 import { DrawingToolType } from "../drawing-tools";
 
 export class ToolRemove extends Tool {

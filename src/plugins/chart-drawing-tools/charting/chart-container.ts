@@ -2,7 +2,7 @@ import { ISeriesApi, MouseEventParams, SeriesType } from "lightweight-charts";
 
 import { IChartApi } from "lightweight-charts";
 import { PluginBase } from "../../plugin-base.ts";
-import { ChartDrawing } from "./drawings/base/chart-drawing-base.ts";
+import { ChartDrawing } from "./drawings/chart-drawing-base.ts";
 import { ensureDefined } from "../../../helpers/assertions";
 import { ChartDrawingsManager } from "./chart-drawings-manager.ts";
 
@@ -169,7 +169,7 @@ export class ChartContainer {
     }
 
     private _onClickChartHandler = (param: MouseEventParams) => {
-       this._chartManager.handleOnClickChart(param, this);
+       this._chartManager.onChartClick(param, this);
 	}
 
     private _rightClickHandler=(evt: MouseEvent): void => {

@@ -1,9 +1,9 @@
 import { ChartDrawingsManager } from '../chart-drawings-manager.ts';
-import { DrawingToolType, AVAILABLE_TOOLS, DrawingToolInfo } from './drawing-tools.ts';
-import { clearToolbar, selectButtonForGroup, unselectAllButtonForGroup } from './helper.ts';
-import { ToolRectangle } from './tools/tool-rectangle.ts';
-import { ToolRemove } from './tools/tool-remove.ts';
-import Tool from './base/tool-base.ts';
+import { DrawingToolType, AVAILABLE_TOOLS, DrawingToolInfo } from './tools/drawing-tools.ts';
+import { clearToolbar, selectDivForGroup, unselectAllDivsForGroup } from './common.ts';
+import { ToolRectangle } from './tools/tool/tool-rectangle.ts';
+import { ToolRemove } from './tools/tool/tool-remove.ts';
+import Tool from './tools/tool-base.ts';
 import { eventBus } from '../../common/common.ts';
 import { ChartEvents } from '../../enums/events.ts';
 // This class is the main class for the chart drawing tools.
@@ -122,16 +122,16 @@ export class ChartDrawingsToolbar {
 		}
 
 		// clear toolbar from view
-		unselectAllButtonForGroup(this._drawingsToolbarContainer!, AVAILABLE_TOOLS.map(t => t.name));
+		unselectAllDivsForGroup(this._drawingsToolbarContainer!, AVAILABLE_TOOLS.map(t => t.name));
 		clearToolbar(this._drawingsSubToolbarContainer!);
 	}
 
 	private _selectTool(toolType: DrawingToolType): void {
 		this._chartDrawingsManager.unselectDrawing();
-		unselectAllButtonForGroup(this._drawingsToolbarContainer!, AVAILABLE_TOOLS.map(t => t.name));
+		unselectAllDivsForGroup(this._drawingsToolbarContainer!, AVAILABLE_TOOLS.map(t => t.name));
 		clearToolbar(this._drawingsSubToolbarContainer!);
 
-		selectButtonForGroup(this._drawingsToolbarContainer!, AVAILABLE_TOOLS.map(t => t.name), toolType);
+		selectDivForGroup(this._drawingsToolbarContainer!, AVAILABLE_TOOLS.map(t => t.name), toolType);
 		this._selectedDrawingTool = toolType;
 		this._populateSubToolbar(toolType);
 	}

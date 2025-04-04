@@ -1,6 +1,6 @@
 import { IChartApi, ISeriesApi, SeriesType, MouseEventParams, Point } from 'lightweight-charts';
-import { DrawingToolType, DrawingStyle } from '../../toolbar/drawing-tools';
-import { DrawingPoint } from '../../../common/common';
+import { DrawingToolType, DrawingStyle } from '../toolbar/tools/drawing-tools';
+import { DrawingPoint } from '../../common/common';
 
 export interface IChartDrawing {
     id: string;

@@ -13,12 +13,12 @@ export function createToolbarButton(name: string, description: string, icon: str
     return button;
 }
 
-export function selectButtonForGroup(container: HTMLDivElement, names: string[], targetName: string): void {
+export function selectDivForGroup(container: HTMLDivElement, names: string[], targetName: string): void {
     const elem = container?.querySelector(`.${names.find(t =>t  === targetName)}`)
     elem?.classList.add('selected');
 }
 
-export function unselectAllButtonForGroup(container: HTMLDivElement, names: string[]): void {
+export function unselectAllDivsForGroup(container: HTMLDivElement, names: string[]): void {
     if(!container) return;
     for(const name of names){
         const elems = container?.querySelectorAll(`.${name}`);

@@ -1,6 +1,6 @@
 import { ConfigStorage } from "../../../data/data";
-import { DrawingSubTools, DrawingSubToolType } from "../drawing-sub-tools";
-import { createToolbarButton, unselectAllButtonForGroup } from "../helper";
+import { DrawingSubTools, DrawingSubToolType } from "./drawing-sub-tools";
+import { createToolbarButton, unselectAllDivsForGroup } from "../common.ts";
 import ISubTool from "./sub-tool-interface";
 
 abstract class SubTool implements ISubTool {
@@ -84,7 +84,7 @@ abstract class SubTool implements ISubTool {
 
     protected setSelectedTool(index?: number): void {
         localStorage.setItem(this._subToolKeyName(), index?.toString() || '');
-        unselectAllButtonForGroup(this._container!, [this.type]);
+        unselectAllDivsForGroup(this._container!, [this.type]);
         this.div.classList.add('selected');
         this.initiateValueUpdatedCallback()
     }

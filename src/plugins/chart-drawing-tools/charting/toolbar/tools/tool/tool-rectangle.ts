@@ -1,10 +1,10 @@
 import { IChartApi, ISeriesApi, SeriesType } from "lightweight-charts";
-import { RectangleDrawing } from "../../drawings/rectangle/rectangle-drawing";
-import Tool from "../base/tool-base";
-import { SubToolColor } from "../sub-tools/sub-tool-color";
-import { SubToolOpacity } from "../sub-tools/sub-tool-opacity"
-import { SubToolThickness } from "../sub-tools/sub-tool-thickness";
-import { DrawingSubToolType, DrawingSubTools } from "../drawing-sub-tools";
+import { RectangleDrawing } from "../../../drawings/rectangle/rectangle-drawing";
+import Tool from "../tool-base";
+import { SubToolColor } from "../../sub-tools/sub-tool/sub-tool-color";
+import { SubToolOpacity } from "../../sub-tools/sub-tool/sub-tool-opacity"
+import { SubToolThickness } from "../../sub-tools/sub-tool/sub-tool-thickness";
+import { DrawingSubToolType, DrawingSubTools } from "../../sub-tools/drawing-sub-tools";
 import { DrawingToolType } from "../drawing-tools";
 
 export class ToolRectangle extends Tool {

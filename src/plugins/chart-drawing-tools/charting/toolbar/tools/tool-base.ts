@@ -2,11 +2,11 @@
 import { IChartApi, ISeriesApi, SeriesType } from "lightweight-charts";
 import { RectangleDrawing } from "../../drawings/rectangle/rectangle-drawing";
 import ITool from "./tool-interface";
-import { createToolbarButton } from "../helper";
-import SubTool from "./sub-tool-base";
+import { createToolbarButton } from "../common";
+import SubTool from "../sub-tools/sub-tool-base";
 import { ConfigStorage } from "../../../data/data";
 import { toolKeyName } from "../../../common/common";
-import { DrawingToolType } from "../drawing-tools";
+import { DrawingToolType } from "./drawing-tools";
 
 abstract class Tool implements ITool {
     toolType: DrawingToolType;

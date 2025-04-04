@@ -1,4 +1,4 @@
-import SubTool from "../base/sub-tool-base";
+import SubTool from "../sub-tool-base";
 import { DrawingSubToolType } from "../drawing-sub-tools";
 
 export class SubToolOpacity extends SubTool {

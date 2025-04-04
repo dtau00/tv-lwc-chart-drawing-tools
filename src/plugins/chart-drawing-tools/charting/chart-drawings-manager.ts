@@ -1,11 +1,11 @@
 import { IChartApi, ISeriesApi, MouseEventParams, Point, SeriesType, Coordinate } from 'lightweight-charts';
-import { ChartDrawing, ChartDrawingBaseProps } from './drawings/base/chart-drawing-base.ts';
-import { DrawingToolType } from './toolbar/drawing-tools.ts';
+import { ChartDrawing, ChartDrawingBaseProps } from './drawings/chart-drawing-base.ts';
+import { DrawingToolType } from './toolbar/tools/drawing-tools.ts';
 import { RectangleDrawing } from './drawings/rectangle/rectangle-drawing.ts';
 import { DataStorage } from '../data/data.ts';
 import { eventBus } from '../common/common.ts';
 import { ChartContainer } from './chart-container.ts';
-import Tool from './toolbar/base/tool-base.ts';
+import Tool from './toolbar/tools/tool-base.ts';
 import { ChartEvents } from '../enums/events.ts';
 import { PluginBase } from '../../plugin-base.ts';
 import { containsPoints, getChartPointFromMouseEvent, getPointFromMouseEvent } from '../common/points.ts';
@@ -21,7 +21,7 @@ import { containsPoints, getChartPointFromMouseEvent, getPointFromMouseEvent } f
 
 export class ChartDrawingsManager {
     private static readonly MouseHoldTimeMs = 400;
-    private static readonly MouseHoldMaxOffsetPoints = 4;
+    private static readonly MouseHoldMaxOffsetPoints = 3;
     private static instance: ChartDrawingsManager;
 
     private _drawings: Map<string, ChartDrawing[]> = new Map(); // symbolName -> drawings
@@ -199,9 +199,8 @@ export class ChartDrawingsManager {
         this.unselectDrawing();
     }
 
-    public handleOnClickChart(param: MouseEventParams, chartContainer: ChartContainer){
+    public onChartClick(param: MouseEventParams, chartContainer: ChartContainer){
         // Ceating a new drawing
-        console.log('onClickChartHandler ChartContainer', chartContainer.chartId);
         this.checkCurrentChartContainer(chartContainer);
 
         if(this.creatingNewDrawingFromToolbar){
@@ -293,13 +292,6 @@ export class ChartDrawingsManager {
         });
     }
 
-
-/*
-    private _getDrawingPoint(evt: MouseEvent): Point | null{
-        const point = this._currentChartContainer?.chart.pointToCoordinate(evt.clientX, evt.clientY);
-        return point;
-    }
-*/
     private _onKeyDown = (evt: KeyboardEvent): void => {
         if (evt.key === 'Delete' || evt.key === 'Backspace') {
             this.removeSelectedDrawing();
@@ -353,6 +345,8 @@ export class ChartDrawingsManager {
     public onRightClick(evt: MouseEvent, chartDivContainer: HTMLDivElement): void {
         if(!this._selectedDrawing || !this._currentChartContainer?.chart || !this._currentChartContainer?.series)
             return;
+
+        // Deselect if right click is outside of drawing
         const point = getChartPointFromMouseEvent(evt, chartDivContainer);  
         if(point && !containsPoints(this._currentChartContainer?.chart, this._currentChartContainer?.series, point, this._selectedDrawing.drawingPoints)){
             this.unselectDrawing();

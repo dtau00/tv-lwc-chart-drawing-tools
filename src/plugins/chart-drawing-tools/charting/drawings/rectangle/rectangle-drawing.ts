@@ -7,8 +7,8 @@ import {
 
 import { DrawingPoint } from '../../../common/common';
 import { ensureDefined } from '../../../../../helpers/assertions';
-import { ChartDrawing, ChartDrawingBaseProps } from '../base/chart-drawing-base';
-import { DrawingToolType } from '../../toolbar/drawing-tools';
+import { ChartDrawing, ChartDrawingBaseProps } from '../chart-drawing-base';
+import { DrawingToolType } from '../../toolbar/tools/drawing-tools';
 import { PreviewRectangle } from './rectangle-preview';
 import { Rectangle } from './rectangle';
 import { defaultOptions, RectangleDrawingToolOptions } from './rectangle-options';
@@ -82,20 +82,6 @@ export class RectangleDrawing extends ChartDrawing{
 	onMouseMove(param: MouseEventParams) {
 		if (!this._chart || this._isDrawing || !this._series || !param.point) 
 			return;
-/*
-		const point = getChartPointFromMouseEvent(evt, this._chart);
-		if(!point) return;
-		
-		const price = this._series.coordinateToPrice(point.y);
-		const time = this._chart.timeScale().coordinateToTime(point.x);
-		if (price === null || !time) 
-			return;
-
-		(this._previewDrawing as PreviewRectangle)?.updateEndPoint({
-			time: time,
-			price,
-		});
-		*/
 
 		const price = this._series.coordinateToPrice(param.point.y);
 		if (price === null || param.time === undefined) 

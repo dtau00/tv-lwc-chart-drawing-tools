@@ -1,4 +1,4 @@
-import { IChartApi, ISeriesApi, SeriesType, MouseEventParams, Point, Time } from 'lightweight-charts';
+import { IChartApi, ISeriesApi, SeriesType, MouseEventParams, Point, Time, Coordinate } from 'lightweight-charts';
 import { DrawingToolType, DrawingStyle } from '../toolbar/tools/drawing-tools';
 import { IChartDrawing } from './chart-drawing-interface';
 import { generateUniqueId } from '../../../../helpers/id-generator';
@@ -35,10 +35,9 @@ export abstract class ChartDrawing implements IChartDrawing {
     protected _isSelected: boolean;
 
     protected _baseDrawing: PluginBase | undefined;
-    protected _previewDrawing: PluginBase | undefined;
+    //protected _previewDrawing: PluginBase | undefined;
     protected _points: DrawingPoint[] = []; // points as the drawing is being created
     protected _totalDrawingPoints: number; // setting this allows for some default handling of drawing points for 1 and 2, most common cases
-    protected _previewDrawingType: any;
 
     public tmpDrawingPoints: DrawingPoint[] = [];
 
@@ -93,8 +92,9 @@ export abstract class ChartDrawing implements IChartDrawing {
     get isDrawing(): boolean { return this._isDrawing; }
     get isCompleted(): boolean { return this._isCompleted; }
     get primative(): PluginBase | undefined{ return this._baseDrawing; }
-    get preview(): PluginBase | undefined{ return this._previewDrawing; }
+   // get preview(): PluginBase | undefined{ return this._previewDrawing; }
     get drawingPoints(): DrawingPoint[] { return this._baseProps.drawingPoints; }
+    set drawingPoints(points: DrawingPoint[]) { this._baseProps.drawingPoints = points; }
     get text(): string { return this._baseProps.text; }
     get leftOffsetSeconds(): number { return this._baseProps.leftOffsetSeconds; }
     get rightOffsetSeconds(): number { return this._baseProps.rightOffsetSeconds; }
@@ -109,11 +109,6 @@ export abstract class ChartDrawing implements IChartDrawing {
     abstract onClick(event: MouseEventParams): void;
     abstract onMouseMove(event: MouseEventParams): void;
     abstract updatePosition(startPoint: Point, endPoint: Point): void;
-    
-	setTmpToNewDrawingPoints(): void {
-		this.drawingPoints[0] = this.tmpDrawingPoints[0];
-		this.drawingPoints[1] = this.tmpDrawingPoints[1];
-	}
 
     containsPoint(chart: IChartApi, series: ISeriesApi<SeriesType>, point: Point, points: DrawingPoint[]): boolean {
 		return containsPoints(chart, series, point, points);
@@ -153,6 +148,11 @@ export abstract class ChartDrawing implements IChartDrawing {
 		//this.removeChartDrawing();
 		this._chart = undefined;
 		this._series = undefined;
+	}
+
+    setTmpToNewDrawingPoints(): void {
+		this.drawingPoints = this.tmpDrawingPoints;
+		this.tmpDrawingPoints = [];
 	}
 
 /*
@@ -198,10 +198,17 @@ export abstract class ChartDrawing implements IChartDrawing {
         );
     }
 
+    /* NOTE the preview behaves differently than the chartDrawing primative.  The chartDrawing is managed by the
+	// chart manager, and the drawing is applied onto the chartContainer.  
+	// For the preview, the primative is attached by this object, directly onto the chart it's initialized with
+	// This is obviously weird, and the las piece of coupling of the chart and series objects.  This code follows
+	// the example provided by Trading View, so we'll have to really consider how and if we should decouple it
+	// for now, funcitonally it shouldnt have a problem, since there can only be one active chart, and therefore preview
+	// at a time.*/
     protected removePreviewDrawing() {
-		if (this._previewDrawing) {
-			ensureDefined(this._series).detachPrimitive(this._previewDrawing);
-			this._previewDrawing = undefined;
+		if (this._baseDrawing && !this._isCompleted) {
+			ensureDefined(this._series).detachPrimitive(this._baseDrawing);
+			//this._baseDrawing = undefined;
 		}
 	}
 

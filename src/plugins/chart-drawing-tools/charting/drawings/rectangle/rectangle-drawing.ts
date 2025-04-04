@@ -12,8 +12,8 @@ import { ensureDefined } from '../../../../../helpers/assertions';
 import { ChartDrawing, ChartDrawingBaseProps } from '../chart-drawing-base';
 import { DrawingToolType } from '../../toolbar/tools/drawing-tools';
 import { Rectangle } from './rectangle';
-import { PreviewRectangle } from './rectangle-preview';
 import { defaultOptions, RectangleDrawingToolOptions } from './rectangle-options';
+import { PluginBase } from '../../../../plugin-base';
 
 export class RectangleDrawing extends ChartDrawing{
 	private static readonly TotalDrawingPoints = 2; // Set the drawing points for this type of drawing.  A box will have 2, a line ray will have 1, etc...
@@ -80,27 +80,6 @@ export class RectangleDrawing extends ChartDrawing{
 		}
 	}
 
-	// TODO: remove this handler if drawing is completed.  this is only for preview
-	onMouseMove(param: MouseEventParams) {
-		if (!this._chart || this._isDrawing || !this._series || !param.point) 
-			return;
-		//console.log('drawing onMouseMove', param);
-		const price = this._series.coordinateToPrice(param.point.y);
-		if (price === null || param.time === undefined) 
-			return;
-
-		(this._previewDrawing as PreviewRectangle)?.updateEndPoint({
-			time: param.time,
-			price,
-		});
-	}
-
-	setTmpToNewDrawingPoints(): void {
-		this.drawingPoints[0] = this.tmpDrawingPoints[0];
-		this.drawingPoints[1] = this.tmpDrawingPoints[1];
-		this.tmpDrawingPoints = [];
-	}
-
 	updatePosition(startPoint: Point, endPoint: Point): void {
 		if (!this._chart || this._isDrawing || !this._series || this.drawingPoints.length < 2) 
 			return;
@@ -139,6 +118,23 @@ export class RectangleDrawing extends ChartDrawing{
 		}
 	}
 
+	// TODO: remove this handler if drawing is completed.  this is only for preview
+	onMouseMove(param: MouseEventParams) {
+		if (!this._chart || this._isDrawing || !this._series || !param.point) 
+			return;
+		//console.log('drawing onMouseMove', param);
+		const price = this._series.coordinateToPrice(param.point.y);
+		if (price === null || param.time === undefined) 
+			return;
+
+		if(!this._isCompleted){
+			(this._baseDrawing as Rectangle)?.updateInitialPoint({
+				time: param.time,
+				price,
+			});
+		}
+	}
+
 	private _initializeChartDrawing(p1?: DrawingPoint, p2?: DrawingPoint) {
 		if(!p1 || !p2){
 			p1  = {time: this.startDate, price: this.startPrice || 0};
@@ -150,33 +146,21 @@ export class RectangleDrawing extends ChartDrawing{
 		//ensureDefined(this._series).attachPrimitive(this._chartDrawing); // we let the chart manager manage the primative
 	}
 
-	// creates the chartDrawing object and primative, but doesn't attach the drawing to a chart.  Will let mgr handle that
-	private _createChartDrawing	(p1: DrawingPoint, p2: DrawingPoint) {
-		this._initializeChartDrawing(p1, p2);
-		this.completeDrawing();
-	}
-
-	// NOTE the preview behaves differently than the chartDrawing primative.  The chartDrawing is managed by the
-	// chart manager, and the drawing is applied onto the chartContainer.  
-	// For the preview, the primative is attached by this object, directly onto the chart it's initialized with
-	// This is obviously weird, and the las piece of coupling of the chart and series objects.  This code follows
-	// the example provided by Trading View, so we'll have to really consider how and if we should decouple it
-	// for now, funcitonally it shouldnt have a problem, since there can only be one active chart, and therefore preview
-	// at a time.
-	private _createPreviewDrawing(p: DrawingPoint) {
-		this._previewDrawing = new PreviewRectangle(p, p, {
-			...this._defaultOptions,
-		});
-		ensureDefined(this._series).attachPrimitive(this._previewDrawing);
-	}
-
 	private _addPoint(p: DrawingPoint) {
 		this._points.push(p);
-		if (this._points.length === 1) {
-			this._createPreviewDrawing(this._points[0]);
+		this._setNewDrawing();
+	}
+
+	private _setNewDrawing(){
+		if(this._points.length === 1){
+			this._initializeChartDrawing(this._points[0], this._points[0]);
+			// we are only drawing this for the preview
+			ensureDefined(this._series).attachPrimitive(this._baseDrawing as PluginBase);
 		}
 		else if (this._points.length >= this._totalDrawingPoints) {
-			this._createChartDrawing(this._points[0], this._points[1]);
+			//this._createChartDrawing(this._points[0], this._points[1]);
+			this.completeDrawing();
+			//ensureDefined(this._series).detachPrimitive(this._baseDrawing as PluginBase);
 		}
 	}
 

@@ -44,6 +44,14 @@ export class Rectangle extends PluginBase {
 		this._timeAxisPaneViews = [new RectangleTimeAxisPaneView(this, false)];
 	}
 
+	updateInitialPoint(p: DrawingPoint) {
+		this._p2 = p;
+		this._paneViews[0].update();
+		this._timeAxisViews[1].movePoint(p);
+		this._priceAxisViews[1].movePoint(p);
+		this.requestUpdate();
+	}
+
 	updatePoints(p1: DrawingPoint, p2: DrawingPoint) {
 		this._p1 = p1;
 		this._p2 = p2;

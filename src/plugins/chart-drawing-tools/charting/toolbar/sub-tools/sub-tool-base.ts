@@ -1,6 +1,7 @@
 import { ConfigStorage } from "../../../data/data";
 import { DrawingSubTools, DrawingSubToolType } from "./drawing-sub-tools";
-import { createToolbarButton, unselectAllDivsForGroup } from "../common.ts";
+import { unselectAllDivsForGroup } from "../../../common/html.ts";
+import { createToolbarButton } from "../common.ts";
 import ISubTool from "./sub-tool-interface";
 
 abstract class SubTool implements ISubTool {

@@ -1,6 +1,6 @@
 import { ChartDrawingsManager } from '../chart-drawings-manager.ts';
 import { DrawingToolType, AVAILABLE_TOOLS, DrawingToolInfo } from './tools/drawing-tools.ts';
-import { clearToolbar, selectDivForGroup, unselectAllDivsForGroup } from './common.ts';
+import { clearDiv, selectDivForGroup, unselectAllDivsForGroup } from '../../common/html.ts';
 import { ToolRectangle } from './tools/tool/tool-rectangle.ts';
 import { ToolRemove } from './tools/tool/tool-remove.ts';
 import Tool from './tools/tool-base.ts';
@@ -106,7 +106,7 @@ export class ChartDrawingsToolbar {
 	}
 
 	private _populateSubToolbar(toolType: DrawingToolType): void {
-		clearToolbar(this._drawingsSubToolbarContainer!); // clear the sub toolbar
+		clearDiv(this._drawingsSubToolbarContainer!); // clear the sub toolbar
 		this._tools.get(toolType)?.setSubToolbarButtons(this._drawingsSubToolbarContainer!); // populate the sub toolbar
 	}
 
@@ -123,13 +123,13 @@ export class ChartDrawingsToolbar {
 
 		// clear toolbar from view
 		unselectAllDivsForGroup(this._drawingsToolbarContainer!, AVAILABLE_TOOLS.map(t => t.name));
-		clearToolbar(this._drawingsSubToolbarContainer!);
+		clearDiv(this._drawingsSubToolbarContainer!);
 	}
 
 	private _selectTool(toolType: DrawingToolType): void {
 		this._chartDrawingsManager.unselectDrawing();
 		unselectAllDivsForGroup(this._drawingsToolbarContainer!, AVAILABLE_TOOLS.map(t => t.name));
-		clearToolbar(this._drawingsSubToolbarContainer!);
+		clearDiv(this._drawingsSubToolbarContainer!);
 
 		selectDivForGroup(this._drawingsToolbarContainer!, AVAILABLE_TOOLS.map(t => t.name), toolType);
 		this._selectedDrawingTool = toolType;

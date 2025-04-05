@@ -32,11 +32,12 @@ export class RectangleView extends ViewBase {
 		defaultOptions: {},
 		options: Partial<RectangleDrawingToolOptions> = {},
 		baseProps: ChartDrawingBaseProps,
+		initializedFromStorage: boolean,
 	) {
 		//super(type, chart, series, symbolName, totalDrawingPoints, defaultOptions, baseProps);
 		super(chart, series, toolType, defaultOptions, options, baseProps);
 		this._isExtended = isExtended;
-		if(baseProps){ // we are loading from storage
+		if(initializedFromStorage){ // we are loading from storage
 			this.initializeDrawingViews(baseProps.drawingPoints[0], baseProps.drawingPoints[1]);
 		}
 	}

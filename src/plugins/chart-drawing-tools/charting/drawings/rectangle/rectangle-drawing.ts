@@ -32,7 +32,7 @@ export class RectangleDrawing extends ChartDrawingBase{
 		super( toolType, chart, series, symbolName, RectangleDrawing.TOTAL_DRAWING_POINTS, rectangleDrawingToolDefaultOptions, baseProps);
 		this._toolType = toolType
 		this._isExtended = isExtended;
-		this.drawingView = new RectangleView(chart, series, this._toolType, isExtended, rectangleDrawingToolDefaultOptions,  baseProps?.styleOptions, baseProps); 
+		this.drawingView = new RectangleView(chart, series, this._toolType, isExtended, rectangleDrawingToolDefaultOptions,  baseProps?.styleOptions, baseProps || this.baseProps, baseProps ? true : false ); 
 
 	}
 

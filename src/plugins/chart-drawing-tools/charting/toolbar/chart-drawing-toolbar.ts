@@ -166,7 +166,7 @@ export class ChartDrawingsToolbar {
 
 		eventBus.addEventListener(ChartEvents.CompletedDrawingUnSelected, (event: Event) => {
             const customEvent = event as CustomEvent<string>;
-			this._unselectTool();
+			this._unselectTool(true);
         });
 
 

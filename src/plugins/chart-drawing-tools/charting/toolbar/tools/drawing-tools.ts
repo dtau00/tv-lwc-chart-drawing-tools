@@ -14,6 +14,7 @@ export interface DrawingToolInfo {
 
 export enum DrawingToolType {
     Rectangle = 'rectangle',
+    RectangleExtended = 'rectangle-extended',
     Remove = 'remove',
     //ExtendedRectangle = 'extended-rectangle',
     //Line = 'line',
@@ -28,6 +29,12 @@ export const AVAILABLE_TOOLS: DrawingToolInfo[] = [
         type: DrawingToolType.Rectangle,
         name: 'rectangle',
         icon: '▭',
+        description: 'Draw rectangles on the chart'
+    },
+    {
+        type: DrawingToolType.RectangleExtended,
+        name: 'rectangle-extended',
+        icon: '⌧',
         description: 'Draw rectangles on the chart'
     },
     {

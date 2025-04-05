@@ -1,3 +1,5 @@
+import SubTool from "./sub-tools/sub-tool-base";
+
 export function createToolbarButton(name: string, description: string, icon: string, listener: (evt: MouseEvent) => void, eventType: 'click' | 'mousedown' | 'mouseup' = 'click', container?: HTMLDivElement): HTMLDivElement {
     const button = document.createElement('div');
     button.className = `toolbar-item ${name}`;
@@ -9,3 +11,8 @@ export function createToolbarButton(name: string, description: string, icon: str
     return button;
 }
 
+export function setSubToolbarButton(subTool: SubTool, subTools: SubTool[], container: HTMLDivElement){
+    subTool.setToolbarButton(container); 
+    subTools.push(subTool);
+    subTool.setSelectedStyling();
+}

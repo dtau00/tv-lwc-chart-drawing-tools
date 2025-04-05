@@ -1,8 +1,10 @@
-import { mergeOpacityIntoRgba, toolKeyName } from '../../common/common';
+import { mergeOpacityIntoRgba } from '../../common/helper';
+import { toolKeyName } from '../../common/common';
 import { IChartApi, ISeriesApi, SeriesType } from 'lightweight-charts';
 import { PluginBase } from '../../../plugin-base';
 import { DrawingToolType } from '../toolbar/tools/drawing-tools';
 import { ConfigStorage } from '../../data/data';
+import { removeUndefinedKeys } from '../../common/helper';
 
 // Base class for all drawing views, handles the style options and updates
 export class ViewBase extends PluginBase {
@@ -62,10 +64,13 @@ export class ViewBase extends PluginBase {
             // TODO fill this out with more rgba color properties
             overrides.fillColor = this.getRgbaOverrideColorFromOptions(this._toolType, 'fillColor', 'fillColorOpacity', this._defaultStyleOptions, overrides);
             overrides.color = this.getRgbaOverrideColorFromOptions(this._toolType, 'color', 'colorOpacity', this._defaultStyleOptions, overrides);
+            overrides = removeUndefinedKeys(overrides);
             return overrides;
         }
     
         public getStyleOptions(): any {
             return this.transformRgbaOptions(this._baseStyleOptions);
         }
+
+
     }

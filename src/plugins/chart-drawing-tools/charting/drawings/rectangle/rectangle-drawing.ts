@@ -17,31 +17,35 @@ import { PluginBase } from '../../../../plugin-base';
 
 export class RectangleDrawing extends ChartDrawingBase{
 	private static readonly TOTAL_DRAWING_POINTS = 2; // Set the drawing points for this type of drawing.  A box will have 2, a line ray will have 1, etc...
-	private static readonly TOOL_TYPE: DrawingToolType = DrawingToolType.Rectangle; // set the tool type for the class
+	private _toolType: DrawingToolType; // = DrawingToolType.Rectangle; // set the tool type for the class
+
+	private _isExtended: boolean;
 
 	constructor(
 		chart: IChartApi,
 		series: ISeriesApi<SeriesType>,
 		symbolName: string,
+		isExtended: boolean,
 		baseProps?: ChartDrawingBaseProps,
 	) {
-		//super(chart, series, symbolName, RectangleDrawing.TOOL_TYPE, RectangleDrawing.TOTAL_DRAWING_POINTS, rectangleDrawingToolDefaultOptions, baseProps);
-		super(RectangleDrawing.TOOL_TYPE, chart, series, symbolName, RectangleDrawing.TOTAL_DRAWING_POINTS, rectangleDrawingToolDefaultOptions, baseProps);
-		this.drawingView = new RectangleView(chart, series, RectangleDrawing.TOOL_TYPE, rectangleDrawingToolDefaultOptions,  baseProps?.styleOptions, baseProps); //new RectangleView(chart, series, symbolName, RectangleDrawing.TOOL_TYPE, RectangleDrawing.TOTAL_DRAWING_POINTS, rectangleDrawingToolDefaultOptions, baseProps);
-		//if(!baseProps)
-		//	this.view().setConfiguredStyle()
+		const toolType = isExtended ? DrawingToolType.RectangleExtended : DrawingToolType.Rectangle;
+		super( toolType, chart, series, symbolName, RectangleDrawing.TOTAL_DRAWING_POINTS, rectangleDrawingToolDefaultOptions, baseProps);
+		this._toolType = toolType
+		this._isExtended = isExtended;
+		this.drawingView = new RectangleView(chart, series, this._toolType, isExtended, rectangleDrawingToolDefaultOptions,  baseProps?.styleOptions, baseProps); 
+
 	}
 
 	// TODO dont make this hard coded
 	// set the style when drawing is selected
 	select(): void {
-		this.view().applyOptions({ fillColor: 'rgba(100, 100, 100, 0.5)', })
+		this._view().applyOptions({ fillColor: 'rgba(100, 100, 100, 0.5)', })
 		super.select();
 	}
 
 	// revert styling when deselected
 	deselect(): void {
-		this.view().setBaseStyleOptions()//.setToConfiguredStyle();
+		this._view().setBaseStyleOptions()//.setToConfiguredStyle();
 		super.deselect();
 	}
 
@@ -74,17 +78,16 @@ export class RectangleDrawing extends ChartDrawingBase{
 
 		// if initial drawing is not completed, update the initial point
 		if(!this._isCompleted){	
-			this.view().updateInitialPoint({
+			this._view().updateInitialPoint({
 				time: param.time,
 				price,
-			});
+			}, param);
 		}
 	}
 
 	updatePosition(startPoint: Point, endPoint: Point): void {
 		if (!this._chart || this._isDrawing || !this._series || this.drawingPoints.length < 2) 
 			return;
-
 		// Note we can't directly update the drawingPoints or the time value will be off , so always have to calculate from the initial points
 		let xOffset = endPoint.x - startPoint.x;
 		let yOffset = endPoint.y - startPoint.y;
@@ -102,16 +105,21 @@ export class RectangleDrawing extends ChartDrawingBase{
 		if(timePoint1 !== null && timePoint2 !== null && pricePoint1 !== null && pricePoint2 !== null){
 			// offset coordinates
 			timePoint1 = (timePoint1 + xOffset) as Coordinate;
-			timePoint2 =(timePoint2 + xOffset) as Coordinate;
+			timePoint2 = (timePoint2 + xOffset) as Coordinate;
 			pricePoint1 = (pricePoint1 + yOffset) as Coordinate;
 			pricePoint2 = (pricePoint2 + yOffset) as Coordinate;
 
-			// convert back to drawing coordinates
+			if(this._isExtended){
+				const end = this._chart.timeScale().getVisibleRange()?.to
+				if(end)
+					timePoint2 = this._chart.timeScale().timeToCoordinate(end)!
+			}
+				// convert back to drawing coordinates
 			const newDrawingPoint1 = {time: this._chart.timeScale().coordinateToTime(timePoint1)!, price: this._series.coordinateToPrice(pricePoint1)!};
 			const newDrawingPoint2 = {time: this._chart.timeScale().coordinateToTime(timePoint2)!, price: this._series.coordinateToPrice(pricePoint2)!};
 
 			// update the drawing
-			this.view().updatePoints( newDrawingPoint1, newDrawingPoint2) 
+			this._view().updatePoints( newDrawingPoint1, newDrawingPoint2) 
 
 			//  store new points temporarily, we will set this back to the drawingPoints when the update is finished
 			// TODO we wont need this if we save directly from the class, consider adding save directly from the class
@@ -120,7 +128,7 @@ export class RectangleDrawing extends ChartDrawingBase{
 		}
 	}
 
-	private view(): RectangleView {
+	private _view(): RectangleView {
 		return this.drawingView as RectangleView;
 	}
 
@@ -131,7 +139,7 @@ export class RectangleDrawing extends ChartDrawingBase{
 
 	private _setNewDrawing(){
 		if(this._points.length === 1){
-			this.view().initializeDrawingViews(this._points[0], this._points[0]);
+			this._view().initializeDrawingViews(this._points[0], this._points[0]);
 			this._setStyleOptions();
 
 			// we are only drawing this for the preview
@@ -144,7 +152,7 @@ export class RectangleDrawing extends ChartDrawingBase{
 
 	// saves the style options to base properties for saving
 	private _setStyleOptions(){
-		const styleOptions = this.view().getStyleOptions();
+		const styleOptions = this._view().getStyleOptions();
 		this.baseProps.styleOptions = styleOptions;
 	}
 }

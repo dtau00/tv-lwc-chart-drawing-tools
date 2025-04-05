@@ -8,7 +8,7 @@ import {
     RectangleTimeAxisView 
 } from './panes/rectangle-axis-pane-views';
 import {  ChartDrawingBaseProps } from '../chart-drawing-base';
-import { IChartApi, ISeriesApi, SeriesType } from 'lightweight-charts';
+import { IChartApi, ISeriesApi, MouseEventParams, SeriesType } from 'lightweight-charts';
 import { ViewBase } from '../drawing-view-base';
 import { DrawingToolType } from '../../toolbar/tools/drawing-tools';
 
@@ -22,17 +22,20 @@ export class RectangleView extends ViewBase {
 	_priceAxisPaneViews: RectanglePriceAxisPaneView[];
 	_timeAxisPaneViews: RectangleTimeAxisPaneView[];
 	_baseProps: ChartDrawingBaseProps;
+	_isExtended: boolean;
 
 	constructor(
 		chart: IChartApi,
 		series: ISeriesApi<SeriesType>,
 		toolType: DrawingToolType,
+		isExtended: boolean,
 		defaultOptions: {},
 		options: Partial<RectangleDrawingToolOptions> = {},
 		baseProps?: ChartDrawingBaseProps,
 	) {
 		//super(type, chart, series, symbolName, totalDrawingPoints, defaultOptions, baseProps);
 		super(chart, series, toolType, defaultOptions, options);
+		this._isExtended = isExtended;
 		if(baseProps){ // we are loading from storage
 			this.initializeDrawingViews(baseProps.drawingPoints[0], baseProps.drawingPoints[1]);
 		}
@@ -61,14 +64,23 @@ export class RectangleView extends ViewBase {
 		this._timeAxisPaneViews = [new RectangleTimeAxisPaneView(this, false)];
 	}
 
-	updateInitialPoint(p: DrawingPoint) {
+	updateInitialPoint(p: DrawingPoint, param: MouseEventParams) {
 		if(!this._p1)
 			return
-
 		this._p1 = p;
+
+		// if extended, modify the points for the desired extended behavior
+		if(this._isExtended && this._p2){
+			this._p2.time = p.time;
+			const end = this.chart.timeScale().getVisibleRange()?.to
+			if(end)
+				this._p2.time = end
+		}
+
 		this._paneViews[0].update();
 		this._timeAxisViews[1].movePoint(p);
 		this._priceAxisViews[1].movePoint(p);
+
 		super.requestUpdate();
 	}
 

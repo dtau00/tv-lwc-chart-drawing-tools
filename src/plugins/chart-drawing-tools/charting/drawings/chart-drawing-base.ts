@@ -4,7 +4,8 @@ import { IChartDrawing } from './chart-drawing-interface';
 import { generateUniqueId } from '../../../../helpers/id-generator';
 import { PluginBase } from '../../../plugin-base';
 import { ensureDefined } from '../../../../helpers/assertions';
-import { eventBus, DrawingPoint, toolKeyName, mergeOpacityIntoRgba } from '../../common/common';
+import { eventBus, DrawingPoint, toolKeyName } from '../../common/common';
+
 import { ChartEvents } from '../../enums/events';
 import { containsPoints, leftRightPoints, topBottomPoints } from '../../common/points';
 import { ConfigStorage } from '../../data/data';
@@ -133,13 +134,6 @@ export abstract class ChartDrawingBase implements IChartDrawing {
         this._isSelected = false;
         //this.draw(this._chart!, this._series!);
     }
-/*
-    updateStyle(style: Partial<DrawingStyle>): void {
-        this._baseProps.styleOptions = { ...this._baseProps.styleOptions, ...style };
-        if (this._baseProps.isVisible) {
-            //this.draw(this._chart!, this._series!);
-        }
-    }*/
 
     startDrawing(): void {
         this._isDrawing = true;
@@ -164,7 +158,6 @@ export abstract class ChartDrawingBase implements IChartDrawing {
 		this.drawingPoints = this.tmpDrawingPoints;
 		this.tmpDrawingPoints = [];
 	}
-
 
     protected completeDrawing(): void {
         this._isCompleted = true;
@@ -207,31 +200,4 @@ export abstract class ChartDrawingBase implements IChartDrawing {
 			//this._baseDrawing = undefined;
 		}
 	}
-
-    /*
-	protected removeChartDrawing() {
-		if (this._chartDrawing) {
-			ensureDefined(this._series).detachPrimitive(this._chartDrawing);
-			this._chartDrawing = undefined;
-		}
-	}*/
-
-    // loads override settings from storage.  Only overrides, does not include default settings
-    /*
-    protected getOverrideOptions<T>(toolType: DrawingToolType, styleOptions: Partial<T>): Partial<T> {
-        const keyName = toolKeyName(toolType);
-        const isEmpty = (obj: object) => Object.keys(obj).length === 0;
-        const overrides = isEmpty(styleOptions) ? ConfigStorage.loadConfig(keyName, {}) as Partial<T> : styleOptions;
-        return overrides;
-    }*/
-
-
-
-    	// gets the override options for styling.  there could be special processing for some settings
-	/*
-	private _finalOptions(styleOptions: {}): Partial<RectangleDrawingToolOptions> {
-		let  overrides = this.getOverrideOptions<RectangleDrawingToolOptions>(this._toolType, styleOptions);
-		overrides.fillColor = this.getRgbaOverrideColorFromOptions<RectangleDrawingToolOptions>(this._toolType, 'fillColor', 'opacity', defaultOptions, overrides);
-		return overrides;
-	}*/
 } 

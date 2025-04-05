@@ -115,10 +115,14 @@ export class ChartDrawingsManager {
                 if(item.symbolName === symbolName){
                     // TODO clean this up
                     if(item.type === DrawingToolType.Rectangle){
-                        const drawing = new RectangleDrawing(chartContainer.chart, chartContainer.series, symbolName, item);
+                        const drawing = new RectangleDrawing(chartContainer.chart, chartContainer.series, symbolName, false, item);
                         this._drawings.get(symbolName)?.push(drawing);
                         chartContainer.addDrawingPrimative(drawing.drawingView as PluginBase);
-                       // drawing.draw(chart, series);
+                    }
+                    else if(item.type === DrawingToolType.RectangleExtended){
+                        const drawing = new RectangleDrawing(chartContainer.chart, chartContainer.series, symbolName, true, item);
+                        this._drawings.get(symbolName)?.push(drawing);
+                        chartContainer.addDrawingPrimative(drawing.drawingView as PluginBase);
                     }
                 }
             }

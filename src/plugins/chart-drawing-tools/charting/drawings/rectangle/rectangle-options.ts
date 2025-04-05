@@ -1,8 +1,9 @@
 import { isBusinessDay, Time } from "lightweight-charts";
 
 export interface RectangleDrawingToolOptions {
-	opacity: number,
+	//opacity: number,
 	fillColor: string;
+	fillColorOpacity: number;
 	previewFillColor: string;
 	labelColor: string;
 	labelTextColor: string;
@@ -11,9 +12,10 @@ export interface RectangleDrawingToolOptions {
 	timeLabelFormatter: (time: Time) => string;
 }
 
-export const defaultOptions: RectangleDrawingToolOptions = {
-	opacity: 1, // this doesnt seem to do anything
+export const rectangleDrawingToolDefaultOptions: RectangleDrawingToolOptions = {
+	//opacity: 1, // this doesnt seem to do anything
 	fillColor: 'rgba(200, 50, 100, 0.25)',
+	fillColorOpacity: 0.75,
 	//previewFillColor: 'rgba(200, 50, 100, 0.25)',
 	previewFillColor: 'rgba(100, 100, 100, 0.25)',
 	labelColor: 'rgb(50, 147, 200)',

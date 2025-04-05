@@ -11,10 +11,12 @@ import { ensureDefined } from '../helpers/assertions';
 import { generateUniqueId } from '../helpers/id-generator';
 
 export abstract class PluginBase implements ISeriesPrimitive<Time> {
-	private _chart: IChartApi | undefined = undefined;
-	private _series: ISeriesApi<keyof SeriesOptionsMap> | undefined = undefined;
+	private _baseId: string = generateUniqueId('plugin-base-');
+
+	protected _chart: IChartApi | undefined = undefined;
+	protected _series: ISeriesApi<keyof SeriesOptionsMap> | undefined = undefined;
 	
-	public id: string = generateUniqueId('plugin-base-');
+	get baseId(): string { return this._baseId; }
 
 	protected dataUpdated?(scope: DataChangedScope): void;
 	protected requestUpdate(): void {

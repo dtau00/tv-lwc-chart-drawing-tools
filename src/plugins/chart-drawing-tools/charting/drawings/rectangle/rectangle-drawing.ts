@@ -9,20 +9,14 @@ import {
 
 import { DrawingPoint } from '../../../common/common';
 import { ensureDefined } from '../../../../../helpers/assertions';
-import { ChartDrawing, ChartDrawingBaseProps } from '../chart-drawing-base';
+import { ChartDrawingBaseProps } from '../chart-drawing-base';
 import { DrawingToolType } from '../../toolbar/tools/drawing-tools';
-import { Rectangle } from './rectangle';
-import { defaultOptions, RectangleDrawingToolOptions } from './rectangle-options';
-import { PluginBase } from '../../../../plugin-base';
+import { RectangleView } from './rectangle-view';
+import { rectangleDrawingToolDefaultOptions } from './rectangle-options';
 
-export class RectangleDrawing extends ChartDrawing{
-	private static readonly TotalDrawingPoints = 2; // Set the drawing points for this type of drawing.  A box will have 2, a line ray will have 1, etc...
-
-	private readonly _toolType: DrawingToolType = DrawingToolType.Rectangle;
-	private _defaultOptions: Partial<RectangleDrawingToolOptions>;
-	private _currentFillColor: string;
-	//private _previewDrawing: PreviewRectangle | undefined = undefined;
-	//private _chartDrawing: Rectangle | undefined = undefined;
+export class RectangleDrawing extends RectangleView{
+	private static readonly TOTAL_DRAWING_POINTS = 2; // Set the drawing points for this type of drawing.  A box will have 2, a line ray will have 1, etc...
+	private static readonly TOOL_TYPE: DrawingToolType = DrawingToolType.Rectangle; // set the tool type for the class
 
 	constructor(
 		chart: IChartApi,
@@ -30,31 +24,20 @@ export class RectangleDrawing extends ChartDrawing{
 		symbolName: string,
 		baseProps?: ChartDrawingBaseProps,
 	) {
-		super(DrawingToolType.Rectangle, chart, series, symbolName, RectangleDrawing.TotalDrawingPoints, baseProps);
-		
-		if(baseProps){ // recreate the chartDrawing object, from loaded data
-			new Rectangle({time: this.startDate, price: this.startPrice}, {time: this.endDate, price: this.endPrice}, { ...this.baseProps.styleOptions }); 
-			this._initializeChartDrawing()
-		}
+		super(chart, series, symbolName, RectangleDrawing.TOOL_TYPE, RectangleDrawing.TOTAL_DRAWING_POINTS, rectangleDrawingToolDefaultOptions, baseProps);
+		this.setConfiguredStyle()
 	}
 
-	// there should probably be default implemetations for lines and boxes.  The styling can be funky and hard to control
-	// Ideally we'll outline the primative or something.  Perhaps implement a DrawingSelected object like Preview
+	// TODO dont make this hard coded
+	// set the style when drawing is selected
 	select(): void {
-		this._currentFillColor = this.getRgbaOverrideColorFromOptions<RectangleDrawingToolOptions>(this._toolType, 'fillColor', 'opacity', defaultOptions);
-		(this._baseDrawing as Rectangle)?.applyOptions({
-			fillColor: 'rgba(100, 100, 100, 0.5)',
-		})
+		this.applyOptions({ fillColor: 'rgba(100, 100, 100, 0.5)', })
 		super.select();
 	}
 
+	// revert styling when deselected
 	deselect(): void {
-		this.removePreviewDrawing();
-		if(this._currentFillColor){
-			(this._baseDrawing as Rectangle)?.applyOptions({
-				fillColor: this._currentFillColor
-			})
-		}
+		this.setConfiguredStyle();
 		super.deselect();
 	}
 
@@ -67,10 +50,7 @@ export class RectangleDrawing extends ChartDrawing{
 			return;
 
 		if(this._isCompleted){
-			alert("completed");
-			// two states, selected, and move
-			// first click to select
-			// then depending on where you click the drawing, it will move
+
 		}
 		else{
 			this._addPoint({
@@ -80,17 +60,17 @@ export class RectangleDrawing extends ChartDrawing{
 		}
 	}
 
-	// TODO: remove this handler if drawing is completed.  this is only for preview
 	onMouseMove(param: MouseEventParams) {
 		if (!this._chart || this._isDrawing || !this._series || !param.point) 
 			return;
-		//console.log('drawing onMouseMove', param);
+
 		const price = this._series.coordinateToPrice(param.point.y);
 		if (price === null || param.time === undefined) 
 			return;
 
-		if(!this._isCompleted){
-			(this._baseDrawing as Rectangle)?.updateInitialPoint({
+		// if initial drawing is not completed, update the initial point
+		if(!this._isCompleted){	
+			this.updateInitialPoint({
 				time: param.time,
 				price,
 			});
@@ -127,23 +107,13 @@ export class RectangleDrawing extends ChartDrawing{
 			const newDrawingPoint2 = {time: this._chart.timeScale().coordinateToTime(timePoint2)!, price: this._series.coordinateToPrice(pricePoint2)!};
 
 			// update the drawing
-			(this._baseDrawing as Rectangle)?.updatePoints( newDrawingPoint1, newDrawingPoint2) 
+			this.updatePoints( newDrawingPoint1, newDrawingPoint2) 
 
 			//  store new points temporarily, we will set this back to the drawingPoints when the update is finished
+			// TODO we wont need this if we save directly from the class, consider adding save directly from the class
 			this.tmpDrawingPoints[0] = newDrawingPoint1;
 			this.tmpDrawingPoints[1] = newDrawingPoint2;
 		}
-	}
-
-	private _initializeChartDrawing(p1?: DrawingPoint, p2?: DrawingPoint) {
-		if(!p1 || !p2){
-			p1  = {time: this.startDate, price: this.startPrice || 0};
-			p2 = {time: this.endDate, price: this.endPrice || 0};
-		}
-		const options = this._options(this._baseProps.styleOptions);
-		this._baseProps.styleOptions = options
-		this._baseDrawing = new Rectangle(p1, p2, { ...options });
-		//ensureDefined(this._series).attachPrimitive(this._chartDrawing); // we let the chart manager manage the primative
 	}
 
 	private _addPoint(p: DrawingPoint) {
@@ -153,21 +123,14 @@ export class RectangleDrawing extends ChartDrawing{
 
 	private _setNewDrawing(){
 		if(this._points.length === 1){
-			this._initializeChartDrawing(this._points[0], this._points[0]);
+			this.initializeDrawingViews(this._points[0], this._points[0]);
+			this.setConfiguredStyle();
+
 			// we are only drawing this for the preview
-			ensureDefined(this._series).attachPrimitive(this._baseDrawing as PluginBase);
+			ensureDefined(this._series).attachPrimitive(this);
 		}
 		else if (this._points.length >= this._totalDrawingPoints) {
-			//this._createChartDrawing(this._points[0], this._points[1]);
 			this.completeDrawing();
-			//ensureDefined(this._series).detachPrimitive(this._baseDrawing as PluginBase);
 		}
-	}
-
-	// gets the override options for styling.  there could be special processing for some settings
-	private _options(styleOptions: {}): Partial<RectangleDrawingToolOptions> {
-		let  overrides = super.getOverrideOptions<RectangleDrawingToolOptions>(this._toolType, styleOptions);
-		overrides.fillColor = this.getRgbaOverrideColorFromOptions<RectangleDrawingToolOptions>(this._toolType, 'fillColor', 'opacity', defaultOptions, overrides);
-		return overrides;
 	}
 }

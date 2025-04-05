@@ -9,6 +9,7 @@ import Tool from './toolbar/tools/tool-base.ts';
 import { ChartEvents } from '../enums/events.ts';
 import { PluginBase } from '../../plugin-base.ts';
 import { containsPoints, getChartPointFromMouseEvent, getPointFromMouseEvent } from '../common/points.ts';
+import { ChartDrawingBase } from './drawings/chart-drawing-base.ts';
 
 // manage charts
     // when chart is created, register it with ChartManager
@@ -24,11 +25,11 @@ export class ChartDrawingsManager {
     private static readonly MouseHoldMaxOffsetPoints = 3;
     private static instance: ChartDrawingsManager;
 
-    private _drawings: Map<string, ChartDrawing[]> = new Map(); // symbolName -> drawings
+    private _drawings: Map<string, ChartDrawingBase[]> = new Map(); // symbolName -> drawings
     private _chartContainers: Map<string, ChartContainer>= new Map();
     private _currentDrawingTool: Tool | null; // currently selected drawing tool
-    private _selectedDrawing: ChartDrawing | null;
-    private _previewDrawing: ChartDrawing | null;
+    private _selectedDrawing: ChartDrawingBase | null;
+    private _previewDrawing: ChartDrawingBase | null;
     private _charts: Map<string, IChartApi> = new Map();
     private _currentChartContainer: ChartContainer | null; // current chart mouse is hovering over
     private _creatingNewDrawingFromToolbar: boolean = false;
@@ -45,8 +46,8 @@ export class ChartDrawingsManager {
         this._listenForChartEvents();
     }
 
-    get drawings(): Map<string, ChartDrawing[]> { return this._drawings;}
-    get selectedDrawing(): ChartDrawing | null { return this._selectedDrawing;}
+    get drawings(): Map<string, ChartDrawingBase[]> { return this._drawings;}
+    get selectedDrawing(): ChartDrawingBase | null { return this._selectedDrawing;}
     get currentChartContainer(): ChartContainer | null { return this._currentChartContainer;}
     get currentDrawingTool(): Tool | null { return this._currentDrawingTool;}
     get creatingNewDrawingFromToolbar(): boolean { return this._creatingNewDrawingFromToolbar;}
@@ -78,7 +79,7 @@ export class ChartDrawingsManager {
         return this._charts.get(chartId);
     }
 
-    public selectDrawing(drawing: ChartDrawing): void {
+    public selectDrawing(drawing: ChartDrawingBase): void {
         this.unselectDrawing();
         this._selectedDrawing = drawing;
     }
@@ -117,7 +118,7 @@ export class ChartDrawingsManager {
                     if(item.type === DrawingToolType.Rectangle){
                         const drawing = new RectangleDrawing(chartContainer.chart, chartContainer.series, symbolName, item);
                         this._drawings.get(symbolName)?.push(drawing);
-                        chartContainer.addDrawingPrimative(drawing.primative as PluginBase);
+                        chartContainer.addDrawingPrimative(drawing);
                        // drawing.draw(chart, series);
                     }
                 }
@@ -127,7 +128,7 @@ export class ChartDrawingsManager {
             console.log("drawings already loaded for chart, just adding primatives ", symbolName);
             const drawings = this._drawings.get(symbolName) || [];
             for(const drawing of drawings){
-                chartContainer.addDrawingPrimative(drawing.primative as PluginBase);
+                chartContainer.addDrawingPrimative(drawing);
             }
         }
 
@@ -142,7 +143,7 @@ export class ChartDrawingsManager {
        // todo filter by symbol
        //const charts = this._chartContainers.values().filter(o => o.symbolName == this._selectedDrawing?.symbolName)
        for(const chart of this._chartContainers.values()){
-            chart.remPrim(this._selectedDrawing.primative)
+            chart.remPrim(this._selectedDrawing)
        }
 
        this._selectedDrawing.remove();
@@ -191,6 +192,7 @@ export class ChartDrawingsManager {
     private _addPrimativeToChartContainers(symbolName: string, primative: PluginBase): void {
         const containers = Array.from(this._chartContainers.values()).filter(c => c.symbolName === symbolName);
         for(const container of containers){
+            console.log("adding primative to container", container.chartId, primative);
             container.addDrawingPrimative(primative);
         }
     }
@@ -208,12 +210,13 @@ export class ChartDrawingsManager {
     private _listenForChartEvents=()=> {
         eventBus.addEventListener(ChartEvents.NewDrawingCompleted, (event: Event) => {
             const customEvent = event as CustomEvent<string>;
-            console.log(`Chart Manager: Chart ${customEvent.detail} has finished rendering.`);
+            console.log(`Chart Manager: Chart ${customEvent.detail} has finished rendering.`, this._selectedDrawing);
             if(this._selectedDrawing){  
                 const drawings = this._drawings.get(this._selectedDrawing.symbolName) || [];
                 this._drawings.set(this._selectedDrawing.symbolName, [...drawings, this._selectedDrawing]);
                 this.saveDrawings(this._selectedDrawing.symbolName);
-                this._addPrimativeToChartContainers(this._selectedDrawing.symbolName, this._selectedDrawing.primative as PluginBase);
+                this._addPrimativeToChartContainers(this._selectedDrawing.symbolName, this._selectedDrawing);
+                console.log("added primative to chart containers", this._selectedDrawing.symbolName, this._selectedDrawing);
             }
             this._creatingNewDrawingFromToolbar = false;
             this.unselectDrawing();
@@ -231,7 +234,7 @@ export class ChartDrawingsManager {
             if(!this.selectedDrawing){ // start of new drawing
                 const drawing =this.currentDrawingTool?.getNewDrawingObject(chartContainer.chart, chartContainer.series, chartContainer.symbolName);
                 this.selectDrawing(drawing!);
-                console.log('new drawing initiated', drawing);
+                console.log('new drawing initiated', drawing, chartContainer.chartId);
             }
             this.selectedDrawing?.onClick(param); // pass onclick to drawing for more processing
         }
@@ -290,8 +293,11 @@ export class ChartDrawingsManager {
     }
 
     public onRightClick(evt: MouseEvent, chartContainer: ChartContainer): void {
-        if(!this._selectedDrawing || !chartContainer.chart || !chartContainer.series)
+        if(!this._selectedDrawing || !chartContainer.chart || !chartContainer.series){
+            this._emitCloseToolbarEvent(chartContainer.chartId);
+            this.unselectTool()
             return;
+        }
 
         // Deselect if right click is outside of drawing
         const point = getChartPointFromMouseEvent(evt, chartContainer.chartDivContainer);  

@@ -34,7 +34,7 @@ export class ToolRectangle extends Tool {
 
         type = DrawingSubTools.get(DrawingSubToolType.Opacity);
         for(let i = 0; i < this._totalOpacities; i++){
-            const subTool = new SubToolOpacity("opacity", this.name, type?.name || '', type?.description || '', type?.icon || '', i, this.valueUpdatedCallback);
+            const subTool = new SubToolOpacity("fillColorOpacity", this.name, type?.name || '', type?.description || '', type?.icon || '', i, this.valueUpdatedCallback);
             subTool.setToolbarButton(container); 
             this.subTools.push(subTool);
             subTool.setSelectedStyling();

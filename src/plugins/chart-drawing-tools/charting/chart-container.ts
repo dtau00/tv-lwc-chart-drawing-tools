@@ -2,9 +2,9 @@ import { ISeriesApi, MouseEventParams, SeriesType } from "lightweight-charts";
 
 import { IChartApi } from "lightweight-charts";
 import { PluginBase } from "../../plugin-base.ts";
-import { ChartDrawing } from "./drawings/chart-drawing-base.ts";
 import { ensureDefined } from "../../../helpers/assertions";
 import { ChartDrawingsManager } from "./chart-drawings-manager.ts";
+import { ChartDrawingBase } from "./drawings/chart-drawing-base.ts";
 
 // container of IChartApi and ISeriesApi, extends to include some additional properties
 // The main purpose of this is to track the drawing primatives on a chart, 
@@ -47,7 +47,7 @@ export class ChartContainer {
     public get series(): ISeriesApi<SeriesType> { return this._series;} 
     public get symbolName(): string { return this._symbolName;}
     public get secondsPerBar(): number { return this._secondsPerBar;}
-    public get primatives(): PluginBase[] { return this._primatives;}
+    //public get primatives(): PluginBase[] { return this._primatives;}
     public get chartId(): string { return this._chartId;}
     public get tags(): string[] { return this._tags;}
     public get chartDivContainer(): HTMLDivElement { return this._chartDivContainer;}
@@ -69,27 +69,25 @@ export class ChartContainer {
 
     // adds a new primative to the series
     addDrawingPrimative(drawing: PluginBase){
+        console.log("addDrawingPrimative", drawing);
         ensureDefined(this._series).attachPrimitive(drawing); // add to series, draws on the chart
-        this._primatives.push(drawing); // add to list for tracking
+        //this._primatives.push(drawing); // add to list for tracking
         return true;
     }
 
     // updates a primative by replacing it
-    updateDrawingPrimative(drawing: ChartDrawing){
-        if(!(drawing?.primative))
-            return;
-
-        const primative = drawing.primative;
-        this.removeDrawingPrimative(primative.id);
-        this.addDrawingPrimative(primative);
+    updateDrawingPrimative(drawing: ChartDrawingBase){
+        //const primative = drawing.primative;
+        this.removeDrawingPrimative(drawing.baseId);
+        this.addDrawingPrimative(drawing);
     }
 
     // removes a primative from the series
     removeDrawingPrimative(id: string){
-        const primative = this._primatives.find(p => p.id === id);
+        const primative = this._primatives.find(p => p.baseId === id);
         if(primative){
             ensureDefined(this._series).detachPrimitive(primative);
-            this._primatives = this._primatives.filter(p => p.id !== id);
+            this._primatives = this._primatives.filter(p => p.baseId !== id);
         }
     }
 

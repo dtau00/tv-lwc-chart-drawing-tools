@@ -108,7 +108,7 @@ abstract class SubTool implements ISubTool {
     }
 
     private _subToolKeyName(): string {
-        return `selected-subtool-${this._parentTool}-${this._type}`;
+        return `selected-subtool-${this._parentTool}-${this._propertyName}`;
     }
 
     private _loadValue(): void {

@@ -25,19 +25,22 @@ export interface ChartDrawingBaseProps{
     isVisible: boolean;
 }
 
-export abstract class ChartDrawing implements IChartDrawing {
+export abstract class ChartDrawingBase extends PluginBase implements IChartDrawing {
     protected _baseProps: ChartDrawingBaseProps;
-    protected _chart: IChartApi | undefined;
-    protected _series: ISeriesApi<SeriesType> | undefined;
+    //protected _chart: IChartApi | undefined;
+    //protected _series: ISeriesApi<SeriesType> | undefined;
+	protected _options: {};//RectangleDrawingToolOptions;
+    protected _defaultOptions: {};//RectangleDrawingToolOptions;
 
     protected _isDrawing: boolean;
     protected _isCompleted: boolean;
     protected _isSelected: boolean;
 
-    protected _baseDrawing: PluginBase | undefined;
+    //protected _baseDrawing: PluginBase | undefined;
     //protected _previewDrawing: PluginBase | undefined;
     protected _points: DrawingPoint[] = []; // points as the drawing is being created
     protected _totalDrawingPoints: number; // setting this allows for some default handling of drawing points for 1 and 2, most common cases
+    
     public tmpDrawingPoints: DrawingPoint[] = [];
 
     constructor(
@@ -46,9 +49,12 @@ export abstract class ChartDrawing implements IChartDrawing {
         series: ISeriesApi<SeriesType>,
         symbolName: string,
         totalDrawingPoints: number,
+        defaultOptions: {},
         baseProps?: ChartDrawingBaseProps,
     ) 
     {
+		super();
+        this._defaultOptions = defaultOptions;
         if(baseProps){
             this._baseProps = baseProps;
             this._isCompleted = true;
@@ -90,7 +96,7 @@ export abstract class ChartDrawing implements IChartDrawing {
     get isVisible(): boolean { return this._baseProps.isVisible; }
     get isDrawing(): boolean { return this._isDrawing; }
     get isCompleted(): boolean { return this._isCompleted; }
-    get primative(): PluginBase | undefined{ return this._baseDrawing; }
+    //get primative(): PluginBase | undefined{ return this._baseDrawing; }
    // get preview(): PluginBase | undefined{ return this._previewDrawing; }
     get drawingPoints(): DrawingPoint[] { return this._baseProps.drawingPoints; }
     set drawingPoints(points: DrawingPoint[]) { this._baseProps.drawingPoints = points; }
@@ -108,6 +114,7 @@ export abstract class ChartDrawing implements IChartDrawing {
     abstract onClick(event: MouseEventParams): void;
     abstract onMouseMove(event: MouseEventParams): void;
     abstract updatePosition(startPoint: Point, endPoint: Point): void;
+	abstract initializeDrawingViews(p1: DrawingPoint, p2: DrawingPoint): void;
 
     containsPoint(chart: IChartApi, series: ISeriesApi<SeriesType>, point: Point, points: DrawingPoint[]): boolean {
 		return containsPoints(chart, series, point, points);
@@ -120,6 +127,7 @@ export abstract class ChartDrawing implements IChartDrawing {
     }
 
     deselect(): void {
+		this.removePreviewDrawing();
         this._isSelected = false;
         //this.draw(this._chart!, this._series!);
     }
@@ -149,9 +157,15 @@ export abstract class ChartDrawing implements IChartDrawing {
 		this._series = undefined;
 	}
 
+    // TODO we can get rid of this by saving directly from the class, rather than from Manager
     setTmpToNewDrawingPoints(): void {
 		this.drawingPoints = this.tmpDrawingPoints;
 		this.tmpDrawingPoints = [];
+	}
+
+    protected applyOptions(options: {}) {
+		this._options = { ...this._options, ...options };
+		super.requestUpdate();
 	}
 
     protected completeDrawing(): void {
@@ -185,8 +199,13 @@ export abstract class ChartDrawing implements IChartDrawing {
 	// for now, funcitonally it shouldnt have a problem, since there can only be one active chart, and therefore preview
 	// at a time.*/
     protected removePreviewDrawing() {
+		/*
 		if (this._baseDrawing && !this._isCompleted) {
 			ensureDefined(this._series).detachPrimitive(this._baseDrawing);
+			//this._baseDrawing = undefined;
+		}*/
+		if (!this._isCompleted) {
+			ensureDefined(this._series).detachPrimitive(this);
 			//this._baseDrawing = undefined;
 		}
 	}
@@ -200,19 +219,58 @@ export abstract class ChartDrawing implements IChartDrawing {
 	}*/
 
     // loads override settings from storage.  Only overrides, does not include default settings
+    /*
     protected getOverrideOptions<T>(toolType: DrawingToolType, styleOptions: Partial<T>): Partial<T> {
         const keyName = toolKeyName(toolType);
         const isEmpty = (obj: object) => Object.keys(obj).length === 0;
         const overrides = isEmpty(styleOptions) ? ConfigStorage.loadConfig(keyName, {}) as Partial<T> : styleOptions;
         return overrides;
+    }*/
+
+    protected getOverrideOptions(toolType: DrawingToolType, styleOptions: {}): any {
+        const keyName = toolKeyName(toolType);
+        const isEmpty = (obj: object) => Object.keys(obj).length === 0;
+        //const overrides = isEmpty(styleOptions) ? ConfigStorage.loadConfig(keyName, {}) as Partial<T> : styleOptions;
+        const overrides = isEmpty(styleOptions) ? ConfigStorage.loadConfig(keyName, {}) : styleOptions;
+        return overrides;
     }
+
 
     // internal system often uses rgba to apply opacity, rather than the opacity property, so heres
     // a helper to merge the two color and opacity values into rgba, or returns default
     protected getRgbaOverrideColorFromOptions<T>(toolType: DrawingToolType, colorPropertyName: string, opacityPropertyName: string, defaultOptions: Partial<T>, overrideOptions?: Partial<T>){
         let overrides = overrideOptions ?? this.getOverrideOptions(toolType, this._baseProps.styleOptions)
-        if((overrides as any)[colorPropertyName] && (overrides as any)[opacityPropertyName])
+        if((overrides as any)[colorPropertyName] && (overrides as any)[opacityPropertyName]){
+            console.log('mergeOpacityIntoRgba', (overrides as any)[colorPropertyName], (overrides as any)[opacityPropertyName])
 			overrides[colorPropertyName] = mergeOpacityIntoRgba((overrides as any)[colorPropertyName], (overrides as any)[opacityPropertyName]);
-		return overrides[colorPropertyName] || defaultOptions[colorPropertyName];
+        }
+        return overrides[colorPropertyName] || defaultOptions[colorPropertyName];
     }
+
+    protected transformRgbaOptions(styleOptions: {}): any {
+		let  overrides = this.getOverrideOptions(this.type, styleOptions);
+
+        // TODO fill this out with more rgba color properties
+		overrides.fillColor = this.getRgbaOverrideColorFromOptions(this.type, 'fillColor', 'fillColorOpacity', this._defaultOptions, overrides);
+        overrides.color = this.getRgbaOverrideColorFromOptions(this.type, 'color', 'colorOpacity', this._defaultOptions, overrides);
+		return overrides;
+	}
+
+    protected getStyleOptions(): any {
+        return this.transformRgbaOptions(this._baseProps.styleOptions);
+    }
+
+    protected setConfiguredStyle(): void{
+        const options = this.getStyleOptions();//this._finalOptions(this._baseProps.styleOptions);
+		this._baseProps.styleOptions = options
+		this.applyOptions(options);
+    }
+
+    	// gets the override options for styling.  there could be special processing for some settings
+	/*
+	private _finalOptions(styleOptions: {}): Partial<RectangleDrawingToolOptions> {
+		let  overrides = this.getOverrideOptions<RectangleDrawingToolOptions>(this._toolType, styleOptions);
+		overrides.fillColor = this.getRgbaOverrideColorFromOptions<RectangleDrawingToolOptions>(this._toolType, 'fillColor', 'opacity', defaultOptions, overrides);
+		return overrides;
+	}*/
 } 

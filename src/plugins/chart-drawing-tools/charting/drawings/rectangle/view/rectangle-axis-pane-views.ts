@@ -7,7 +7,7 @@ import {
 } from 'lightweight-charts';
 
 import { DrawingPoint } from '../../../../common/common';
-import { Rectangle } from '../rectangle';
+import { Rectangle } from '../rectangle-view';
 import { RectangleAxisPaneRenderer } from './rectangle-axis-pane-renderer';
 
 abstract class RectangleAxisPaneView implements IPrimitivePaneView {

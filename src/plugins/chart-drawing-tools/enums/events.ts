@@ -1,5 +1,9 @@
 export enum ChartEvents {
     NewDrawingCompleted = 'newDrawingCompleted',
     UnsetToolbar = 'unsetToolbar',
-    SetToolbar = 'setToolbar',
+    SetToolbarTool = 'setToolbarTool',
+    ToolSet = 'toolSet',
+    SubToolSet = 'subToolSet',
+    CompletedDrawingSelected = 'completedDrawingSelected',
+    CompletedDrawingUnSelected = 'completedDrawingUnSelected',
 }

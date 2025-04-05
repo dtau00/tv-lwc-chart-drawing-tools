@@ -21,7 +21,7 @@ export class RectangleView extends ViewBase {
 	_priceAxisViews: RectanglePriceAxisView[];
 	_priceAxisPaneViews: RectanglePriceAxisPaneView[];
 	_timeAxisPaneViews: RectangleTimeAxisPaneView[];
-	_baseProps: ChartDrawingBaseProps;
+	//_baseProps: ChartDrawingBaseProps;
 	_isExtended: boolean;
 
 	constructor(
@@ -31,10 +31,10 @@ export class RectangleView extends ViewBase {
 		isExtended: boolean,
 		defaultOptions: {},
 		options: Partial<RectangleDrawingToolOptions> = {},
-		baseProps?: ChartDrawingBaseProps,
+		baseProps: ChartDrawingBaseProps,
 	) {
 		//super(type, chart, series, symbolName, totalDrawingPoints, defaultOptions, baseProps);
-		super(chart, series, toolType, defaultOptions, options);
+		super(chart, series, toolType, defaultOptions, options, baseProps);
 		this._isExtended = isExtended;
 		if(baseProps){ // we are loading from storage
 			this.initializeDrawingViews(baseProps.drawingPoints[0], baseProps.drawingPoints[1]);

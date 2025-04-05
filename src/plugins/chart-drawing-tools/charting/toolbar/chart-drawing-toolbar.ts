@@ -7,6 +7,7 @@ import Tool from './tools/tool-base.ts';
 import { eventBus } from '../../common/common.ts';
 import { ChartEvents } from '../../enums/events.ts';
 import { ToolRectangleExtended } from './tools/tool/tool-rectangle-extended.ts';
+import { ChartDrawingBase } from '../drawings/chart-drawing-base.ts';
 // This class is the main class for the chart drawing tools.
 
 export class ChartDrawingsToolbar {
@@ -46,7 +47,6 @@ export class ChartDrawingsToolbar {
 		this._drawingsToolbarContainer?.removeEventListener("contextmenu", this._disableRightClick);
 		this._removeButton?.removeEventListener('click', this._onClickRemoveDrawingTool);
 		eventBus.removeEventListener(ChartEvents.NewDrawingCompleted, this._listenForChartEvents);
-
 		// todo verify events are being removed
 		this._toolButtons.forEach((handler, button) => {
 			button.removeEventListener('click', handler);
@@ -112,6 +112,11 @@ export class ChartDrawingsToolbar {
 		this._tools.get(toolType)?.setSubToolbarButtons(this._drawingsSubToolbarContainer!); // populate the sub toolbar
 	}
 
+	private _populateModifyDrawingSubToolbar(toolType: DrawingToolType): void {
+		clearDiv(this._drawingsSubToolbarContainer!); // clear the sub toolbar
+		this._tools.get(toolType)?.setSubToolbarButtons(this._drawingsSubToolbarContainer!); // populate the sub toolbar
+	}
+
 	private _startDrawingTool(toolType: DrawingToolType): void {
 		this._chartDrawingsManager.startToolDrawing(this._tools.get(toolType)!);
 	}
@@ -126,6 +131,10 @@ export class ChartDrawingsToolbar {
 		// clear toolbar from view
 		unselectAllDivsForGroup(this._drawingsToolbarContainer!, AVAILABLE_TOOLS.map(t => t.name));
 		clearDiv(this._drawingsSubToolbarContainer!);
+	}
+
+	private _openModifyDrawingToolbar(drawing: ChartDrawingBase): void {
+		this._populateSubToolbar(drawing.type)
 	}
 
 	private _selectTool(toolType: DrawingToolType): void {
@@ -146,6 +155,21 @@ export class ChartDrawingsToolbar {
             this._unselectTool()
         });
 
+		eventBus.addEventListener(ChartEvents.CompletedDrawingSelected, (event: Event) => {
+            const customEvent = event as CustomEvent<string>;
+			const selectedDrawing = this._chartDrawingsManager.selectedDrawing;
+            //console.log(`Chart Manager: Chart ${customEvent.detail} modify drawing`, selectedDrawing);
+            if(selectedDrawing){  
+				this._openModifyDrawingToolbar(selectedDrawing)
+            }
+        });
+
+		eventBus.addEventListener(ChartEvents.CompletedDrawingUnSelected, (event: Event) => {
+            const customEvent = event as CustomEvent<string>;
+			this._unselectTool();
+        });
+
+
 		// request to unset toolbar, remove it from view.  Used while a drawing tool is active, but switching chart
 		eventBus.addEventListener(ChartEvents.UnsetToolbar, (event: Event) => {
 			const customEvent = event as CustomEvent; // No type checking here
@@ -155,7 +179,7 @@ export class ChartDrawingsToolbar {
         });
 
 		// request to set toolbar for  given chart.  Used when a drawing tool is active, and switching to active chart
-		eventBus.addEventListener(ChartEvents.SetToolbar, (event: Event) => {
+		eventBus.addEventListener(ChartEvents.SetToolbarTool, (event: Event) => {
 			const customEvent = event as CustomEvent; // No type checking here
             if(customEvent.detail.chartId === this._chartId){
 				this._selectTool(customEvent.detail.toolType);

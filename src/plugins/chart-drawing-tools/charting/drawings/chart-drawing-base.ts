@@ -9,6 +9,7 @@ import { eventBus, DrawingPoint, toolKeyName } from '../../common/common';
 import { ChartEvents } from '../../enums/events';
 import { containsPoints, leftRightPoints, topBottomPoints } from '../../common/points';
 import { ConfigStorage } from '../../data/data';
+import { ViewBase } from './drawing-view-base';
 
  // base properties that are common to all drawings, to make it cleaner to serialize and save/load
 export interface ChartDrawingBaseProps{
@@ -43,7 +44,7 @@ export abstract class ChartDrawingBase implements IChartDrawing {
     protected _totalDrawingPoints: number; // setting this allows for some default handling of drawing points for 1 and 2, most common cases
     
     public tmpDrawingPoints: DrawingPoint[] = [];
-    public drawingView: PluginBase | undefined;
+    public drawingView: ViewBase | undefined;
 
     constructor(
         type: DrawingToolType,
@@ -126,12 +127,14 @@ export abstract class ChartDrawingBase implements IChartDrawing {
     // Common methods with default implementations
     select(): void {
         this._isSelected = true;
+        eventBus.dispatchEvent(new CustomEvent(ChartEvents.CompletedDrawingSelected, { detail: this.id }));
         //this.draw(this._chart!, this._series!);
     }
 
     deselect(): void {
 		this.removePreviewDrawing();
         this._isSelected = false;
+        eventBus.dispatchEvent(new CustomEvent(ChartEvents.CompletedDrawingUnSelected, { detail: this.id }));
         //this.draw(this._chart!, this._series!);
     }
 
@@ -164,7 +167,7 @@ export abstract class ChartDrawingBase implements IChartDrawing {
         this._baseProps.drawingPoints = this._points; // save confirmed points
         this.stopDrawing();
         this.removePreviewDrawing(true); // remove the preview, it will be readded by the manager to all charts
-        eventBus.dispatchEvent(new CustomEvent(ChartEvents.NewDrawingCompleted, { detail: this._baseProps.id }));
+        eventBus.dispatchEvent(new CustomEvent(ChartEvents.NewDrawingCompleted, { detail: this.id }));
     }
 
     protected setChart(chart: IChartApi): void {
@@ -200,4 +203,8 @@ export abstract class ChartDrawingBase implements IChartDrawing {
 			//this._baseDrawing = undefined;
 		}
 	}
+
+    public setBaseStyleOptionsFromConfig() {
+        this.drawingView?.setBaseStyleOptionsFromConfig();
+    }
 } 

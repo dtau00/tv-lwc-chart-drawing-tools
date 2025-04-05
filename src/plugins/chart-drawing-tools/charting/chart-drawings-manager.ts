@@ -207,7 +207,7 @@ export class ChartDrawingsManager {
     }
 
     private _emitOpenToolbarEvent(chartId: string, toolType: DrawingToolType): void {
-        eventBus.dispatchEvent(new CustomEvent(ChartEvents.SetToolbar, { detail: {chartId: chartId, toolType: toolType} }));
+        eventBus.dispatchEvent(new CustomEvent(ChartEvents.SetToolbarTool, { detail: {chartId: chartId, toolType: toolType} }));
     }
 
     private _listenForChartEvents=()=> {
@@ -223,6 +223,16 @@ export class ChartDrawingsManager {
             }
             this._creatingNewDrawingFromToolbar = false;
             this.unselectDrawing();
+        });
+
+        eventBus.addEventListener(ChartEvents.SubToolSet, (event: Event) => {
+            const customEvent = event as CustomEvent<string>;
+            console.log("subtool set", customEvent.detail);
+            if(this._selectedDrawing && this._selectedDrawing.isCompleted){  
+                this._selectedDrawing.setBaseStyleOptionsFromConfig();
+                this.saveDrawings(this._selectedDrawing.symbolName);
+                //this._addPrimativeToChartContainers(this._selectedDrawing.symbolName, this._selectedDrawing.drawingView as PluginBase);
+            }
         });
     }
 

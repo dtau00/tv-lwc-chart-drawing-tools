@@ -3,6 +3,8 @@ import { DrawingSubTools, DrawingSubToolType } from "./drawing-sub-tools";
 import { unselectAllDivsForGroup } from "../../../common/html.ts";
 import { createToolbarButton } from "../common.ts";
 import ISubTool from "./sub-tool-interface";
+import { eventBus } from "../../../common/common";
+import { ChartEvents } from "../../../enums/events";
 
 abstract class SubTool implements ISubTool {
     private _div: HTMLDivElement;
@@ -88,6 +90,7 @@ abstract class SubTool implements ISubTool {
         unselectAllDivsForGroup(this._container!, [this.type]);
         this.div.classList.add('selected');
         this.initiateValueUpdatedCallback()
+        eventBus.dispatchEvent(new CustomEvent(ChartEvents.SubToolSet, { detail: { type : this.type, index : this._index, name : this._name, property : this._propertyName } }));
     }
 
     protected _saveValue(value: any): void {

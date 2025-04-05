@@ -46,10 +46,7 @@ export class ToolRectangle extends Tool {
   */      
         return buttons; 
     }
-    selectButtonForGroup(container: HTMLDivElement) {
-        throw new Error("Method not implemented.");
-    }
-
+    
     defaultMouseListener(evt: MouseEvent, index?: number): void {
         console.log("listener", index);
     }

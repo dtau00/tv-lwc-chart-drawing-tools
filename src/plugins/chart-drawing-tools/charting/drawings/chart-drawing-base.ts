@@ -9,7 +9,7 @@ import { ChartEvents } from '../../enums/events';
 import { containsPoints, leftRightPoints, topBottomPoints } from '../../common/points';
 import { ConfigStorage } from '../../data/data';
 
-    // base properties that are common to all drawings, to make it cleaner to serialize and save/load
+ // base properties that are common to all drawings, to make it cleaner to serialize and save/load
 export interface ChartDrawingBaseProps{
     id: string;
     userId: string;
@@ -38,7 +38,6 @@ export abstract class ChartDrawing implements IChartDrawing {
     //protected _previewDrawing: PluginBase | undefined;
     protected _points: DrawingPoint[] = []; // points as the drawing is being created
     protected _totalDrawingPoints: number; // setting this allows for some default handling of drawing points for 1 and 2, most common cases
-
     public tmpDrawingPoints: DrawingPoint[] = [];
 
     constructor(
@@ -154,26 +153,6 @@ export abstract class ChartDrawing implements IChartDrawing {
 		this.drawingPoints = this.tmpDrawingPoints;
 		this.tmpDrawingPoints = [];
 	}
-
-/*
-    protected addPoint(point: DrawingPoint): void {
-        this._points.push(point);
-        if(this._totalDrawingPoints === 1){
-            throw new Error(`need to implement default handling for 1 point drawing`);
-        }   
-        else if(this._totalDrawingPoints === 2){
-            if (this._points.length === 1) {
-                this._createPreviewDrawing(this._points[0]);
-            }
-            else if (this._points.length >= this._totalDrawingPoints) {
-                this._createChartDrawing(this._points[0], this._points[1]);
-            }
-        }
-        else{
-            // no default handling for more than 2 points, you'll need to override this
-            throw new Error(`totalDrawingPoints not hanlded: ${this._totalDrawingPoints}`);
-        }
-    }*/
 
     protected completeDrawing(): void {
         this._isCompleted = true;

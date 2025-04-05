@@ -3,7 +3,7 @@ import {
 } from 'lightweight-charts';
 
 import { Rectangle } from '../rectangle';
-import { ViewPoint } from '../../../common/common';
+import { ViewPoint } from '../../../../common/common';
 import { RectanglePaneRenderer } from './rectangle-pane-renderer';
 
 export class RectanglePaneView implements IPrimitivePaneView {

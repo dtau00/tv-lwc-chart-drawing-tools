@@ -107,23 +107,30 @@ export class ChartDrawingsManager {
 
     private _loadDrawings(chartContainer: ChartContainer): void {
         const symbolName = chartContainer.symbolName;
-        const data = DataStorage.loadData<ChartDrawingBaseProps[]>(`${symbolName}-drawings`, []);
-        for(const item of data){
-            if(item.symbolName === symbolName){
-                if(!this._drawings.has(symbolName)){
-                    this._drawings.set(symbolName, []);
-                }
-                console.log("loading drawings for ", symbolName, item);
-                
-                // TODO clean this up
-                if(item.type === DrawingToolType.Rectangle){
-                    const drawing = new RectangleDrawing(chartContainer.chart, chartContainer.series, symbolName, item);
-                    this._drawings.get(symbolName)?.push(drawing);
-                    chartContainer.addDrawingPrimative(drawing.primative as PluginBase);
-                   // drawing.draw(chart, series);
+        if(!this._drawings.has(symbolName)){
+            this._drawings.set(symbolName, []);
+            const data = DataStorage.loadData<ChartDrawingBaseProps[]>(`${symbolName}-drawings`, []);
+            console.log("loading drawings for ", symbolName);
+            for(const item of data){
+                if(item.symbolName === symbolName){
+                    // TODO clean this up
+                    if(item.type === DrawingToolType.Rectangle){
+                        const drawing = new RectangleDrawing(chartContainer.chart, chartContainer.series, symbolName, item);
+                        this._drawings.get(symbolName)?.push(drawing);
+                        chartContainer.addDrawingPrimative(drawing.primative as PluginBase);
+                       // drawing.draw(chart, series);
+                    }
                 }
             }
         }
+        else{
+            console.log("drawings already loaded for chart, just adding primatives ", symbolName);
+            const drawings = this._drawings.get(symbolName) || [];
+            for(const drawing of drawings){
+                chartContainer.addDrawingPrimative(drawing.primative as PluginBase);
+            }
+        }
+
         console.log("all loaded drawings ", this._drawings);
     }
 
@@ -218,6 +225,7 @@ export class ChartDrawingsManager {
     public onChartClick(param: MouseEventParams, chartContainer: ChartContainer){
         // Ceating a new drawing
         this.checkCurrentChartContainer(chartContainer);
+        console.log('onChartClick', chartContainer.chartId);
 
         if(this.creatingNewDrawingFromToolbar){
             if(!this.selectedDrawing){ // start of new drawing
@@ -238,6 +246,7 @@ export class ChartDrawingsManager {
                         this.selectDrawing(drawing);
                         drawing.select();
                         drawingFound = true;
+                        //this._updateChartContainerPrimatives(chartContainer.symbolName, [drawing.primative as PluginBase]);
                         break;
                     }
                 }

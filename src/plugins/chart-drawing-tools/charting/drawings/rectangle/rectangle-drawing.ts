@@ -31,7 +31,7 @@ export class RectangleDrawing extends ChartDrawing{
 		baseProps?: ChartDrawingBaseProps,
 	) {
 		super(DrawingToolType.Rectangle, chart, series, symbolName, RectangleDrawing.TotalDrawingPoints, baseProps);
-
+		
 		if(baseProps){ // recreate the chartDrawing object, from loaded data
 			new Rectangle({time: this.startDate, price: this.startPrice}, {time: this.endDate, price: this.endPrice}, { ...this.baseProps.styleOptions }); 
 			this._initializeChartDrawing()
@@ -80,6 +80,23 @@ export class RectangleDrawing extends ChartDrawing{
 		}
 	}
 
+	// TODO: remove this handler if drawing is completed.  this is only for preview
+	onMouseMove(param: MouseEventParams) {
+		if (!this._chart || this._isDrawing || !this._series || !param.point) 
+			return;
+		//console.log('drawing onMouseMove', param);
+		const price = this._series.coordinateToPrice(param.point.y);
+		if (price === null || param.time === undefined) 
+			return;
+
+		if(!this._isCompleted){
+			(this._baseDrawing as Rectangle)?.updateInitialPoint({
+				time: param.time,
+				price,
+			});
+		}
+	}
+
 	updatePosition(startPoint: Point, endPoint: Point): void {
 		if (!this._chart || this._isDrawing || !this._series || this.drawingPoints.length < 2) 
 			return;
@@ -115,23 +132,6 @@ export class RectangleDrawing extends ChartDrawing{
 			//  store new points temporarily, we will set this back to the drawingPoints when the update is finished
 			this.tmpDrawingPoints[0] = newDrawingPoint1;
 			this.tmpDrawingPoints[1] = newDrawingPoint2;
-		}
-	}
-
-	// TODO: remove this handler if drawing is completed.  this is only for preview
-	onMouseMove(param: MouseEventParams) {
-		if (!this._chart || this._isDrawing || !this._series || !param.point) 
-			return;
-		//console.log('drawing onMouseMove', param);
-		const price = this._series.coordinateToPrice(param.point.y);
-		if (price === null || param.time === undefined) 
-			return;
-
-		if(!this._isCompleted){
-			(this._baseDrawing as Rectangle)?.updateInitialPoint({
-				time: param.time,
-				price,
-			});
 		}
 	}
 

@@ -104,15 +104,17 @@ export class ChartContainer {
     // better to call the individual updates
     updatePrimatives(primatives: PluginBase[]){
         // remove all primatives
-        for(const primate of this._primatives)
+       for(const primate of this._primatives)
             ensureDefined(this._series).detachPrimitive(primate);
         
         // re-add all primatives
-        for(const drawing of primatives)
-            this.addDrawingPrimative(drawing);
+        for(const primative of primatives)
+            this.addDrawingPrimative(primative);
     }
 
     // preview primative -------------------------------------------------------------
+    // primatives are currnently managed by the Drawing itself, since it can only apply to one chart at a time
+    /*
     createPreviewDrawingPrimative<T>(drawing: PluginBase){
         this._previewPrimative = drawing;
         ensureDefined(this._series).attachPrimitive(drawing);
@@ -121,7 +123,7 @@ export class ChartContainer {
     removePreviewDrawingPrimative(drawing: PluginBase){
         this._previewPrimative = null;
         ensureDefined(this._series).detachPrimitive(drawing);
-    }
+    }*/
 
     // event handlers coordinated by the ChartDrawingsManager-----------------------------------------------
     // we will initialize the listeners here, but the chart manager will control it for the most part

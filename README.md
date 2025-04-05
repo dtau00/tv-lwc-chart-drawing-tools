@@ -52,7 +52,7 @@ This is a very early preview build; the architecture and structure is still bein
 
 Things to finish for v1 Release
 ---------------------------------
-- Implement remaining basic drawing funtionality (modify styling,  drag corners, etc...)
+- Implement remaining basic drawing funtionality (drag corners, etc...)
 - Implement a couple more basic drawings (line, extended, line)
 - Implement drawing projection (drawings beyond available chart data)
 - More OOP modularization of the ChartDrawing (breaking down example from Rectangle plugin tutorial)

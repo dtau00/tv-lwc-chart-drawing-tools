@@ -1,4 +1,4 @@
-import { createChart, ColorType, CandlestickSeries, CandlestickData, Time } from 'lightweight-charts';
+import { createChart, ColorType, CandlestickSeries, CandlestickData, Time, LineSeries } from 'lightweight-charts';
 //import { generateCandlestickData } from './helpers/sample-data';
 import { ChartDrawingToolsPlugin } from './plugins/chart-drawing-tools/plugin';
 import {dataSample} from './data-sample.ts';
@@ -21,6 +21,7 @@ function generateChart(id: string, symbol: string, secondsPerBar: number, chartC
 	
 	const candlestickSeries = chart.addSeries(CandlestickSeries);
 	candlestickSeries.setData(data)
+
 	//candlestickSeries.setData(data ? data : generateCandlestickData())
 
 	// add the symbol as a header above the chart
@@ -35,6 +36,7 @@ function generateChart(id: string, symbol: string, secondsPerBar: number, chartC
 	return new ChartDrawingToolsPlugin(
 		chart,
 		candlestickSeries,
+		data,
 		symbol,
 		secondsPerBar,
 		document.querySelector<HTMLDivElement>(`#${chartContainerId}`)!,

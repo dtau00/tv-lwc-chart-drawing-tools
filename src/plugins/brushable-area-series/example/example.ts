@@ -1,5 +1,5 @@
 import { Logical, WhitespaceData, createChart } from 'lightweight-charts';
-import { generateLineData } from '../../../sample-data';
+import { generateLineData } from '../../../helpers/sample-data';
 import { BrushableAreaSeries } from '../brushable-area-series';
 import { BrushableAreaData } from '../data';
 import { BrushableAreaStyle } from '../options';

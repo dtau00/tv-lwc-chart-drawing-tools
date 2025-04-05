@@ -11,7 +11,7 @@ import { DrawingPoint } from '../../../common/common';
 import { ensureDefined } from '../../../../../helpers/assertions';
 import { ChartDrawingBase, ChartDrawingBaseProps } from '../chart-drawing-base';
 import { DrawingToolType } from '../../toolbar/tools/drawing-tools';
-import { RectangleView } from './rectangle-view';
+import { Rectangle } from './rectangle-view';
 import { rectangleDrawingToolDefaultOptions } from './rectangle-options';
 import { PluginBase } from '../../../../plugin-base';
 
@@ -32,7 +32,7 @@ export class RectangleDrawing extends ChartDrawingBase{
 		super( toolType, chart, series, symbolName, RectangleDrawing.TOTAL_DRAWING_POINTS, rectangleDrawingToolDefaultOptions, baseProps);
 		this._toolType = toolType
 		this._isExtended = isExtended;
-		this.drawingView = new RectangleView(chart, series, this._toolType, isExtended, rectangleDrawingToolDefaultOptions,  baseProps?.styleOptions, baseProps || this.baseProps, baseProps ? true : false ); 
+		this.drawingView = new Rectangle(chart, series, this._toolType, isExtended, rectangleDrawingToolDefaultOptions,  baseProps?.styleOptions, baseProps || this.baseProps, baseProps ? true : false ); 
 
 	}
 
@@ -128,8 +128,8 @@ export class RectangleDrawing extends ChartDrawingBase{
 		}
 	}
 
-	private _view(): RectangleView {
-		return this.drawingView as RectangleView;
+	private _view(): Rectangle {
+		return this.drawingView as Rectangle;
 	}
 
 	private _addPoint(p: DrawingPoint) {

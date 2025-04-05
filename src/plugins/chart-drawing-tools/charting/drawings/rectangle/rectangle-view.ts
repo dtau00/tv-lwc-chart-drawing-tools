@@ -12,7 +12,7 @@ import { IChartApi, ISeriesApi, MouseEventParams, SeriesType } from 'lightweight
 import { ViewBase } from '../drawing-view-base';
 import { DrawingToolType } from '../../toolbar/tools/drawing-tools';
 
-export class RectangleView extends ViewBase {
+export class Rectangle extends ViewBase {
 	//private _options: Partial<RectangleDrawingToolOptions> = {};
 	_p1?: DrawingPoint | null;
 	_p2?: DrawingPoint | null;
@@ -74,6 +74,7 @@ export class RectangleView extends ViewBase {
 		if(this._isExtended && this._p2){
 			this._p2.time = p.time;
 			const end = this.chart.timeScale().getVisibleRange()?.to
+			console.log("end", end);
 			if(end)
 				this._p2.time = end
 		}

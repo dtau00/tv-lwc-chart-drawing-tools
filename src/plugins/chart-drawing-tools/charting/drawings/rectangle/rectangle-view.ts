@@ -1,18 +1,19 @@
 import { DrawingPoint } from '../../../common/common';
 import { RectangleDrawingToolOptions } from './rectangle-options';
-import { RectanglePaneView, } from './view/rectangle-pane-view';
+import { RectanglePaneView, } from './panes/rectangle-pane-view';
 import {     
     RectanglePriceAxisPaneView, 
     RectanglePriceAxisView, 
     RectangleTimeAxisPaneView, 
     RectangleTimeAxisView 
-} from './view/rectangle-axis-pane-views';
-import { ChartDrawingBase, ChartDrawingBaseProps } from '../chart-drawing-base';
+} from './panes/rectangle-axis-pane-views';
+import {  ChartDrawingBaseProps } from '../chart-drawing-base';
+import { IChartApi, ISeriesApi, SeriesType } from 'lightweight-charts';
+import { ViewBase } from '../drawing-view-base';
 import { DrawingToolType } from '../../toolbar/tools/drawing-tools';
-import { IChartApi, ISeriesApi, MouseEventParams, Point, SeriesType } from 'lightweight-charts';
 
-export abstract class RectangleView extends ChartDrawingBase {
-	private _initalized: boolean = false;
+export class RectangleView extends ViewBase {
+	//private _options: Partial<RectangleDrawingToolOptions> = {};
 	_p1?: DrawingPoint | null;
 	_p2?: DrawingPoint | null;
 	_paneViews: RectanglePaneView[];
@@ -20,35 +21,30 @@ export abstract class RectangleView extends ChartDrawingBase {
 	_priceAxisViews: RectanglePriceAxisView[];
 	_priceAxisPaneViews: RectanglePriceAxisPaneView[];
 	_timeAxisPaneViews: RectangleTimeAxisPaneView[];
+	_baseProps: ChartDrawingBaseProps;
 
 	constructor(
 		chart: IChartApi,
 		series: ISeriesApi<SeriesType>,
-		symbolName: string,
-		type: DrawingToolType,
-		totalDrawingPoints: number,
+		toolType: DrawingToolType,
 		defaultOptions: {},
+		options: Partial<RectangleDrawingToolOptions> = {},
 		baseProps?: ChartDrawingBaseProps,
-		options: Partial<RectangleDrawingToolOptions> = {}
 	) {
-		super(type, chart, series, symbolName, totalDrawingPoints, defaultOptions, baseProps);
-		this._options = {...defaultOptions, ...options};
+		//super(type, chart, series, symbolName, totalDrawingPoints, defaultOptions, baseProps);
+		super(chart, series, toolType, defaultOptions, options);
 		if(baseProps){ // we are loading from storage
 			this.initializeDrawingViews(baseProps.drawingPoints[0], baseProps.drawingPoints[1]);
 		}
 	}
 
-	abstract onClick(event: MouseEventParams): void
-	abstract onMouseMove(event: MouseEventParams): void;
-	abstract updatePosition(startPoint: Point, endPoint: Point): void;
-
 	// initializes the drawing views on first click
 	initializeDrawingViews(p1: DrawingPoint, p2: DrawingPoint) {
-		if(this._initalized){
-			console.log("rectangle already initialized", this.baseId);
+		if(this.initalized){
+			//console.log("rectangle already initialized", this.baseId);
 			return;
 		}
-		this._initalized = true;
+		this.initalized = true;
 		this._p1 = p1;
 		this._p2 = p2;
 

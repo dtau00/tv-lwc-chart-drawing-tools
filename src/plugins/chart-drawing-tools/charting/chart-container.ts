@@ -19,8 +19,8 @@ export class ChartContainer {
     private _tags: string[] = [];
     private _chart: IChartApi;
     private _series: ISeriesApi<SeriesType>;
-    private _primatives : PluginBase[] = [];  // ISeriesApi primative drawings, we must track these manually. Theres no way to get this at the moment.
-    private _previewPrimative: PluginBase | null;
+    private _primatives : PluginBase[] = [];  // TODO; we dont need this, its tracked within the drawingView
+
     constructor(
         chartManager: ChartDrawingsManager,
         chartDivContainer: HTMLDivElement,
@@ -52,7 +52,7 @@ export class ChartContainer {
     public get tags(): string[] { return this._tags;}
     public get chartDivContainer(): HTMLDivElement { return this._chartDivContainer;}
 
-    dispose(){
+    dispose() : void{
         this._removeListeners();
         this._chart.remove();
     }
@@ -68,22 +68,19 @@ export class ChartContainer {
     }
 
     // adds a new primative to the series
-    addDrawingPrimative(drawing: PluginBase){
-        console.log("addDrawingPrimative", drawing);
-        ensureDefined(this._series).attachPrimitive(drawing); // add to series, draws on the chart
-        //this._primatives.push(drawing); // add to list for tracking
-        return true;
+    addDrawingPrimative(primative: PluginBase) : void{
+        ensureDefined(this._series).attachPrimitive(primative); // add to series, draws on the chart
     }
 
     // updates a primative by replacing it
-    updateDrawingPrimative(drawing: ChartDrawingBase){
+    updateDrawingPrimative(drawing: ChartDrawingBase) : void{
         //const primative = drawing.primative;
-        this.removeDrawingPrimative(drawing.baseId);
-        this.addDrawingPrimative(drawing);
+        this.removeDrawingPrimative(drawing.drawingView?.baseId ?? "");
+        this.addDrawingPrimative(drawing.drawingView as PluginBase);
     }
 
     // removes a primative from the series
-    removeDrawingPrimative(id: string){
+    removeDrawingPrimative(id: string) : void{
         const primative = this._primatives.find(p => p.baseId === id);
         if(primative){
             ensureDefined(this._series).detachPrimitive(primative);
@@ -91,7 +88,7 @@ export class ChartContainer {
         }
     }
 
-    remPrim(primative?: PluginBase){
+    remPrim(primative?: PluginBase) : void{
         if(!primative)
             return
         ensureDefined(this._series).detachPrimitive(primative);
@@ -100,7 +97,7 @@ export class ChartContainer {
     // re-syncs all primatives with the chartDrawings
     // this is not ideal, its slow, so use sparingly
     // better to call the individual updates
-    updatePrimatives(primatives: PluginBase[]){
+    updatePrimatives(primatives: PluginBase[]) : void{
         // remove all primatives
        for(const primate of this._primatives)
             ensureDefined(this._series).detachPrimitive(primate);
@@ -127,7 +124,7 @@ export class ChartContainer {
     // we will initialize the listeners here, but the chart manager will control it for the most part
     // makes it cleaner to dispose the listeners
 
-    private _initializeListeners(){
+    private _initializeListeners() : void{
         this._chart.subscribeClick(this._onClickChartHandler);
        this._chart.subscribeCrosshairMove(this._onCrosshairMoveChartHandler);
 
@@ -137,7 +134,7 @@ export class ChartContainer {
        this._chartDivContainer .addEventListener('wheel', this._onWheelChart);
    }
 
-    private _removeListeners(){
+    private _removeListeners() : void{
         this._chart.unsubscribeClick(this._onClickChartHandler)
         this._chart.unsubscribeCrosshairMove(this._onCrosshairMoveChartHandler)    
 
@@ -147,13 +144,13 @@ export class ChartContainer {
         this._chartDivContainer.removeEventListener('wheel', this._onWheelChart);
     }
     
-    private _onCrosshairMoveChartHandler = (param: MouseEventParams) => {
+    private _onCrosshairMoveChartHandler = (param: MouseEventParams) : void => {
         this._chartManager.onMouseMove(param);
         this._chartManager.checkCurrentChartContainer(this);
         this._chartManager.selectedDrawing?.onMouseMove(param);
     }
 
-    private _onClickChartHandler = (param: MouseEventParams) => {
+    private _onClickChartHandler = (param: MouseEventParams) : void => {
        this._chartManager.onChartClick(param, this);
 	}
 

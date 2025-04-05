@@ -9,12 +9,13 @@ import {
 
 import { DrawingPoint } from '../../../common/common';
 import { ensureDefined } from '../../../../../helpers/assertions';
-import { ChartDrawingBaseProps } from '../chart-drawing-base';
+import { ChartDrawingBase, ChartDrawingBaseProps } from '../chart-drawing-base';
 import { DrawingToolType } from '../../toolbar/tools/drawing-tools';
 import { RectangleView } from './rectangle-view';
 import { rectangleDrawingToolDefaultOptions } from './rectangle-options';
+import { PluginBase } from '../../../../plugin-base';
 
-export class RectangleDrawing extends RectangleView{
+export class RectangleDrawing extends ChartDrawingBase{
 	private static readonly TOTAL_DRAWING_POINTS = 2; // Set the drawing points for this type of drawing.  A box will have 2, a line ray will have 1, etc...
 	private static readonly TOOL_TYPE: DrawingToolType = DrawingToolType.Rectangle; // set the tool type for the class
 
@@ -24,20 +25,23 @@ export class RectangleDrawing extends RectangleView{
 		symbolName: string,
 		baseProps?: ChartDrawingBaseProps,
 	) {
-		super(chart, series, symbolName, RectangleDrawing.TOOL_TYPE, RectangleDrawing.TOTAL_DRAWING_POINTS, rectangleDrawingToolDefaultOptions, baseProps);
-		this.setConfiguredStyle()
+		//super(chart, series, symbolName, RectangleDrawing.TOOL_TYPE, RectangleDrawing.TOTAL_DRAWING_POINTS, rectangleDrawingToolDefaultOptions, baseProps);
+		super(RectangleDrawing.TOOL_TYPE, chart, series, symbolName, RectangleDrawing.TOTAL_DRAWING_POINTS, rectangleDrawingToolDefaultOptions, baseProps);
+		this.drawingView = new RectangleView(chart, series, RectangleDrawing.TOOL_TYPE, rectangleDrawingToolDefaultOptions,  baseProps?.styleOptions, baseProps); //new RectangleView(chart, series, symbolName, RectangleDrawing.TOOL_TYPE, RectangleDrawing.TOTAL_DRAWING_POINTS, rectangleDrawingToolDefaultOptions, baseProps);
+		//if(!baseProps)
+		//	this.view().setConfiguredStyle()
 	}
 
 	// TODO dont make this hard coded
 	// set the style when drawing is selected
 	select(): void {
-		this.applyOptions({ fillColor: 'rgba(100, 100, 100, 0.5)', })
+		this.view().applyOptions({ fillColor: 'rgba(100, 100, 100, 0.5)', })
 		super.select();
 	}
 
 	// revert styling when deselected
 	deselect(): void {
-		this.setConfiguredStyle();
+		this.view().setBaseStyleOptions()//.setToConfiguredStyle();
 		super.deselect();
 	}
 
@@ -70,7 +74,7 @@ export class RectangleDrawing extends RectangleView{
 
 		// if initial drawing is not completed, update the initial point
 		if(!this._isCompleted){	
-			this.updateInitialPoint({
+			this.view().updateInitialPoint({
 				time: param.time,
 				price,
 			});
@@ -107,13 +111,17 @@ export class RectangleDrawing extends RectangleView{
 			const newDrawingPoint2 = {time: this._chart.timeScale().coordinateToTime(timePoint2)!, price: this._series.coordinateToPrice(pricePoint2)!};
 
 			// update the drawing
-			this.updatePoints( newDrawingPoint1, newDrawingPoint2) 
+			this.view().updatePoints( newDrawingPoint1, newDrawingPoint2) 
 
 			//  store new points temporarily, we will set this back to the drawingPoints when the update is finished
 			// TODO we wont need this if we save directly from the class, consider adding save directly from the class
 			this.tmpDrawingPoints[0] = newDrawingPoint1;
 			this.tmpDrawingPoints[1] = newDrawingPoint2;
 		}
+	}
+
+	private view(): RectangleView {
+		return this.drawingView as RectangleView;
 	}
 
 	private _addPoint(p: DrawingPoint) {
@@ -123,14 +131,20 @@ export class RectangleDrawing extends RectangleView{
 
 	private _setNewDrawing(){
 		if(this._points.length === 1){
-			this.initializeDrawingViews(this._points[0], this._points[0]);
-			this.setConfiguredStyle();
+			this.view().initializeDrawingViews(this._points[0], this._points[0]);
+			this._setStyleOptions();
 
 			// we are only drawing this for the preview
-			ensureDefined(this._series).attachPrimitive(this);
+			ensureDefined(this._series).attachPrimitive(this.drawingView as PluginBase);
 		}
 		else if (this._points.length >= this._totalDrawingPoints) {
 			this.completeDrawing();
 		}
+	}
+
+	// saves the style options to base properties for saving
+	private _setStyleOptions(){
+		const styleOptions = this.view().getStyleOptions();
+		this.baseProps.styleOptions = styleOptions;
 	}
 }

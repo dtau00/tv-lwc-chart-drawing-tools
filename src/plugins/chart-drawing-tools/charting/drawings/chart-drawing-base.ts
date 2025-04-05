@@ -25,10 +25,10 @@ export interface ChartDrawingBaseProps{
     isVisible: boolean;
 }
 
-export abstract class ChartDrawingBase extends PluginBase implements IChartDrawing {
+export abstract class ChartDrawingBase implements IChartDrawing {
     protected _baseProps: ChartDrawingBaseProps;
-    //protected _chart: IChartApi | undefined;
-    //protected _series: ISeriesApi<SeriesType> | undefined;
+    protected _chart: IChartApi | undefined;
+    protected _series: ISeriesApi<SeriesType> | undefined;
 	protected _options: {};//RectangleDrawingToolOptions;
     protected _defaultOptions: {};//RectangleDrawingToolOptions;
 
@@ -42,6 +42,7 @@ export abstract class ChartDrawingBase extends PluginBase implements IChartDrawi
     protected _totalDrawingPoints: number; // setting this allows for some default handling of drawing points for 1 and 2, most common cases
     
     public tmpDrawingPoints: DrawingPoint[] = [];
+    public drawingView: PluginBase | undefined;
 
     constructor(
         type: DrawingToolType,
@@ -53,7 +54,8 @@ export abstract class ChartDrawingBase extends PluginBase implements IChartDrawi
         baseProps?: ChartDrawingBaseProps,
     ) 
     {
-		super();
+        this._chart = chart;
+        this._series = series;
         this._defaultOptions = defaultOptions;
         if(baseProps){
             this._baseProps = baseProps;
@@ -114,7 +116,7 @@ export abstract class ChartDrawingBase extends PluginBase implements IChartDrawi
     abstract onClick(event: MouseEventParams): void;
     abstract onMouseMove(event: MouseEventParams): void;
     abstract updatePosition(startPoint: Point, endPoint: Point): void;
-	abstract initializeDrawingViews(p1: DrawingPoint, p2: DrawingPoint): void;
+	//abstract initializeDrawingViews(p1: DrawingPoint, p2: DrawingPoint): void;
 
     containsPoint(chart: IChartApi, series: ISeriesApi<SeriesType>, point: Point, points: DrawingPoint[]): boolean {
 		return containsPoints(chart, series, point, points);
@@ -131,13 +133,13 @@ export abstract class ChartDrawingBase extends PluginBase implements IChartDrawi
         this._isSelected = false;
         //this.draw(this._chart!, this._series!);
     }
-
+/*
     updateStyle(style: Partial<DrawingStyle>): void {
         this._baseProps.styleOptions = { ...this._baseProps.styleOptions, ...style };
         if (this._baseProps.isVisible) {
             //this.draw(this._chart!, this._series!);
         }
-    }
+    }*/
 
     startDrawing(): void {
         this._isDrawing = true;
@@ -163,16 +165,12 @@ export abstract class ChartDrawingBase extends PluginBase implements IChartDrawi
 		this.tmpDrawingPoints = [];
 	}
 
-    protected applyOptions(options: {}) {
-		this._options = { ...this._options, ...options };
-		super.requestUpdate();
-	}
 
     protected completeDrawing(): void {
         this._isCompleted = true;
         this._baseProps.drawingPoints = this._points; // save confirmed points
         this.stopDrawing();
-        this.removePreviewDrawing();
+        this.removePreviewDrawing(true); // remove the preview, it will be readded by the manager to all charts
         eventBus.dispatchEvent(new CustomEvent(ChartEvents.NewDrawingCompleted, { detail: this._baseProps.id }));
     }
 
@@ -198,14 +196,14 @@ export abstract class ChartDrawingBase extends PluginBase implements IChartDrawi
 	// the example provided by Trading View, so we'll have to really consider how and if we should decouple it
 	// for now, funcitonally it shouldnt have a problem, since there can only be one active chart, and therefore preview
 	// at a time.*/
-    protected removePreviewDrawing() {
+    protected removePreviewDrawing(force : boolean = false) {
 		/*
 		if (this._baseDrawing && !this._isCompleted) {
 			ensureDefined(this._series).detachPrimitive(this._baseDrawing);
 			//this._baseDrawing = undefined;
 		}*/
-		if (!this._isCompleted) {
-			ensureDefined(this._series).detachPrimitive(this);
+		if (force || !this._isCompleted) {
+			ensureDefined(this._series).detachPrimitive(this.drawingView as PluginBase);
 			//this._baseDrawing = undefined;
 		}
 	}
@@ -227,44 +225,7 @@ export abstract class ChartDrawingBase extends PluginBase implements IChartDrawi
         return overrides;
     }*/
 
-    protected getOverrideOptions(toolType: DrawingToolType, styleOptions: {}): any {
-        const keyName = toolKeyName(toolType);
-        const isEmpty = (obj: object) => Object.keys(obj).length === 0;
-        //const overrides = isEmpty(styleOptions) ? ConfigStorage.loadConfig(keyName, {}) as Partial<T> : styleOptions;
-        const overrides = isEmpty(styleOptions) ? ConfigStorage.loadConfig(keyName, {}) : styleOptions;
-        return overrides;
-    }
 
-
-    // internal system often uses rgba to apply opacity, rather than the opacity property, so heres
-    // a helper to merge the two color and opacity values into rgba, or returns default
-    protected getRgbaOverrideColorFromOptions<T>(toolType: DrawingToolType, colorPropertyName: string, opacityPropertyName: string, defaultOptions: Partial<T>, overrideOptions?: Partial<T>){
-        let overrides = overrideOptions ?? this.getOverrideOptions(toolType, this._baseProps.styleOptions)
-        if((overrides as any)[colorPropertyName] && (overrides as any)[opacityPropertyName]){
-            console.log('mergeOpacityIntoRgba', (overrides as any)[colorPropertyName], (overrides as any)[opacityPropertyName])
-			overrides[colorPropertyName] = mergeOpacityIntoRgba((overrides as any)[colorPropertyName], (overrides as any)[opacityPropertyName]);
-        }
-        return overrides[colorPropertyName] || defaultOptions[colorPropertyName];
-    }
-
-    protected transformRgbaOptions(styleOptions: {}): any {
-		let  overrides = this.getOverrideOptions(this.type, styleOptions);
-
-        // TODO fill this out with more rgba color properties
-		overrides.fillColor = this.getRgbaOverrideColorFromOptions(this.type, 'fillColor', 'fillColorOpacity', this._defaultOptions, overrides);
-        overrides.color = this.getRgbaOverrideColorFromOptions(this.type, 'color', 'colorOpacity', this._defaultOptions, overrides);
-		return overrides;
-	}
-
-    protected getStyleOptions(): any {
-        return this.transformRgbaOptions(this._baseProps.styleOptions);
-    }
-
-    protected setConfiguredStyle(): void{
-        const options = this.getStyleOptions();//this._finalOptions(this._baseProps.styleOptions);
-		this._baseProps.styleOptions = options
-		this.applyOptions(options);
-    }
 
     	// gets the override options for styling.  there could be special processing for some settings
 	/*

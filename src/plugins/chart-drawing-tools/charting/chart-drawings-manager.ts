@@ -1,5 +1,5 @@
 import { IChartApi, ISeriesApi, MouseEventParams, Point, SeriesType, Coordinate } from 'lightweight-charts';
-import { ChartDrawing, ChartDrawingBaseProps } from './drawings/chart-drawing-base.ts';
+import { ChartDrawingBase, ChartDrawingBaseProps } from './drawings/chart-drawing-base.ts';
 import { DrawingToolType } from './toolbar/tools/drawing-tools.ts';
 import { RectangleDrawing } from './drawings/rectangle/rectangle-drawing.ts';
 import { DataStorage } from '../data/data.ts';
@@ -9,7 +9,6 @@ import Tool from './toolbar/tools/tool-base.ts';
 import { ChartEvents } from '../enums/events.ts';
 import { PluginBase } from '../../plugin-base.ts';
 import { containsPoints, getChartPointFromMouseEvent, getPointFromMouseEvent } from '../common/points.ts';
-import { ChartDrawingBase } from './drawings/chart-drawing-base.ts';
 
 // manage charts
     // when chart is created, register it with ChartManager
@@ -118,7 +117,7 @@ export class ChartDrawingsManager {
                     if(item.type === DrawingToolType.Rectangle){
                         const drawing = new RectangleDrawing(chartContainer.chart, chartContainer.series, symbolName, item);
                         this._drawings.get(symbolName)?.push(drawing);
-                        chartContainer.addDrawingPrimative(drawing);
+                        chartContainer.addDrawingPrimative(drawing.drawingView as PluginBase);
                        // drawing.draw(chart, series);
                     }
                 }
@@ -128,7 +127,7 @@ export class ChartDrawingsManager {
             console.log("drawings already loaded for chart, just adding primatives ", symbolName);
             const drawings = this._drawings.get(symbolName) || [];
             for(const drawing of drawings){
-                chartContainer.addDrawingPrimative(drawing);
+                chartContainer.addDrawingPrimative(drawing.drawingView as PluginBase);
             }
         }
 
@@ -143,7 +142,7 @@ export class ChartDrawingsManager {
        // todo filter by symbol
        //const charts = this._chartContainers.values().filter(o => o.symbolName == this._selectedDrawing?.symbolName)
        for(const chart of this._chartContainers.values()){
-            chart.remPrim(this._selectedDrawing)
+            chart.remPrim(this._selectedDrawing.drawingView as PluginBase)
        }
 
        this._selectedDrawing.remove();
@@ -215,7 +214,7 @@ export class ChartDrawingsManager {
                 const drawings = this._drawings.get(this._selectedDrawing.symbolName) || [];
                 this._drawings.set(this._selectedDrawing.symbolName, [...drawings, this._selectedDrawing]);
                 this.saveDrawings(this._selectedDrawing.symbolName);
-                this._addPrimativeToChartContainers(this._selectedDrawing.symbolName, this._selectedDrawing);
+                this._addPrimativeToChartContainers(this._selectedDrawing.symbolName, this._selectedDrawing.drawingView as PluginBase);
                 console.log("added primative to chart containers", this._selectedDrawing.symbolName, this._selectedDrawing);
             }
             this._creatingNewDrawingFromToolbar = false;

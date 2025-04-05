@@ -90,3 +90,193 @@ export function leftRightPoints(points: DrawingPoint[]) : {left: Time, right: Ti
         throw new Error("leftRightPoints: more than 2 points no implemented");
     }
 }
+
+//type Time = UTCTimestamp;
+export type BoxSide =
+  | 'top-left' | 'top' | 'top-right'
+  | 'left'     | 'right'
+  | 'bottom-left' | 'bottom' | 'bottom-right'
+  | 'inside'
+  | null;
+
+export function getBoxHoverTarget(
+  chart: IChartApi,
+  series: ISeriesApi<SeriesType>,
+  p1: DrawingPoint,
+  p2: DrawingPoint,
+  mouse: Point,
+  offset = 3
+): BoxSide {
+  const timeScale = chart.timeScale();
+  const priceScale = series;
+
+  // Convert logical points to pixel coordinates
+  const x1 = timeScale.timeToCoordinate(p1.time);
+  const x2 = timeScale.timeToCoordinate(p2.time);
+  const y1 = priceScale.priceToCoordinate(p1.price);
+  const y2 = priceScale.priceToCoordinate(p2.price);
+
+  if (x1 === null || x2 === null || y1 === null || y2 === null) {
+    return null;
+  }
+
+  // Get bounding box in screen space
+  const left = Math.min(x1, x2);
+  const right = Math.max(x1, x2);
+  const top = Math.min(y1, y2);
+  const bottom = Math.max(y1, y2);
+
+  const mx = mouse.x;
+  const my = mouse.y;
+
+  // Check corners first
+  if (Math.abs(mx - left) <= offset && Math.abs(my - top) <= offset) return 'top-left';
+  if (Math.abs(mx - right) <= offset && Math.abs(my - top) <= offset) return 'top-right';
+  if (Math.abs(mx - left) <= offset && Math.abs(my - bottom) <= offset) return 'bottom-left';
+  if (Math.abs(mx - right) <= offset && Math.abs(my - bottom) <= offset) return 'bottom-right';
+
+  // Check sides
+  if (mx >= left && mx <= right) {
+    if (Math.abs(my - top) <= offset) return 'top';
+    if (Math.abs(my - bottom) <= offset) return 'bottom';
+  }
+  if (my >= top && my <= bottom) {
+    if (Math.abs(mx - left) <= offset) return 'left';
+    if (Math.abs(mx - right) <= offset) return 'right';
+  }
+
+  // Check inside box
+  if (mx >= left && mx <= right && my >= top && my <= bottom) {
+    return 'inside';
+  }
+
+  return null;
+}
+
+/*
+export function resizeBoxByHandle(
+  p1: DrawingPoint,
+  p2: DrawingPoint,
+  handle: BoxSide,
+  newMousePoint: DrawingPoint
+): [DrawingPoint, DrawingPoint] {
+  let newP1 = { ...p1 };
+  let newP2 = { ...p2 };
+
+  switch (handle) {
+    case 'top-left':
+      newP1.time = newMousePoint.time;
+      newP1.price = newMousePoint.price;
+      break;
+
+    case 'top':
+      newP1.price = newMousePoint.price;
+      break;
+
+    case 'top-right':
+      newP2.time = newMousePoint.time;
+      newP1.price = newMousePoint.price;
+      break;
+
+    case 'left':
+      newP1.time = newMousePoint.time;
+      break;
+
+    case 'right':
+      newP2.time = newMousePoint.time;
+      break;
+
+    case 'bottom-left':
+      newP1.time = newMousePoint.time;
+      newP2.price = newMousePoint.price;
+      break;
+
+    case 'bottom':
+      newP2.price = newMousePoint.price;
+      break;
+
+    case 'bottom-right':
+      newP2.time = newMousePoint.time;
+      newP2.price = newMousePoint.price;
+      break;
+  }
+
+  return [newP1, newP2];
+}
+*/
+export function resizeBoxByHandle(
+    p1: Point,
+    p2: Point,
+    handle: BoxSide,
+    mouse: Point
+  ): [Point, Point] {
+    let newP1 = { ...p1 };
+    let newP2 = { ...p2 };
+  
+    switch (handle) {
+      case 'top-left':
+        newP1.x = mouse.x;
+        newP1.y = mouse.y;
+        break;
+  
+      case 'top':
+        newP1.y = mouse.y;
+        break;
+  
+      case 'top-right':
+        newP2.x = mouse.x;
+        newP1.y = mouse.y;
+        break;
+  
+      case 'left':
+        newP1.x = mouse.x;
+        break;
+  
+      case 'right':
+        newP2.x = mouse.x;
+        break;
+  
+      case 'bottom-left':
+        newP1.x = mouse.x;
+        newP2.y = mouse.y;
+        break;
+  
+      case 'bottom':
+        newP2.y = mouse.y;
+        break;
+  
+      case 'bottom-right':
+        newP2.x = mouse.x;
+        newP2.y = mouse.y;
+        break;
+      case 'inside':
+        newP1.x = mouse.x;
+        newP1.y = mouse.y;
+        newP2.x = mouse.x;
+        newP2.y = mouse.y;
+        break;
+    }
+  
+    return [newP1, newP2];
+  }
+
+export function getCursorForBoxSide(side: BoxSide): string {
+    switch (side) {
+      case 'top-left':
+      case 'bottom-right':
+        return 'nwse-resize';
+      case 'top-right':
+      case 'bottom-left':
+        return 'nesw-resize';
+      case 'top':
+      case 'bottom':
+        return 'ns-resize';
+      case 'left':
+      case 'right':
+        return 'ew-resize';
+      case 'inside':
+        return 'move';
+      default:
+        return 'default';
+    }
+  }

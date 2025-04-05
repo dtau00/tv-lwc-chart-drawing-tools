@@ -1,6 +1,7 @@
 import { IChartApi, ISeriesApi, SeriesType, MouseEventParams, Point, Time } from 'lightweight-charts';
 import { DrawingToolType, DrawingStyle } from '../toolbar/tools/drawing-tools';
 import { DrawingPoint } from '../../common/common';
+import { BoxSide } from '../../common/points';
 
 export interface IChartDrawing {
     //id: string;
@@ -24,7 +25,7 @@ export interface IChartDrawing {
     deselect(): void;
     onMouseMove(event: MouseEventParams): void;
     onClick(event: MouseEventParams): void;
-    updatePosition(startPoint: Point, endPoint: Point): void;
+    updatePosition(startPoint: Point, endPoint: Point, side: BoxSide): void;
     //updateStyle(style: Partial<DrawingStyle>): void;
     //getBounds(): { top: number; bottom: number; left: number; right: number };
     //containsPoint(chart: IChartApi, series: ISeriesApi<SeriesType>, point: Point, points: DrawingPoint[]): boolean

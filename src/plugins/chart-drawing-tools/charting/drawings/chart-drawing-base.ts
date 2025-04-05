@@ -7,7 +7,7 @@ import { ensureDefined } from '../../../../helpers/assertions';
 import { eventBus, DrawingPoint, toolKeyName } from '../../common/common';
 
 import { ChartEvents } from '../../enums/events';
-import { containsPoints, leftRightPoints, topBottomPoints } from '../../common/points';
+import { BoxSide, containsPoints, leftRightPoints, topBottomPoints } from '../../common/points';
 import { ConfigStorage } from '../../data/data';
 import { ViewBase } from './drawing-view-base';
 
@@ -117,7 +117,7 @@ export abstract class ChartDrawingBase implements IChartDrawing {
     //abstract getBounds(): { top: number; bottom: number; left: number; right: number };
     abstract onClick(event: MouseEventParams): void;
     abstract onMouseMove(event: MouseEventParams): void;
-    abstract updatePosition(startPoint: Point, endPoint: Point): void;
+    abstract updatePosition(startPoint: Point, endPoint: Point, side: BoxSide): void;
 	//abstract initializeDrawingViews(p1: DrawingPoint, p2: DrawingPoint): void;
 
     containsPoint(chart: IChartApi, series: ISeriesApi<SeriesType>, point: Point, points: DrawingPoint[]): boolean {

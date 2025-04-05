@@ -74,7 +74,6 @@ export class Rectangle extends ViewBase {
 		if(this._isExtended && this._p2){
 			this._p2.time = p.time;
 			const end = this.chart.timeScale().getVisibleRange()?.to
-			console.log("end", end);
 			if(end)
 				this._p2.time = end
 		}

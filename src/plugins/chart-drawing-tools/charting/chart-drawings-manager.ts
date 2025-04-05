@@ -8,7 +8,7 @@ import { ChartContainer } from './chart-container.ts';
 import Tool from './toolbar/tools/tool-base.ts';
 import { ChartEvents } from '../enums/events.ts';
 import { PluginBase } from '../../plugin-base.ts';
-import { containsPoints, getChartPointFromMouseEvent, getPointFromMouseEvent } from '../common/points.ts';
+import { containsPoints, getChartPointFromMouseEvent, getBoxHoverTarget, getCursorForBoxSide, BoxSide } from '../common/points.ts';
 
 // manage charts
     // when chart is created, register it with ChartManager
@@ -20,7 +20,7 @@ import { containsPoints, getChartPointFromMouseEvent, getPointFromMouseEvent } f
     // when drawings are added, updated, removed for a symbol, it will also update drawings for all other charts that use the same symbol
 
 export class ChartDrawingsManager {
-    private static readonly MouseHoldTimeMs = 400;
+    private static readonly MouseHoldTimeMs = 10;
     private static readonly MouseHoldMaxOffsetPoints = 3;
     private static instance: ChartDrawingsManager;
 
@@ -35,7 +35,7 @@ export class ChartDrawingsManager {
 
     private _mouseDownStartPoint: Point | null = null;
     private _mousePosition: Point | null = null;
-    private _isMouseDragging: boolean = false;
+    private _isMouseDragging: BoxSide = null;
     private _mouseHoldTimer: NodeJS.Timeout | null = null;
 
     private constructor() {
@@ -257,7 +257,6 @@ export class ChartDrawingsManager {
                 console.log('selectedDrawing', this.selectedDrawing);
                 const drawings = this._drawings.get(chartContainer.symbolName) || [];
                 for(const drawing of drawings){
-                    //console.log('check drawing', drawing);
                     if(drawing.containsPoint(chartContainer.chart, chartContainer.series, param.point, drawing.drawingPoints)){
                         this.selectDrawing(drawing);
                         drawing.select();
@@ -268,21 +267,33 @@ export class ChartDrawingsManager {
                 }
                 if(!drawingFound){
                     this.unselectDrawing();
-                    //console.log('no drawing found');
                 }
             }
-        }
-        else{ 
-            alert('unknown state')
         }
     }
 
     public onMouseDown(evt: MouseEvent, chartContainer: ChartContainer): boolean {
         if(!this._selectedDrawing) // only check if a drawing is selected
             return false;
+        
+        const p1 = this._selectedDrawing.drawingPoints[0];
+        const p2 = this._selectedDrawing.drawingPoints[1];
 
         this._mouseDownStartPoint = getChartPointFromMouseEvent(evt, chartContainer.chartDivContainer); // set original mouse down position
-        this._mouseHoldTimer = setTimeout(() => this._mouseHoldTimeout(chartContainer.chart), ChartDrawingsManager.MouseHoldTimeMs);
+        if(!this._mouseDownStartPoint || !p1 || !p2)
+            return false;
+
+        //if(this._hasMouseMoved())
+        //    return;
+        // this._mouseHoldTimer = setTimeout(() => this._mouseHoldTimeout(chartContainer.chart), ChartDrawingsManager.MouseHoldTimeMs);
+        const side = getBoxHoverTarget(chartContainer.chart, chartContainer.series, p1, p2, this._mouseDownStartPoint);
+        //console.log('onMouseDown side', side);
+        if(side){
+            this._isMouseDragging = side;
+            document.body.style.cursor = getCursorForBoxSide(side);
+            this._setChartDragging(chartContainer.chart, false);
+        }
+
         return true;
     }
 
@@ -301,7 +312,13 @@ export class ChartDrawingsManager {
         this._mousePosition = param.point || null; 
         if(this._isMouseDragging && this._mouseDownStartPoint && this._selectedDrawing){
             // move drawing
-            this._selectedDrawing?.updatePosition(this._mouseDownStartPoint, param.point);
+            this._selectedDrawing?.updatePosition(this._mouseDownStartPoint, param.point, this._isMouseDragging);
+        }
+        else if(this._selectedDrawing && this._selectedDrawing.isCompleted){
+            const side = getBoxHoverTarget(this._currentChartContainer?.chart!, this._currentChartContainer?.series!, this._selectedDrawing.drawingPoints[0], this._selectedDrawing.drawingPoints[1], param.point);
+            if(side){
+                document.body.style.cursor = getCursorForBoxSide(side);
+            }
         }
     }
 
@@ -327,13 +344,14 @@ export class ChartDrawingsManager {
 
     // mouse event hander functions ------------------------------------------------------------
 
+    /*
     private _mouseHoldTimeout =(chart: IChartApi) =>{
         if(this._hasMouseMoved())
             return;
         this._isMouseDragging = true;
         this._setChartDragging(chart, false);
         document.body.style.cursor = 'move';
-    }
+    }*/
 
     // check if mouse is being held, allow for some movement before starting drag (if the mouse jitters due to high dpi)
     private _hasMouseMoved(): boolean{
@@ -356,7 +374,7 @@ export class ChartDrawingsManager {
     private _resetMouseControls(): void {
         document.body.style.cursor = 'default';
         this._mouseDownStartPoint = null;
-        this._isMouseDragging = false;
+        this._isMouseDragging = null;
         if(this._mouseHoldTimer)
             clearTimeout(this._mouseHoldTimer);
 

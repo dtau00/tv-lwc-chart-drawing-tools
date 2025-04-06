@@ -25,19 +25,21 @@ export class Line extends ViewBase {
 
 		super(chart, series, toolType, defaultOptions, options, baseProps);
 		this._isExtended = isExtended;
-        console.log('default', defaultOptions, this._options, baseProps);
+
 		if(initializedFromStorage){ // we are loading from storage
-			this.initializeDrawingViews(baseProps.drawingPoints[0], baseProps.drawingPoints[1]);
+			this.initializeDrawingViews([baseProps.drawingPoints[0], baseProps.drawingPoints[1]]);
 		}
 	}
 
-    initializeDrawingViews(p1: DrawingPoint, p2: DrawingPoint) {
+		// make sure you pass in the correct number of points for your drawing
+	// TODO enfore this
+    initializeDrawingViews(points: DrawingPoint[]) {
         if(this.initalized)
 			return;
 
         this.initalized = true;
-        this._p1 = p1;
-        this._p2 = p2;
+        this._p1 = points[0];
+        this._p2 = points[1];
 
         this._paneViews = [new LinePaneView(this)];
     }
@@ -51,9 +53,11 @@ export class Line extends ViewBase {
 		super.requestUpdate();
 	}
 
-    updatePoints(p1: DrawingPoint, p2: DrawingPoint) {
-		this._p1 = p1;
-		this._p2 = p2;
+	// update the points for the drawing, make sure you pass in the correct number of points
+	// TODO enforce the proper number of points
+    updatePoints(points: DrawingPoint[]) {
+		this._p1 = points[0];
+		this._p2 = points[1];
 		this._paneViews[0].update();
 		super.requestUpdate();
 	}

@@ -36,56 +36,16 @@ export class LineDrawing extends ChartDrawingBase{
 		this._toolType = toolType
 		this._isExtended = isExtended;
 		this.drawingView = new View(chart, series, this._toolType, isExtended, drawingToolDefaultOptions,  baseProps?.styleOptions, baseProps || this.baseProps, baseProps ? true : false ); 
-
 	}
 
 	// TODO dont make this hard coded
 	// set the style when drawing is selected
 	select(): void {
-		this._view().applyOptions({ lineColor: 'rgba(100, 100, 100, 0.5)', })
+		this.view().applyOptions({ lineColor: 'rgba(100, 100, 100, 0.5)', })
 		super.select();
 	}
 
-	// revert styling when deselected
-	deselect(): void {
-		this._view().setBaseStyleOptions()
-		super.deselect();
-	}
-
-	onClick(param: MouseEventParams) {
-		if (this._isDrawing || !param.point || !param.time || !this._series) 
-			return;
-
-		const price = this._series.coordinateToPrice(param.point.y);
-		if (price === null) 
-			return;
-
-		// if initial drawing is not completed, add the point
-		if(!this._isCompleted){
-			this._addPoint({
-				time: param.time,
-				price,
-			});
-		}
-	}
-
-	onMouseMove(param: MouseEventParams) {
-		if (!this._chart || this._isDrawing || !this._series || !param.point) 
-			return;
-
-		const price = this._series.coordinateToPrice(param.point.y);
-		if (price === null || param.time === undefined) 
-			return;
-
-		// if initial drawing is not completed, update the initial point
-		if(!this._isCompleted){	
-			this._view().updateInitialPoint({
-				time: param.time,
-				price,
-			}, param);
-		}
-	}
-
+    	// update the position of the drawing, based on how its being resized
 	updatePosition(startPoint: Point, endPoint: Point, side: BoxSide): void {
 		if (!this._chart || this._isDrawing || !this._series || this.drawingPoints.length < 2) 
 			return;
@@ -140,40 +100,12 @@ export class LineDrawing extends ChartDrawingBase{
 			const newDrawingPoint2 = {time: this._chart.timeScale().coordinateToTime(timePoint2)!, price: this._series.coordinateToPrice(pricePoint2)!};
 
 			// update the drawing
-			this._view().updatePoints( newDrawingPoint1, newDrawingPoint2) 
+			this.view().updatePoints([newDrawingPoint1, newDrawingPoint2]) 
 
 			//  store new points temporarily, we will set this back to the drawingPoints when the update is finished
 			// TODO we wont need this if we save directly from the class, consider adding save directly from the class
 			this.tmpDrawingPoints[0] = newDrawingPoint1
 			this.tmpDrawingPoints[1] =newDrawingPoint2
 		}
-	}
-
-	private _addPoint(p: DrawingPoint) {
-		this._points.push(p);
-		this._setNewDrawing();
-	}
-
-	private _setNewDrawing(){
-		if(this._points.length === 1){
-			this._view().initializeDrawingViews(this._points[0], this._points[0]);
-			this._setStyleOptions();
-
-			// we are only drawing this for the preview
-			ensureDefined(this._series).attachPrimitive(this.drawingView as PluginBase);
-		}
-		else if (this._points.length >= this._totalDrawingPoints) {
-			this.completeDrawing();
-		}
-	}
-
-    private _view(): View {
-		return this.drawingView as View;
-	}
-
-	// saves the style options to base properties for saving
-	private _setStyleOptions(){
-		const styleOptions = this._view().getStyleOptions();
-		this.baseProps.styleOptions = styleOptions;
 	}
 }

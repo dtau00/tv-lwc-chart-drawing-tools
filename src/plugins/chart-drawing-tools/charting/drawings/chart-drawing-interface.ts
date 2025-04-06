@@ -1,5 +1,6 @@
 import { MouseEventParams, Point } from 'lightweight-charts';
 import { BoxSide } from '../../common/points';
+import { DrawingPoint } from '../../common/common';
 
 export interface IChartDrawing {
     //id: string;

@@ -39,18 +39,20 @@ export class Rectangle extends ViewBase {
 		this._isExtended = isExtended;
 
 		if(initializedFromStorage){ // we are loading from storage
-			this.initializeDrawingViews(baseProps.drawingPoints[0], baseProps.drawingPoints[1]);
+			this.initializeDrawingViews([baseProps.drawingPoints[0], baseProps.drawingPoints[1]]);
 		}
 	}
 
 	// initializes the drawing views on first click
-	initializeDrawingViews(p1: DrawingPoint, p2: DrawingPoint) {
+	// make sure you pass in the correct number of points for your drawing
+	// TODO enfore this
+	initializeDrawingViews(points: DrawingPoint[]) {
 		if(this.initalized)
 			return;
 		
 		this.initalized = true;
-		this._p1 = p1;
-		this._p2 = p2;
+		this._p1 = points[0];
+		this._p2 = points[1];
 
 		this._paneViews = [new RectanglePaneView(this)];
 		/* disable axis views
@@ -88,9 +90,11 @@ export class Rectangle extends ViewBase {
 		super.requestUpdate();
 	}
 
-	updatePoints(p1: DrawingPoint, p2: DrawingPoint) {
-		this._p1 = p1;
-		this._p2 = p2;
+	// update the points for the drawing, make sure you pass in the correct number of points
+	// TODO enforce the proper number of points
+	updatePoints(points: DrawingPoint[]) {
+		this._p1 = points[0];
+		this._p2 = points[1];
 		this._paneViews[0].update();
 		/* disable axis views
 		this._timeAxisViews[0].movePoint(p1);

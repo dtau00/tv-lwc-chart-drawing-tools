@@ -1,6 +1,6 @@
 import { mergeOpacityIntoRgba } from '../../common/helper';
-import { toolKeyName } from '../../common/common';
-import { IChartApi, ISeriesApi, SeriesType } from 'lightweight-charts';
+import { DrawingPoint, toolKeyName } from '../../common/common';
+import { IChartApi, ISeriesApi, MouseEventParams, SeriesType } from 'lightweight-charts';
 import { PluginBase } from '../../../plugin-base';
 import { DrawingToolType } from '../toolbar/tools/drawing-tools';
 import { ConfigStorage } from '../../data/data';
@@ -37,6 +37,10 @@ export class ViewBase extends PluginBase {
         this._baseStyleOptions = this._options;
         this._baseProps = baseProps;
 	}
+        public updatePoints(points: DrawingPoint[]){
+            throw new Error("Method not implemented.  Overrite this methods in your class.");
+        }
+
         public getOverrideOptions(toolType: DrawingToolType, styleOptions: {}): any {
             const keyName = toolKeyName(toolType);
             //const overrides = isEmpty(styleOptions) ? ConfigStorage.loadConfig(keyName, {}) as Partial<T> : styleOptions;
@@ -84,6 +88,14 @@ export class ViewBase extends PluginBase {
     
         public getStyleOptions(): any {
             return this.transformRgbaOptions(this._baseStyleOptions);
+        }
+
+        public initializeDrawingViews(points: DrawingPoint[]): void{
+            throw new Error("Method not implemented.  Overrite this methods in your class.");
+        }
+
+        public updateInitialPoint(p: DrawingPoint, param: MouseEventParams) {
+            throw new Error("Method not implemented.  Overrite this methods in your class.");
         }
 
 /*

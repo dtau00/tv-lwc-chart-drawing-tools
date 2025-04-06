@@ -21,8 +21,6 @@ export interface ChartDrawingBaseProps{
     styleOptions: {}; 
     drawingPoints: DrawingPoint[];
     text: string;
-    leftOffsetSeconds: number;
-    rightOffsetSeconds: number;
     secondsPerBar: number;
     isVisible: boolean;
 }
@@ -71,8 +69,6 @@ export abstract class ChartDrawingBase implements IChartDrawing {
                 styleOptions: {},
                 drawingPoints: [],
                 text: '',
-                leftOffsetSeconds: 0,
-                rightOffsetSeconds: 0,
                 secondsPerBar: 0,
                 isVisible: true,
                 userId: '',
@@ -105,8 +101,6 @@ export abstract class ChartDrawingBase implements IChartDrawing {
     get drawingPoints(): DrawingPoint[] { return this._baseProps.drawingPoints; }
     set drawingPoints(points: DrawingPoint[]) { this._baseProps.drawingPoints = points; }
     get text(): string { return this._baseProps.text; }
-    get leftOffsetSeconds(): number { return this._baseProps.leftOffsetSeconds; }
-    get rightOffsetSeconds(): number { return this._baseProps.rightOffsetSeconds; }
     get secondsPerBar(): number { return this._baseProps.secondsPerBar; }
 
     set styleOptions(style: {}) { this._baseProps.styleOptions = style }
@@ -115,10 +109,12 @@ export abstract class ChartDrawingBase implements IChartDrawing {
     // Abstract methods that must be implemented by derived classes
     //abstract draw(chart: IChartApi, series: ISeriesApi<SeriesType>): void;
     //abstract getBounds(): { top: number; bottom: number; left: number; right: number };
-    abstract onClick(event: MouseEventParams): void;
-    abstract onMouseMove(event: MouseEventParams): void;
     abstract updatePosition(startPoint: Point, endPoint: Point, side: BoxSide): void;
-	//abstract initializeDrawingViews(p1: DrawingPoint, p2: DrawingPoint): void;
+
+        // set the style options to base properties, this is used when loading from config
+        public setBaseStyleOptionsFromConfig() {
+            this.drawingView?.setBaseStyleOptionsFromConfig();
+        }
 
     containsPoint(chart: IChartApi, series: ISeriesApi<SeriesType>, point: Point, points: DrawingPoint[]): boolean {
 		return containsPoints(chart, series, point, points);
@@ -132,6 +128,7 @@ export abstract class ChartDrawingBase implements IChartDrawing {
     }
 
     deselect(): void {
+        this.drawingView?.setBaseStyleOptions()
 		this.removePreviewDrawing();
         this._isSelected = false;
         eventBus.dispatchEvent(new CustomEvent(ChartEvents.CompletedDrawingUnSelected, { detail: this.id }));
@@ -160,6 +157,38 @@ export abstract class ChartDrawingBase implements IChartDrawing {
     setTmpToNewDrawingPoints(): void {
 		this.drawingPoints = this.tmpDrawingPoints;
 		this.tmpDrawingPoints = [];
+	}
+
+    onClick(param: MouseEventParams) {
+		if (this._isDrawing || !param.point || !param.time || !this._series) 
+			return;
+
+		const price = this._series.coordinateToPrice(param.point.y);
+
+		// if initial drawing is not completed, add the point
+		if(!this._isCompleted && price !== null){
+			this._addPoint({
+				time: param.time,
+				price,
+			});
+		}
+	}
+
+	onMouseMove(param: MouseEventParams) {
+		if (!this._chart || this._isDrawing || !this._series || !param.point) 
+			return;
+
+		const price = this._series.coordinateToPrice(param.point.y);
+		if (price === null || param.time === undefined) 
+			return;
+
+		// if initial drawing is not completed, update the initial point
+		if(!this._isCompleted){	
+			this.view().updateInitialPoint({
+				time: param.time,
+				price,
+			}, param);
+		}
 	}
 
     protected completeDrawing(): void {
@@ -204,7 +233,31 @@ export abstract class ChartDrawingBase implements IChartDrawing {
 		}
 	}
 
-    public setBaseStyleOptionsFromConfig() {
-        this.drawingView?.setBaseStyleOptionsFromConfig();
+    // set the style options to base properties, this is used when loading from config
+    protected setStyleOptions() {
+		const styleOptions = this.drawingView?.getStyleOptions();
+		this.baseProps.styleOptions = styleOptions;
     }
+
+    private _addPoint(p: DrawingPoint) {
+		this._points.push(p);
+		this._setNewDrawing();
+	}
+
+	private _setNewDrawing(){
+		if(this._points.length === 1){
+			this.view().initializeDrawingViews([this._points[0], this._points[0]]);
+			//this.setStyleOptions();
+
+			// we are only drawing this for the preview
+			ensureDefined(this._series).attachPrimitive(this.drawingView as PluginBase);
+		}
+		else if (this._points.length >= this._totalDrawingPoints) {
+			this.completeDrawing();
+		}
+	}
+
+    protected view(): ViewBase {
+		return this.drawingView as ViewBase;
+	}
 } 

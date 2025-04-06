@@ -2,7 +2,9 @@ v1
 --
 rectangle resize can sometimes get mixed up and pivot at the wrong corner
 drawing can crash by clicking around too much
-ext line drawings
+ext line, horizontal, vertical drawings
+fix line drawing selection
+lines dont save
 
 test when new data is added
   make sure whitespade is supported
@@ -77,6 +79,12 @@ Adding New drawing
     xxx-drawing.ts : drawing class that handles the logic for your drawing
     xxx-view.ts : a seperate object every chartDrawing has that controls the view and rendering
     /panes : contains all the panes and renderers for your view
+4. Add to load ... chart-data-manager -> _loadDrawings
+  // add how to load your drawing type
+
+  * the framework generally handles one and two points for most cases, since these are the most common.  
+  if you are doing something more complex, or need more points, you will need to override the appropriate 
+  methods in your classes, from the base classes, for the desired behaviors
 
 
 

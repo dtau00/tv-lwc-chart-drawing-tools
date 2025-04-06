@@ -1,5 +1,6 @@
 v1
 --
+show brush mouse if drawing
 the rect and rectext subtools are shared, but they shouldnt
 rectangle resize can sometimes get mixed up and pivot at the wrong corner
 drawing can crash by clicking around too much

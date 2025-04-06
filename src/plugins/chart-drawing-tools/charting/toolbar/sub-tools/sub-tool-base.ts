@@ -29,7 +29,7 @@ abstract class SubTool implements ISubTool {
     get parentTool(): string { return this._parentTool; }
     get buttonType(): ToolbarButton { return this._buttonType; }
     get index(): number { return this._index; }
-    
+
     constructor(propertyName: string, parentTool: string, buttonType: ToolbarButton, name: string, description: string, icon: string, index: number, type: DrawingSubToolType, valueUpdatedCallback?: (value: any) => void) {
         this._name = name;
         this._description = description;
@@ -108,7 +108,7 @@ abstract class SubTool implements ISubTool {
     }
 
     private _keyName(): string {
-        return `subtool_val_${this._name}_${this._index}`;
+        return `subtool-val-${this._parentTool}-${this._propertyName}-${this._index}`;
     }
 
     private _subToolKeyName(): string {

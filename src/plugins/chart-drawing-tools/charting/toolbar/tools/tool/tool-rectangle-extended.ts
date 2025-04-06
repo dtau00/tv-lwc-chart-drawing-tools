@@ -21,7 +21,7 @@ export class ToolRectangleExtended extends Tool {
         return new RectangleDrawing(chart, series, symbolName, true);
     }
     
-    setSubToolbarButtons(container: HTMLDivElement, listener?: (evt: MouseEvent, index?: number) => void): HTMLDivElement[] {
+    setSubToolbarButtons(container: HTMLDivElement): HTMLDivElement[] {
         let buttons: HTMLDivElement[] = [];
 
         // TODO we can clean this up more

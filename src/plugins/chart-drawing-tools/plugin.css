@@ -9,6 +9,7 @@
     background-color: rgba(224, 227, 235, 1);
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
+    cursor: default;
 }
 .chart {
     border-top-left-radius: 0px;

@@ -126,6 +126,7 @@ export class ChartDrawingsToolbar {
 
 	private _unselectTool(unselectViewOnly? : boolean): void {
 		if(!unselectViewOnly){ // truly unselecting, not just changing views between charts
+			// dispose all  subtools
 			if(this._selectedDrawingTool !== DrawingToolType.None){
 				this._tools.get(this._selectedDrawingTool)?.dispose();
 			}
@@ -134,7 +135,7 @@ export class ChartDrawingsToolbar {
 			this._chartDrawingsManager.unselectTool();
 			
 		}
-
+		document.body.style.cursor = 'default';
 		// clear toolbar from view
 		unselectAllDivsForGroup(this._drawingsToolbarContainer!, AVAILABLE_TOOLS.map(t => t.name));
 		clearDiv(this._drawingsSubToolbarContainer!);
@@ -152,6 +153,8 @@ export class ChartDrawingsToolbar {
 		selectDivForGroup(this._drawingsToolbarContainer!, AVAILABLE_TOOLS.map(t => t.name), toolType);
 		this._selectedDrawingTool = toolType;
 		this._populateSubToolbar(toolType);
+		//alert('selectTool')
+		document.body.style.cursor = 'crosshair';
 	}
 
 	// events and listeners ------------------------------------------------------------
@@ -189,7 +192,8 @@ export class ChartDrawingsToolbar {
 		eventBus.addEventListener(ChartEvents.SetToolbarTool, (event: Event) => {
 			const customEvent = event as CustomEvent; // No type checking here
             if(customEvent.detail.chartId === this._chartId){
-				this._selectTool(customEvent.detail.toolType);
+				if(customEvent.detail.toolType !== DrawingToolType.None)
+					this._selectTool(customEvent.detail.toolType);
 			}
         });
     }
@@ -204,6 +208,8 @@ export class ChartDrawingsToolbar {
 	}
 
 	// selecting new drawing tool
+	// Make sure the clicks bubble up back to here so we can adjust the toolbar
+	// An event bus would be cleaner, but we might have a lot of events firing if we have hundreds of charts
 	private _onClickDrawingTool(toolType: DrawingToolType): void {
 		if(this._selectedDrawingTool === toolType)
 			this._unselectTool();

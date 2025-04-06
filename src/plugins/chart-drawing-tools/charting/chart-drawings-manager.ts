@@ -303,7 +303,7 @@ export class ChartDrawingsManager {
             this._selectedDrawing?.setTmpToNewDrawingPoints();
             this.saveDrawings(this._selectedDrawing?.symbolName || '');
         }
-        this._resetMouseControls();
+        this._resetMouseDragControls();
     }
 
     public onMouseMove(param: MouseEventParams): void {
@@ -317,9 +317,7 @@ export class ChartDrawingsManager {
         }
         else if(this._selectedDrawing && this._selectedDrawing.isCompleted){
             const side = getBoxHoverTarget(this._currentChartContainer?.chart!, this._currentChartContainer?.series!, this._selectedDrawing.drawingPoints[0], this._selectedDrawing.drawingPoints[1], param.point);
-            if(side){
-                document.body.style.cursor = getCursorForBoxSide(side);
-            }
+            document.body.style.cursor = getCursorForBoxSide(side);
         }
     }
 
@@ -373,8 +371,8 @@ export class ChartDrawingsManager {
         });
     }
 
-    private _resetMouseControls(): void {
-        document.body.style.cursor = 'default';
+    private _resetMouseDragControls(): void {
+        //document.body.style.cursor = 'default';
         this._mouseDownStartPoint = null;
         this._isMouseDragging = null;
         if(this._mouseHoldTimer)

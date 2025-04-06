@@ -26,6 +26,7 @@ export interface ChartDrawingBaseProps{
 }
 
 export abstract class ChartDrawingBase implements IChartDrawing {
+    private _drawingFinishedCallback: () => void | undefined;
     protected _baseProps: ChartDrawingBaseProps;
     protected _chart: IChartApi | undefined;
     protected _series: ISeriesApi<SeriesType> | undefined;
@@ -52,14 +53,21 @@ export abstract class ChartDrawingBase implements IChartDrawing {
         totalDrawingPoints: number,
         defaultOptions: {},
         baseProps?: ChartDrawingBaseProps,
+        drawingFinishedCallback?: () => void | undefined
     ) 
     {
         this._chart = chart;
         this._series = series;
         this._defaultOptions = defaultOptions;
+
+        if(drawingFinishedCallback){
+            this._drawingFinishedCallback = drawingFinishedCallback;
+        }
         if(baseProps){
             this._baseProps = baseProps;
             this._isCompleted = true;
+            this._points  = baseProps.drawingPoints;
+            this.drawingPoints = this._points;
         }
         else{
             this._baseProps = {
@@ -110,6 +118,7 @@ export abstract class ChartDrawingBase implements IChartDrawing {
     //abstract draw(chart: IChartApi, series: ISeriesApi<SeriesType>): void;
     //abstract getBounds(): { top: number; bottom: number; left: number; right: number };
     abstract updatePosition(startPoint: Point, endPoint: Point, side: BoxSide): void;
+    abstract select(): void;
 
         // set the style options to base properties, this is used when loading from config
         public setBaseStyleOptionsFromConfig() {
@@ -121,7 +130,7 @@ export abstract class ChartDrawingBase implements IChartDrawing {
 	}
     
     // Common methods with default implementations
-    select(): void {
+    protected selected(): void {
         this._isSelected = true;
         eventBus.dispatchEvent(new CustomEvent(ChartEvents.CompletedDrawingSelected, { detail: this.id }));
         //this.draw(this._chart!, this._series!);
@@ -191,11 +200,21 @@ export abstract class ChartDrawingBase implements IChartDrawing {
 		}
 	}
 
+    protected overrideDrawingPoints(points: DrawingPoint[]): void {
+        this.tmpDrawingPoints = points;
+        this._baseProps.drawingPoints = points;
+        this.drawingPoints = points;
+        this._points = points;
+    }
+
     protected completeDrawing(): void {
         this._isCompleted = true;
         this._baseProps.drawingPoints = this._points; // save confirmed points
         this.stopDrawing();
         this.removePreviewDrawing(true); // remove the preview, it will be readded by the manager to all charts
+        if(this._drawingFinishedCallback){
+            this._drawingFinishedCallback();
+        }
         eventBus.dispatchEvent(new CustomEvent(ChartEvents.NewDrawingCompleted, { detail: {id: this.id, type: this.type } }));
     }
 

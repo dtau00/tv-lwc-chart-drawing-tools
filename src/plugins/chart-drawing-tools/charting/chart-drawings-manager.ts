@@ -266,6 +266,7 @@ export class ChartDrawingsManager {
                 const drawings = this._drawings.get(chartContainer.symbolName) || [];
                 for(const drawing of drawings){
                     if(drawing.containsPoint(chartContainer.chart, chartContainer.series, param.point, drawing.drawingPoints)){
+                        console.log('drawing selected', drawing);
                         this.selectDrawing(drawing);
                         drawing.select();
                         drawingFound = true;

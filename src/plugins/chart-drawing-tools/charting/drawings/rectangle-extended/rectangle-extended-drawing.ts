@@ -4,29 +4,45 @@ import {
 	ISeriesApi,
     Point,
     SeriesType,
+	Time,
 } from 'lightweight-charts';
 import { RectangleExtendedView } from './rectangle-extended-view';
 import { rectangleExtendedDrawingToolDefaultOptions as drawingToolDefaultOptions } from './rectangle-extended-options';
 import { ChartDrawingBase, ChartDrawingBaseProps } from '../chart-drawing-base';
 import { DrawingToolType } from '../../toolbar/tools/drawing-tools';
-
 import { BoxSide, resizeBoxByHandle } from '../../../common/points';
 
 export class RectangleExtendedDrawing extends ChartDrawingBase{
 	private static readonly TOTAL_DRAWING_POINTS = 2; // Set the drawing points for this type of drawing.  A box will have 2, a line ray will have 1, etc...
 	private _toolType: DrawingToolType; // = DrawingToolType.Rectangle; // set the tool type for the class
-
+	private _drawingFinished: () => void | undefined;
 	constructor(
 		chart: IChartApi,
 		series: ISeriesApi<SeriesType>,
 		symbolName: string,
 		baseProps?: ChartDrawingBaseProps,
 	) {
+
+		let _drawingFinished =()=>{
+			let p1 = this.drawingPoints[0];
+			let p2 = this.drawingPoints[1];
+			const end = this._chart?.timeScale().getVisibleRange()?.to;
+			if(end){
+				if(p1.time > p2.time)
+					p1.time = end as Time; //(Number(p1.time) * 2) as Time;
+				else
+					p2.time = end as Time; //(Number(p2.time) * 2) as Time;
+				//console.log('p1', p1, 'p2', p2);
+				this.overrideDrawingPoints([p1, p2]);
+			}
+		}
+
 		// MAKE SURE TO UPDATE THIS WHEN CREATING NEW DRAWING TOOLS
-		const toolType = DrawingToolType.Rectangle
-		
-		super( toolType, chart, series, symbolName, RectangleExtendedDrawing.TOTAL_DRAWING_POINTS, drawingToolDefaultOptions, baseProps);
+		const toolType = DrawingToolType.RectangleExtended
+
+		super( toolType, chart, series, symbolName, RectangleExtendedDrawing.TOTAL_DRAWING_POINTS, drawingToolDefaultOptions, baseProps, _drawingFinished);
 		this._toolType = toolType
+		this._drawingFinished = _drawingFinished;
 		this.drawingView = new RectangleExtendedView(chart, series, this._toolType, drawingToolDefaultOptions,  baseProps?.styleOptions, baseProps || this.baseProps, baseProps ? true : false ); 
 	}
 
@@ -34,7 +50,7 @@ export class RectangleExtendedDrawing extends ChartDrawingBase{
 	// set the style when drawing is selected
 	select(): void {
 		this.view().applyOptions({ fillColor: 'rgba(100, 100, 100, 0.5)', })
-		super.select();
+		super.selected();
 	}
 
 	// update the position of the drawing, based on how its being resized

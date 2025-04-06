@@ -8,25 +8,38 @@ export class SubToolColor extends SubTool {
 
     constructor(propertyName: string, parentTool: string, name: string, description: string, icon: string, index: number, valueUpdatedCallback?: (value: any) => void) {
         super(propertyName, parentTool, 'color', name, description, icon, index, DrawingSubToolType.Color, valueUpdatedCallback);
+
+        this._onMouseDown = this._onMouseDown.bind(this);
+        this._onChange = this._onChange.bind(this);
+        this._onClick = this._onClick.bind(this);
     }
 
     init(): void {
         if (this.div instanceof HTMLInputElement) {
-            this.div.addEventListener('change', (event) => this.onChange(event));
-            this.div.addEventListener('click', (event) => this.onClick(event));
+            this.div.addEventListener('change', this._onChange);
+            this.div.addEventListener('click', this._onClick);
+            this.div.addEventListener('mousedown', this._onMouseDown);
         }
-        super.init();
     }
     
     dispose(): void {
         if (this.div instanceof HTMLInputElement) {
-            this.div.removeEventListener('change', this.onChange);
-            this.div.removeEventListener('click', this.onClick);
+            this.div.removeEventListener('change', this._onChange);
+            this.div.removeEventListener('click', this._onClick);
+            this.div.removeEventListener('mousedown', this._onMouseDown);
         }
-        super.dispose();
     }
     
-    onChange(evt: Event): void {
+    updateDiv(): void {
+        if (this.div && this.div instanceof HTMLInputElement) {
+            //this.div.style.borderRadius = '50%';
+            this.div.style.width = '22px';
+            this.div.style.height = '20px';
+            this.div.value = rgbaStringToColorInputHex(this.value) || '';
+        }
+    }
+
+    private _onChange(evt: Event): void {
         if (this.div instanceof HTMLInputElement) {
             const colorValue = this.div.value;
             const rgba = hexToRgba(colorValue);
@@ -37,7 +50,7 @@ export class SubToolColor extends SubTool {
         }
     }
 
-    onClick(evt: MouseEvent): void {
+    private _onClick(evt: MouseEvent): void {
         if(this._openColorPickerToggle){ // hack to open color wheel on rclick
             this._openColorPickerToggle = false;
         }
@@ -46,7 +59,8 @@ export class SubToolColor extends SubTool {
         }
     }
 
-    mouseListener(evt: MouseEvent, index?: number): void {
+    private _onMouseDown(evt: MouseEvent): void {
+        const index = this.index;
         // if rclick, open color picker
         this._lastSelectedIndex = index ?? 0;
         if (evt.button === 0) { // left click
@@ -57,19 +71,6 @@ export class SubToolColor extends SubTool {
             this._openColorPickerToggle = true;
             console.log('open color picker', this._openColorPickerToggle)
             this.div.click();
-        }
-    }
-
-    updateDiv(): void {
-        if (!this.div) return
-        //this.div.style.borderRadius = '50%';
-        this.div.style.width = '22px';
-        this.div.style.height = '20px';
-
-        if (this.div instanceof HTMLInputElement) {
-            const hex = rgbaStringToColorInputHex(this.value) || '';
-            this.div.value = hex
-            //this.div.style.backgroundColor = hex;
         }
     }
 }

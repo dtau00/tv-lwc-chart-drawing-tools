@@ -1,7 +1,7 @@
 import { ConfigStorage } from "../../../data/data";
 import { DrawingSubTools, DrawingSubToolType } from "./drawing-sub-tools";
 import { unselectAllDivsForGroup } from "../../../common/html.ts";
-import { createToolbarButton, ToolbarButton } from "../common.ts";
+import { createSubToolbarButton, createToolbarButton, ToolbarButton } from "../common.ts";
 import ISubTool from "./sub-tool-interface";
 import { eventBus } from "../../../common/common";
 import { ChartEvents } from "../../../enums/events";
@@ -17,7 +17,6 @@ abstract class SubTool implements ISubTool {
     private _type: DrawingSubToolType;
     private _propertyName: string;
     private _container: HTMLDivElement;
-    private _mouseListener: (evt: MouseEvent) => void;
     private _valueUpdatedCallback?: (value: any) => void;
     private _buttonType: ToolbarButton;
 
@@ -29,7 +28,8 @@ abstract class SubTool implements ISubTool {
     get type(): DrawingSubToolType { return this._type; }
     get parentTool(): string { return this._parentTool; }
     get buttonType(): ToolbarButton { return this._buttonType; }
-
+    get index(): number { return this._index; }
+    
     constructor(propertyName: string, parentTool: string, buttonType: ToolbarButton, name: string, description: string, icon: string, index: number, type: DrawingSubToolType, valueUpdatedCallback?: (value: any) => void) {
         this._name = name;
         this._description = description;
@@ -46,20 +46,14 @@ abstract class SubTool implements ISubTool {
     }
 
     abstract updateDiv(): void;
-    abstract mouseListener(evt: MouseEvent, index?: number): void;
+    abstract init(): void;
+    abstract dispose(): void;
     
-    init(): void{
-        
-    }
 
     setToolbarButton(container: HTMLDivElement): void {
         this._container = container;
-        this._div = createToolbarButton(this._name, this._description, this._icon, this._buttonType, (evt: MouseEvent) => this.mouseListener(evt, this._index), 'mousedown', container!);
+        this._div = createSubToolbarButton(this._name, this._description, this._icon, this._buttonType, container!);
         this.updateDiv()
-    }
-
-    dispose(): void {
-       this._div.removeEventListener('mousedown', this.mouseListener);
     }
 
     setValue(value?: any, initiateCallback: boolean = true): void {

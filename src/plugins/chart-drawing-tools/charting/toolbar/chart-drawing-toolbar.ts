@@ -115,19 +115,7 @@ export class ChartDrawingsToolbar {
 		this._toolButtons.set(button, clickHandler);
 	}
 
-	private _initializeSubToolbar(): void {
-		if(this._initialized) return;
-		this._drawingsSubToolbarContainer = document.createElement('div');
-		this._drawingsSubToolbarContainer.className = 'sub-toolbar';
-		this._drawingsToolbarContainer?.appendChild(this._drawingsSubToolbarContainer);
-	}
-
 	private _populateSubToolbar(toolType: DrawingToolType): void {
-		clearDiv(this._drawingsSubToolbarContainer!); // clear the sub toolbar
-		this._tools.get(toolType)?.setSubToolbarButtons(this._drawingsSubToolbarContainer!); // populate the sub toolbar
-	}
-
-	private _populateModifyDrawingSubToolbar(toolType: DrawingToolType): void {
 		clearDiv(this._drawingsSubToolbarContainer!); // clear the sub toolbar
 		this._tools.get(toolType)?.setSubToolbarButtons(this._drawingsSubToolbarContainer!); // populate the sub toolbar
 	}
@@ -138,9 +126,13 @@ export class ChartDrawingsToolbar {
 
 	private _unselectTool(unselectViewOnly? : boolean): void {
 		if(!unselectViewOnly){ // truly unselecting, not just changing views between charts
+			if(this._selectedDrawingTool !== DrawingToolType.None){
+				this._tools.get(this._selectedDrawingTool)?.dispose();
+			}
 			this._selectedDrawingTool = DrawingToolType.None;
 			this._chartDrawingsManager.unselectDrawing();
 			this._chartDrawingsManager.unselectTool();
+			
 		}
 
 		// clear toolbar from view

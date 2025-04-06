@@ -26,17 +26,16 @@ abstract class Tool implements ITool {
 
     abstract getNewDrawingObject(chart: IChartApi, series: ISeriesApi<SeriesType>, symbolName: string): RectangleDrawing;
     abstract setSubToolbarButtons(container: HTMLDivElement): HTMLDivElement[];
-    abstract defaultMouseListener(evt: MouseEvent, index?: number): void;
 
     setToolbarButton(container: HTMLDivElement, listener?: (evt: MouseEvent) => void): HTMLDivElement {
-        this._listener = listener || this.defaultMouseListener;
+        this._listener = listener || (() => void 0);
         this.button = createToolbarButton(this.name, this.description, this.icon, 'div', (evt: MouseEvent) => this._listener(evt), 'click', container!);
         return this.button;
     }
 
     dispose(): void {
-        this.button.removeEventListener('click', this._listener);
         this.subTools.forEach(subTool => subTool.dispose());
+        this.button.removeEventListener('click', this._listener);
     }
 
     setProps(value?: any): void {

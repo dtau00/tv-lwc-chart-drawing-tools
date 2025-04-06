@@ -9,7 +9,6 @@ interface ITool {
     setToolbarButton: (container: HTMLDivElement, listener?: (evt: MouseEvent) => void) => void;
     getNewDrawingObject: (chart: IChartApi, series: ISeriesApi<SeriesType>, symbolName: string) => RectangleDrawing;
     setSubToolbarButtons: (container: HTMLDivElement) => HTMLDivElement[];
-    defaultMouseListener: (evt: MouseEvent) => void;
     dispose: () => void;
 }
 

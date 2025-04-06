@@ -2,34 +2,43 @@ import SubTool from "./sub-tools/sub-tool-base";
 
 export type ToolbarButton = 'div' | 'color'
 
-export function createToolbarButton(name: string, description: string, icon: string, type: ToolbarButton, listener: (evt: MouseEvent) => void, eventType: 'click' | 'mousedown' | 'mouseup' = 'click', container?: HTMLDivElement): HTMLDivElement | HTMLInputElement {
+export function createSubToolbarButton(name: string, description: string, icon: string, type: ToolbarButton, container?: HTMLDivElement): HTMLDivElement | HTMLInputElement {
+  return createToolbarButton(name, description, icon, type, () => void 0, '', container);
+}
+
+export function createToolbarButton(name: string, description: string, icon: string, type: ToolbarButton, listener: (evt: MouseEvent) => void, eventType: 'click' | 'mousedown' | 'mouseup' | '' = '', container?: HTMLDivElement): HTMLDivElement | HTMLInputElement {
 
     if(type === 'color'){
-        const colorPicker = document.createElement('input');
+        const colorPicker : HTMLInputElement = document.createElement('input');
         colorPicker.className = `toolbar-item ${name}`;
         colorPicker.type = 'color';
         colorPicker.style.border = 'none';
         colorPicker.title = description;
 		    container?.appendChild(colorPicker);
-        colorPicker.addEventListener(eventType, listener);
+        if(eventType !== ''){
+          colorPicker.addEventListener(eventType, listener);
+        }
         return colorPicker as HTMLInputElement;
     }
-    if(type === 'div'){
-        let button = document.createElement('div');
+    else if(type === 'div'){
+        const button : HTMLDivElement = document.createElement('div');
         button.className = `toolbar-item ${name}`;
         button.title = description;
         button.innerHTML = icon;
-        button.addEventListener(eventType, listener);
+        if(eventType !== ''){
+          button.addEventListener(eventType, listener);
+        }
         container?.appendChild(button);
         return button;
     }
+    
     // returns empty div
     return document.createElement('div');
 }
 
 export function setSubToolbarButton(subTool: SubTool, subTools: SubTool[], container: HTMLDivElement){
     subTool.setToolbarButton(container); 
-    subTool.setSelectedStyling();
+   subTool.setSelectedStyling();
     subTool.init()
     subTools.push(subTool);
 }

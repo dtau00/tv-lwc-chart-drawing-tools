@@ -4,10 +4,6 @@ import Tool from "../tool-base";
 import { DrawingToolType } from "../drawing-tools";
 
 export class ToolRemove extends Tool {
-    defaultMouseListener(evt: MouseEvent, index?: number): void {
-        throw new Error("Method not implemented.");
-    }
-
     getNewDrawingObject(chart: IChartApi, series: ISeriesApi<SeriesType>, symbolName: string): RectangleDrawing {
         throw new Error("Method not implemented.");
     }

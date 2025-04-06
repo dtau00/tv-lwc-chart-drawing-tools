@@ -33,7 +33,6 @@ export class ToolRectangle extends Tool {
         }
         
         container.appendChild(createSpacer());
-
         type = DrawingSubTools.get(DrawingSubToolType.Opacity);
         for(let i = 0; i < this._totalOpacities; i++){
             const subTool = new SubToolOpacity("fillColorOpacity", this.name, type?.name || '', type?.description || '', type?.icon || '', i, this.valueUpdatedCallback);
@@ -48,9 +47,5 @@ export class ToolRectangle extends Tool {
         }
   */      
         return buttons; 
-    }
-    
-    defaultMouseListener(evt: MouseEvent, index?: number): void {
-        console.log("listener", index);
     }
 }

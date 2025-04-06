@@ -41,8 +41,4 @@ export class ToolRectangleExtended extends Tool {
 
         return buttons; 
     }
-
-    defaultMouseListener(evt: MouseEvent, index?: number): void {
-        console.log("listener", index);
-    }
 }

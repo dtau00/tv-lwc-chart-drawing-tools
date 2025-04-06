@@ -16,7 +16,6 @@ export enum DrawingToolType {
     Rectangle = 'rectangle',
     RectangleExtended = 'rectangle-extended',
     Remove = 'remove',
-    //ExtendedRectangle = 'extended-rectangle',
     //Line = 'line',
     //ExtendedLine = 'extended-line',
     //Text = 'text',
@@ -44,12 +43,6 @@ export const AVAILABLE_TOOLS: DrawingToolInfo[] = [
         description: 'Remove the last drawing'
     },
     /*
-    {
-        type: DrawingToolType.ExtendedRectang
-        name: 'ExtendedRectangle',
-        icon: 'extended-rectangle-tool',
-        description: 'Draws rectangles that extends all the way to the right'
-    },
     {
         type: DrawingToolType.Line,
         name: 'Line',

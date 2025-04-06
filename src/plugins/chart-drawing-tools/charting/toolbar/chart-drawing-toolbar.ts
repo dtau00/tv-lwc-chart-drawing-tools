@@ -154,7 +154,7 @@ export class ChartDrawingsToolbar {
 		this._selectedDrawingTool = toolType;
 		this._populateSubToolbar(toolType);
 		//alert('selectTool')
-		document.body.style.cursor = 'crosshair';
+		document.body.style.cursor = 'copy';
 	}
 
 	// events and listeners ------------------------------------------------------------

@@ -1,11 +1,8 @@
 v1
 --
-show brush mouse if drawing
-the rect and rectext subtools are shared, but they shouldnt
 rectangle resize can sometimes get mixed up and pivot at the wrong corner
 drawing can crash by clicking around too much
 line, and ext line drawings
-slider for opacity change
 
 test when new data is added
   make sure whitespade is supported
@@ -15,6 +12,8 @@ check dispsol of all event handlers (tools, subtools, charts, etc..)
 
 v2
 --
+slider for opacity change
+fix rectangles showing at edges of pane
 multi chart support of same symbol, synced drawings
 add text to drawing
 allow users to modify styling
@@ -47,6 +46,38 @@ allow users to put in custom buttons, that may replicate a certain drawing, but 
   - plugin will send back events regarding drawing actions
 create api for communication of drawings between user and plugin
 more performant saving/loading, different options other than localstorage
+
+
+
+
+Adding New drawing
+ 1. Add Tool to toolbar /src/plugins/chart-drawing-tools/toolbar
+  a.  Add new tool (button to select drawing tool)
+    i. /tools/drawing-tools.ts
+      Add to DrawingToolType : add your new drawing type
+      Add to AVAILABLE_TOOLS : define your drawing type
+    ii. /chart-drawing-toolbar.ts
+      Add to _initializeToolFactory : add to factory so the toolbar knows about your drawing
+    iii. /tools/tool
+      create new class for your tool (new file) .Follow the others a s a template. 
+        Add subtools you need for your tool (there are 3 types you can use for different properties)
+        This also defines the property the subtool is configuring (color, fillColor, lineWeight, etc...)
+ 2. Create custom subtool (optional)
+  i. /sub-tools/drawing-sub-tools.ts
+    Add to DrawingSubToolType : add new subtool type
+    Define in DrawingSubTools map : define your subtool
+  ii. /sub-tools/sub-too/
+    create new class for your sub-tool (new file).  Follow the others as a template. Most to set the configurable propertly value
+      define the mouse behaviors of your subtool
+      define the styling of your subtool (as the values change)
+3. Implement views and renders /src/plugins/chart-drawing-tools/charting/drawings/
+  a. Add new folder for your drawing
+  b. Implement using rectangle as a template
+    xxx-options.ts : define the properties for your drawings
+    xxx-drawing.ts : drawing class that handles the logic for your drawing
+    xxx-view.ts : a seperate object every chartDrawing has that controls the view and rendering
+    /panes : contains all the panes and renderers for your view
+
 
 
 

@@ -24,7 +24,7 @@ abstract class Tool implements ITool {
         this.toolType = toolType;
     }
 
-    abstract getNewDrawingObject(chart: IChartApi, series: ISeriesApi<SeriesType>, symbolName: string): RectangleDrawing;
+    abstract getNewDrawingObject(chart: IChartApi, series: ISeriesApi<SeriesType>, symbolName: string): any;
     abstract setSubToolbarButtons(container: HTMLDivElement): HTMLDivElement[];
 
     setToolbarButton(container: HTMLDivElement, listener?: (evt: MouseEvent) => void): HTMLDivElement {

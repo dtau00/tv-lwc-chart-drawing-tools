@@ -6,17 +6,17 @@ import {
     Point,
     SeriesType,
 } from 'lightweight-charts';
-import { Rectangle as View } from './rectangle-view';
-import { rectangleDrawingToolDefaultOptions as drawingToolDefaultOptions } from './rectangle-options';
+
+import { Line as View } from './line-view';
+import { lineDrawingToolDefaultOptions as drawingToolDefaultOptions } from './line-options';
 import { DrawingPoint } from '../../../common/common';
 import { ensureDefined } from '../../../../../helpers/assertions';
 import { ChartDrawingBase, ChartDrawingBaseProps } from '../chart-drawing-base';
 import { DrawingToolType } from '../../toolbar/tools/drawing-tools';
-
 import { PluginBase } from '../../../../plugin-base';
 import { BoxSide, resizeBoxByHandle } from '../../../common/points';
 
-export class RectangleDrawing extends ChartDrawingBase{
+export class LineDrawing extends ChartDrawingBase{
 	private static readonly TOTAL_DRAWING_POINTS = 2; // Set the drawing points for this type of drawing.  A box will have 2, a line ray will have 1, etc...
 	private _toolType: DrawingToolType; // = DrawingToolType.Rectangle; // set the tool type for the class
 
@@ -29,10 +29,10 @@ export class RectangleDrawing extends ChartDrawingBase{
 		isExtended: boolean,
 		baseProps?: ChartDrawingBaseProps,
 	) {
-		// MAKE SURE TO UPDATE THIS WHEN CREATING NEW DRAWING TOOLS
-		const toolType = isExtended ? DrawingToolType.RectangleExtended : DrawingToolType.Rectangle;
-		
-		super( toolType, chart, series, symbolName, RectangleDrawing.TOTAL_DRAWING_POINTS, drawingToolDefaultOptions, baseProps);
+        // MAKE SURE TO UPDATE THIS WHEN CREATING NEW DRAWING TOOLS
+		const toolType = isExtended ? DrawingToolType.LineExtended : DrawingToolType.Line;
+
+		super( toolType, chart, series, symbolName, LineDrawing.TOTAL_DRAWING_POINTS, drawingToolDefaultOptions, baseProps);
 		this._toolType = toolType
 		this._isExtended = isExtended;
 		this.drawingView = new View(chart, series, this._toolType, isExtended, drawingToolDefaultOptions,  baseProps?.styleOptions, baseProps || this.baseProps, baseProps ? true : false ); 
@@ -42,7 +42,7 @@ export class RectangleDrawing extends ChartDrawingBase{
 	// TODO dont make this hard coded
 	// set the style when drawing is selected
 	select(): void {
-		this._view().applyOptions({ fillColor: 'rgba(100, 100, 100, 0.5)', })
+		this._view().applyOptions({ lineColor: 'rgba(100, 100, 100, 0.5)', })
 		super.select();
 	}
 
@@ -167,7 +167,7 @@ export class RectangleDrawing extends ChartDrawingBase{
 		}
 	}
 
-	private _view(): View {
+    private _view(): View {
 		return this.drawingView as View;
 	}
 

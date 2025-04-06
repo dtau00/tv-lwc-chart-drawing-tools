@@ -30,9 +30,9 @@ export const DrawingSubTools: Map<DrawingSubToolType, DrawingSubToolInfo> = new 
     [DrawingSubToolType.Thickness, {
         type: DrawingSubToolType.Thickness,
         name: 'line-width',
-        icon: '|',
+        icon: '',
         description: 'Thickness of drawing',
-        defaultValue: 1
+        defaultValue: 2
     }]
 ]);
 

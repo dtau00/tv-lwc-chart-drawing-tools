@@ -1,9 +1,10 @@
 import { isBusinessDay, Time } from "lightweight-charts";
 
-export interface RectangleDrawingToolOptions {
+export interface LineDrawingToolOptions {
 	//opacity: number,
-	fillColor: string;
-	fillColorOpacity: number;
+	lineColor: string;
+	lineColorOpacity: number;
+	lineWidth: number;
 	labelColor: string;
 	labelTextColor: string;
 	showLabels: boolean;
@@ -11,10 +12,11 @@ export interface RectangleDrawingToolOptions {
 	timeLabelFormatter: (time: Time) => string;
 }
 
-export const rectangleDrawingToolDefaultOptions: RectangleDrawingToolOptions = {
+export const lineDrawingToolDefaultOptions: LineDrawingToolOptions = {
 	//opacity: 1, // this doesnt seem to do anything
-	fillColor: 'rgba(200, 50, 100, 0.25)',
-	fillColorOpacity: 0.75,
+	lineColor: 'rgba(200, 50, 100, 0.25)',
+	lineColorOpacity: 0.75,
+	lineWidth: 2,
 	labelColor: 'rgb(50, 147, 200)',
 	labelTextColor: 'white',
 	showLabels: false,

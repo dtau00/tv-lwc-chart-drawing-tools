@@ -1,8 +1,9 @@
 v1
 --
+sometimes click dont register in the beginning
 rectangle resize can sometimes get mixed up and pivot at the wrong corner
 drawing can crash by clicking around too much
-line, and ext line drawings
+ext line drawings
 
 test when new data is added
   make sure whitespade is supported

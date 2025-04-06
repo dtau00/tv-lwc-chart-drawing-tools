@@ -4,15 +4,13 @@ import Tool from "../tool-base";
 import { DrawingToolType } from "../drawing-tools";
 
 export class ToolRemove extends Tool {
-    getNewDrawingObject(chart: IChartApi, series: ISeriesApi<SeriesType>, symbolName: string): RectangleDrawing {
+    // not needed for this tool
+    getNewDrawingObject(chart: IChartApi, series: ISeriesApi<SeriesType>, symbolName: string): any {
         throw new Error("Method not implemented.");
     }
 
+    // not needed for this tool
     setSubToolbarButtons(container: HTMLDivElement): HTMLDivElement[] {
-        throw new Error("Method not implemented.");
-    }
-
-    listener(evt: MouseEvent, index?: number): void {
         throw new Error("Method not implemented.");
     }
 

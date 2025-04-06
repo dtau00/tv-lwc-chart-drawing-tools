@@ -1,5 +1,5 @@
 import { IChartApi, ISeriesApi, SeriesType, MouseEventParams, Point, Time, Coordinate } from 'lightweight-charts';
-import { DrawingToolType, DrawingStyle } from '../toolbar/tools/drawing-tools';
+import { DrawingToolType } from '../toolbar/tools/drawing-tools';
 import { IChartDrawing } from './chart-drawing-interface';
 import { generateUniqueId } from '../../../../helpers/id-generator';
 import { PluginBase } from '../../../plugin-base';
@@ -18,7 +18,7 @@ export interface ChartDrawingBaseProps{
     tags: string[];
     symbolName: string;
     type: DrawingToolType;
-    styleOptions: {}; //DrawingStyle;
+    styleOptions: {}; 
     drawingPoints: DrawingPoint[];
     text: string;
     leftOffsetSeconds: number;

@@ -1,6 +1,7 @@
 import { ChartDrawingsManager } from '../chart-drawings-manager.ts';
 import { DrawingToolType, AVAILABLE_TOOLS, DrawingToolInfo } from './tools/drawing-tools.ts';
 import { clearDiv, selectDivForGroup, unselectAllDivsForGroup } from '../../common/html.ts';
+import { ToolLine } from './tools/tool/tool-line.ts';
 import { ToolRectangle } from './tools/tool/tool-rectangle.ts';
 import { ToolRemove } from './tools/tool/tool-remove.ts';
 import Tool from './tools/tool-base.ts';
@@ -74,6 +75,7 @@ export class ChartDrawingsToolbar {
 		this._toolFactory.set(DrawingToolType.Rectangle, ToolRectangle);
 		this._toolFactory.set(DrawingToolType.Remove, ToolRemove);
 		this._toolFactory.set(DrawingToolType.RectangleExtended, ToolRectangleExtended);
+		this._toolFactory.set(DrawingToolType.Line, ToolLine);
 	}
 
 	private _initializeToolbar() {

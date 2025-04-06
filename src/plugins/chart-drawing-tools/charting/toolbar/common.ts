@@ -38,9 +38,10 @@ export function createToolbarButton(name: string, description: string, icon: str
 
 export function setSubToolbarButton(subTool: SubTool, subTools: SubTool[], container: HTMLDivElement){
     subTool.setToolbarButton(container); 
-   subTool.setSelectedStyling();
+    subTool.setSelectedStyling();
     subTool.init()
     subTools.push(subTool);
+
 }
 
 // rgba to hex, then truncates value to fit color input

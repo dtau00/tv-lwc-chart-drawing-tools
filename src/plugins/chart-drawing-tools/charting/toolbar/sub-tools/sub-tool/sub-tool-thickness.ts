@@ -22,14 +22,16 @@ export class SubToolThickness extends SubTool {
 
     updateDiv(): void {
         if (!this.div) return
-        this.div.style.width = '100%';
-        this.div.style.height = '2px';
-        this.div.style.border = `${this.value}px solid #000`;
+        this.div.style.width = '20px';
+        this.div.style.height = '20px';
+        this.div.style.borderLeft = `${this.value}px solid #000`;
     }
 
     private _onMouseDown(evt: MouseEvent): void {
         const index = this.index;
         if (evt.button === 2) { // rclick, TODO open slider
+            const thickness = this._getNextThickness();
+            console.log('thickness', thickness);
             this.setValue(this._getNextThickness());
             this.setSelectedTool(index);
         }

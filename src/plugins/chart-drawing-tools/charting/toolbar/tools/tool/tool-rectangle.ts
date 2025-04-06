@@ -3,7 +3,6 @@ import { RectangleDrawing } from "../../../drawings/rectangle/rectangle-drawing"
 import Tool from "../tool-base";
 import { SubToolColor } from "../../sub-tools/sub-tool/sub-tool-color";
 import { SubToolOpacity } from "../../sub-tools/sub-tool/sub-tool-opacity"
-import { SubToolThickness } from "../../sub-tools/sub-tool/sub-tool-thickness";
 import { DrawingSubToolType, DrawingSubTools } from "../../sub-tools/drawing-sub-tools";
 import { DrawingToolType } from "../drawing-tools";
 import { setSubToolbarButton } from "../../common";
@@ -38,14 +37,6 @@ export class ToolRectangle extends Tool {
             const subTool = new SubToolOpacity("fillColorOpacity", this.name, type?.name || '', type?.description || '', type?.icon || '', i, this.valueUpdatedCallback);
             setSubToolbarButton(subTool, this.subTools, container);
         }
-/*
-        type = DrawingSubTools.get(DrawingSubToolType.Thickness);
-        for(let i = 0; i < this._totalThicknesses; i++){
-            const subTool = new SubToolThickness(type?.name || '', type?.description || '', type?.icon || '', i, this.valueUpdatedCallback);
-            subTool.setToolbarButton(container);
-            this.subTools.push(subTool);
-        }
-  */      
         return buttons; 
     }
 }

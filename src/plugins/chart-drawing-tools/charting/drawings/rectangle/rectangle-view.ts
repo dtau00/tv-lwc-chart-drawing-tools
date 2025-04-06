@@ -17,10 +17,11 @@ export class Rectangle extends ViewBase {
 	_p1?: DrawingPoint | null;
 	_p2?: DrawingPoint | null;
 	_paneViews: RectanglePaneView[];
+	/* disable axis views
 	_timeAxisViews: RectangleTimeAxisView[];
 	_priceAxisViews: RectanglePriceAxisView[];
 	_priceAxisPaneViews: RectanglePriceAxisPaneView[];
-	_timeAxisPaneViews: RectangleTimeAxisPaneView[];
+	_timeAxisPaneViews: RectangleTimeAxisPaneView[];*/
 	//_baseProps: ChartDrawingBaseProps;
 	_isExtended: boolean;
 
@@ -34,9 +35,9 @@ export class Rectangle extends ViewBase {
 		baseProps: ChartDrawingBaseProps,
 		initializedFromStorage: boolean,
 	) {
-		//super(type, chart, series, symbolName, totalDrawingPoints, defaultOptions, baseProps);
 		super(chart, series, toolType, defaultOptions, options, baseProps);
 		this._isExtended = isExtended;
+
 		if(initializedFromStorage){ // we are loading from storage
 			this.initializeDrawingViews(baseProps.drawingPoints[0], baseProps.drawingPoints[1]);
 		}
@@ -44,15 +45,15 @@ export class Rectangle extends ViewBase {
 
 	// initializes the drawing views on first click
 	initializeDrawingViews(p1: DrawingPoint, p2: DrawingPoint) {
-		if(this.initalized){
-			//console.log("rectangle already initialized", this.baseId);
+		if(this.initalized)
 			return;
-		}
+		
 		this.initalized = true;
 		this._p1 = p1;
 		this._p2 = p2;
 
 		this._paneViews = [new RectanglePaneView(this)];
+		/* disable axis views
 		this._timeAxisViews = [
 			new RectangleTimeAxisView(this, p1),
 			new RectangleTimeAxisView(this, p2),
@@ -62,12 +63,13 @@ export class Rectangle extends ViewBase {
 			new RectanglePriceAxisView(this, p2),
 		];
 		this._priceAxisPaneViews = [new RectanglePriceAxisPaneView(this, true)];
-		this._timeAxisPaneViews = [new RectangleTimeAxisPaneView(this, false)];
+		this._timeAxisPaneViews = [new RectangleTimeAxisPaneView(this, false)];*/
 	}
 
 	updateInitialPoint(p: DrawingPoint, param: MouseEventParams) {
 		if(!this._p1)
 			return
+
 		this._p1 = p;
 
 		// if extended, modify the points for the desired extended behavior
@@ -79,8 +81,9 @@ export class Rectangle extends ViewBase {
 		}
 
 		this._paneViews[0].update();
-		this._timeAxisViews[1].movePoint(p);
-		this._priceAxisViews[1].movePoint(p);
+		// disable axis views
+		//this._timeAxisViews[1].movePoint(p);
+		//this._priceAxisViews[1].movePoint(p);
 
 		super.requestUpdate();
 	}
@@ -89,34 +92,39 @@ export class Rectangle extends ViewBase {
 		this._p1 = p1;
 		this._p2 = p2;
 		this._paneViews[0].update();
+		/* disable axis views
 		this._timeAxisViews[0].movePoint(p1);
 		this._timeAxisViews[1].movePoint(p2);
 		this._priceAxisViews[0].movePoint(p1);
-		this._priceAxisViews[1].movePoint(p2);
+		this._priceAxisViews[1].movePoint(p2);*/
 		super.requestUpdate();
 	}
 
 	updateAllViews() {
 		if(!this._p1 || !this._p2)
 			return
+		
 		this._paneViews.forEach(pw => pw.update());
-		this._timeAxisViews.forEach(pw => pw.update());
-		this._priceAxisViews.forEach(pw => pw.update());
-		this._priceAxisPaneViews.forEach(pw => pw.update());
-		this._timeAxisPaneViews.forEach(pw => pw.update());
-	}
 
-	priceAxisViews() {
-		return this._priceAxisViews;
-	}
-
-	timeAxisViews() {
-		return this._timeAxisViews;
+		// Disable the axis views
+		//this._timeAxisViews.forEach(pw => pw.update());
+		//this._priceAxisViews.forEach(pw => pw.update());
+		//	this._priceAxisPaneViews.forEach(pw => pw.update());
+		//	this._timeAxisPaneViews.forEach(pw => pw.update());
 	}
 
 	paneViews() {
 		return this._paneViews;
 	}
+
+	/*
+	timeAxisViews() {
+		return this._timeAxisViews;
+	}
+	priceAxisViews() {
+		return this._priceAxisViews;
+	}
+
 
 	priceAxisPaneViews() {
 		return this._priceAxisPaneViews;
@@ -124,5 +132,5 @@ export class Rectangle extends ViewBase {
 
 	timeAxisPaneViews() {
 		return this._timeAxisPaneViews;
-	}
+	}*/
 }

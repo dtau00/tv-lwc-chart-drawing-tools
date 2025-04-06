@@ -1,10 +1,3 @@
-export interface DrawingStyle {
-    color: string;
-    lineWidth?: number;
-    fillColor?: string;
-    opacity?: number;
-}
-
 export interface DrawingToolInfo {
     type: DrawingToolType;
     name: string;
@@ -15,11 +8,13 @@ export interface DrawingToolInfo {
 export enum DrawingToolType {
     Rectangle = 'rectangle',
     RectangleExtended = 'rectangle-extended',
-    Remove = 'remove',
+    Line = 'line',
+    LineExtended = 'line-extended',
     //Line = 'line',
     //ExtendedLine = 'extended-line',
     //Text = 'text',
     //Fibonacci = 'fibonacci',
+    Remove = 'remove',
     None = 'none'  // For when no tool is selected
 }
 
@@ -37,11 +32,18 @@ export const AVAILABLE_TOOLS: DrawingToolInfo[] = [
         description: 'Draw rectangles on the chart'
     },
     {
+        type: DrawingToolType.Line,
+        name: 'line',
+        icon: '/',
+        description: 'Draw lines on the chart'
+    },
+    {
         type: DrawingToolType.Remove,
         name: 'remove',
         icon: '❌',
         description: 'Remove the last drawing'
     },
+
     /*
     {
         type: DrawingToolType.Line,

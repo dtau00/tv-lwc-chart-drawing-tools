@@ -17,20 +17,17 @@ export class Rectangle extends ViewBase {
 	_priceAxisPaneViews: RectanglePriceAxisPaneView[];
 	_timeAxisPaneViews: RectangleTimeAxisPaneView[];*/
 	//_baseProps: ChartDrawingBaseProps;
-	_isExtended: boolean;
 
 	constructor(
 		chart: IChartApi,
 		series: ISeriesApi<SeriesType>,
 		toolType: DrawingToolType,
-		isExtended: boolean,
 		defaultOptions: {},
 		options: Partial<RectangleDrawingToolOptions> = {},
 		baseProps: ChartDrawingBaseProps,
 		initializedFromStorage: boolean,
 	) {
 		super(chart, series, toolType, defaultOptions, options, baseProps);
-		this._isExtended = isExtended;
 
 		if(initializedFromStorage){ // we are loading from storage
 			this.initializeDrawingViews([baseProps.drawingPoints[0], baseProps.drawingPoints[1]]);

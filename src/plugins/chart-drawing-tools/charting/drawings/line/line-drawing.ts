@@ -16,22 +16,19 @@ export class LineDrawing extends ChartDrawingBase{
 	private static readonly TOTAL_DRAWING_POINTS = 2; // Set the drawing points for this type of drawing.  A box will have 2, a line ray will have 1, etc...
 	private _toolType: DrawingToolType; // = DrawingToolType.Rectangle; // set the tool type for the class
 
-	private _isExtended: boolean;
 
 	constructor(
 		chart: IChartApi,
 		series: ISeriesApi<SeriesType>,
 		symbolName: string,
-		isExtended: boolean,
 		baseProps?: ChartDrawingBaseProps,
 	) {
         // MAKE SURE TO UPDATE THIS WHEN CREATING NEW DRAWING TOOLS
-		const toolType = isExtended ? DrawingToolType.LineExtended : DrawingToolType.Line;
+		const toolType = DrawingToolType.Line;
 
 		super( toolType, chart, series, symbolName, LineDrawing.TOTAL_DRAWING_POINTS, drawingToolDefaultOptions, baseProps);
 		this._toolType = toolType
-		this._isExtended = isExtended;
-		this.drawingView = new View(chart, series, this._toolType, isExtended, drawingToolDefaultOptions,  baseProps?.styleOptions, baseProps || this.baseProps, baseProps ? true : false ); 
+		this.drawingView = new View(chart, series, this._toolType, drawingToolDefaultOptions,  baseProps?.styleOptions, baseProps || this.baseProps, baseProps ? true : false ); 
 	}
 
 	// TODO dont make this hard coded
@@ -87,16 +84,6 @@ export class LineDrawing extends ChartDrawingBase{
 				const newPoints = resizeBoxByHandle(point1, point2, side, endPoint);
 				p1 = newPoints[0];
 				p2 = newPoints[1];
-			}
-
-			if(this._isExtended){
-				const end = this._chart.timeScale().getVisibleRange()?.to
-				if(end && p2.x !== null && p1.x !== null){
-					if(p2.x > p1.x)
-						p2.x = this._chart.timeScale().timeToCoordinate(end)!
-					else
-						p1.x = this._chart.timeScale().timeToCoordinate(end)!
-				}
 			}
 
             // convert back to drawing coordinates

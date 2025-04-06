@@ -196,7 +196,7 @@ export abstract class ChartDrawingBase implements IChartDrawing {
         this._baseProps.drawingPoints = this._points; // save confirmed points
         this.stopDrawing();
         this.removePreviewDrawing(true); // remove the preview, it will be readded by the manager to all charts
-        eventBus.dispatchEvent(new CustomEvent(ChartEvents.NewDrawingCompleted, { detail: this.id }));
+        eventBus.dispatchEvent(new CustomEvent(ChartEvents.NewDrawingCompleted, { detail: {id: this.id, type: this.type } }));
     }
 
     protected setChart(chart: IChartApi): void {
@@ -222,14 +222,8 @@ export abstract class ChartDrawingBase implements IChartDrawing {
 	// for now, funcitonally it shouldnt have a problem, since there can only be one active chart, and therefore preview
 	// at a time.*/
     protected removePreviewDrawing(force : boolean = false) {
-		/*
-		if (this._baseDrawing && !this._isCompleted) {
-			ensureDefined(this._series).detachPrimitive(this._baseDrawing);
-			//this._baseDrawing = undefined;
-		}*/
 		if (force || !this._isCompleted) {
 			ensureDefined(this._series).detachPrimitive(this.drawingView as PluginBase);
-			//this._baseDrawing = undefined;
 		}
 	}
 
@@ -239,6 +233,10 @@ export abstract class ChartDrawingBase implements IChartDrawing {
 		this.baseProps.styleOptions = styleOptions;
     }
 
+    protected view(): ViewBase {
+		return this.drawingView as ViewBase;
+	}
+
     private _addPoint(p: DrawingPoint) {
 		this._points.push(p);
 		this._setNewDrawing();
@@ -247,7 +245,7 @@ export abstract class ChartDrawingBase implements IChartDrawing {
 	private _setNewDrawing(){
 		if(this._points.length === 1){
 			this.view().initializeDrawingViews([this._points[0], this._points[0]]);
-			//this.setStyleOptions();
+			this.setStyleOptions();
 
 			// we are only drawing this for the preview
 			ensureDefined(this._series).attachPrimitive(this.drawingView as PluginBase);
@@ -255,9 +253,5 @@ export abstract class ChartDrawingBase implements IChartDrawing {
 		else if (this._points.length >= this._totalDrawingPoints) {
 			this.completeDrawing();
 		}
-	}
-
-    protected view(): ViewBase {
-		return this.drawingView as ViewBase;
 	}
 } 

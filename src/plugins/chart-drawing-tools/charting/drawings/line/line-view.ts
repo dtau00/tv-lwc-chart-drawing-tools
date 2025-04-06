@@ -9,13 +9,11 @@ import { LineDrawingToolOptions } from './line-options';
 export class Line extends ViewBase {
 	_p1?: DrawingPoint | null = null;
 	_p2?: DrawingPoint | null = null;
-	_isExtended: boolean;
 
 	constructor(
 		chart: IChartApi,
 		series: ISeriesApi<SeriesType>,
 		toolType: DrawingToolType,
-		isExtended: boolean,
 		defaultOptions: {},
 		options: Partial<LineDrawingToolOptions> = {},
 		baseProps: ChartDrawingBaseProps,
@@ -23,7 +21,6 @@ export class Line extends ViewBase {
 	) {
 
 		super(chart, series, toolType, defaultOptions, options, baseProps);
-		this._isExtended = isExtended;
 
 		if(initializedFromStorage){ // we are loading from storage
 			this.initializeDrawingViews([baseProps.drawingPoints[0], baseProps.drawingPoints[1]]);

@@ -5,14 +5,14 @@ import {
     Point,
     SeriesType,
 } from 'lightweight-charts';
-import { Rectangle } from './rectangle-view';
-import { rectangleDrawingToolDefaultOptions as drawingToolDefaultOptions } from './rectangle-options';
+import { RectangleExtendedView } from './rectangle-extended-view';
+import { rectangleExtendedDrawingToolDefaultOptions as drawingToolDefaultOptions } from './rectangle-extended-options';
 import { ChartDrawingBase, ChartDrawingBaseProps } from '../chart-drawing-base';
 import { DrawingToolType } from '../../toolbar/tools/drawing-tools';
 
 import { BoxSide, resizeBoxByHandle } from '../../../common/points';
 
-export class RectangleDrawing extends ChartDrawingBase{
+export class RectangleExtendedDrawing extends ChartDrawingBase{
 	private static readonly TOTAL_DRAWING_POINTS = 2; // Set the drawing points for this type of drawing.  A box will have 2, a line ray will have 1, etc...
 	private _toolType: DrawingToolType; // = DrawingToolType.Rectangle; // set the tool type for the class
 
@@ -23,11 +23,11 @@ export class RectangleDrawing extends ChartDrawingBase{
 		baseProps?: ChartDrawingBaseProps,
 	) {
 		// MAKE SURE TO UPDATE THIS WHEN CREATING NEW DRAWING TOOLS
-		const toolType =  DrawingToolType.Rectangle;
+		const toolType = DrawingToolType.Rectangle
 		
-		super( toolType, chart, series, symbolName, RectangleDrawing.TOTAL_DRAWING_POINTS, drawingToolDefaultOptions, baseProps);
+		super( toolType, chart, series, symbolName, RectangleExtendedDrawing.TOTAL_DRAWING_POINTS, drawingToolDefaultOptions, baseProps);
 		this._toolType = toolType
-		this.drawingView = new Rectangle(chart, series, this._toolType, drawingToolDefaultOptions,  baseProps?.styleOptions, baseProps || this.baseProps, baseProps ? true : false ); 
+		this.drawingView = new RectangleExtendedView(chart, series, this._toolType, drawingToolDefaultOptions,  baseProps?.styleOptions, baseProps || this.baseProps, baseProps ? true : false ); 
 	}
 
 	// TODO dont make this hard coded
@@ -83,6 +83,16 @@ export class RectangleDrawing extends ChartDrawingBase{
 				const newPoints = resizeBoxByHandle(point1, point2, side, endPoint);
 				p1 = newPoints[0];
 				p2 = newPoints[1];
+			}
+
+			
+			// extend coordinates to the end of the chart
+			const end = this._chart.timeScale().getVisibleRange()?.to
+			if(end && p2.x !== null && p1.x !== null){
+				if(p2.x > p1.x)
+					p2.x = this._chart.timeScale().timeToCoordinate(end)!
+				else
+					p1.x = this._chart.timeScale().timeToCoordinate(end)!
 			}
 
 			// convert back to drawing coordinates'

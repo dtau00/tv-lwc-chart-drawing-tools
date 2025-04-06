@@ -1,6 +1,7 @@
 import { IChartApi, ISeriesApi, MouseEventParams, Point, SeriesType, Coordinate } from 'lightweight-charts';
 import { ChartDrawingBase, ChartDrawingBaseProps } from './drawings/chart-drawing-base.ts';
 import { DrawingToolType } from './toolbar/tools/drawing-tools.ts';
+import { RectangleExtendedDrawing } from './drawings/rectangle-extended/rectangle-extended-drawing.ts';
 import { RectangleDrawing } from './drawings/rectangle/rectangle-drawing.ts';
 import { DataStorage } from '../data/data.ts';
 import { eventBus } from '../common/common.ts';
@@ -116,17 +117,17 @@ export class ChartDrawingsManager {
                 if(item.symbolName === symbolName){
                     // TODO clean this up
                     if(item.type === DrawingToolType.Rectangle){
-                        const drawing = new RectangleDrawing(chartContainer.chart, chartContainer.series, symbolName, false, item);
+                        const drawing = new RectangleDrawing(chartContainer.chart, chartContainer.series, symbolName, item);
                         this._drawings.get(symbolName)?.push(drawing);
                         chartContainer.addDrawingPrimative(drawing.drawingView as PluginBase);
                     }
                     else if(item.type === DrawingToolType.RectangleExtended){
-                        const drawing = new RectangleDrawing(chartContainer.chart, chartContainer.series, symbolName, true, item);
+                        const drawing = new RectangleExtendedDrawing(chartContainer.chart, chartContainer.series, symbolName, item);
                         this._drawings.get(symbolName)?.push(drawing);
                         chartContainer.addDrawingPrimative(drawing.drawingView as PluginBase);
                     }
                     else if(item.type === DrawingToolType.Line){
-                        const drawing = new LineDrawing(chartContainer.chart, chartContainer.series, symbolName, false, item);
+                        const drawing = new LineDrawing(chartContainer.chart, chartContainer.series, symbolName, item);
                         this._drawings.get(symbolName)?.push(drawing);
                         chartContainer.addDrawingPrimative(drawing.drawingView as PluginBase);
                     }

@@ -10,7 +10,6 @@ fix line drawing selection
 test when new data is added
   make sure whitespade is supported
 
-more drawings to get a feel of how to further break down drawing class and views
 check dispsol of all event handlers (tools, subtools, charts, etc..)
 
 v2

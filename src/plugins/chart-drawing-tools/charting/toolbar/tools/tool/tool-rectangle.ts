@@ -17,7 +17,7 @@ export class ToolRectangle extends Tool {
     }
 
     getNewDrawingObject(chart: IChartApi, series: ISeriesApi<SeriesType>, symbolName: string): RectangleDrawing {
-        return new RectangleDrawing(chart, series, symbolName, false);
+        return new RectangleDrawing(chart, series, symbolName);
     }
     
     setSubToolbarButtons(container: HTMLDivElement): HTMLDivElement[] {
@@ -31,6 +31,7 @@ export class ToolRectangle extends Tool {
         }
         
         container.appendChild(createSpacer());
+        
         type = DrawingSubTools.get(DrawingSubToolType.Opacity);
         for(let i = 0; i < this._totalOpacities; i++){
             const subTool = new SubToolOpacity("fillColorOpacity", this.name, type?.name || '', type?.description || '', type?.icon || '', i, this.valueUpdatedCallback);

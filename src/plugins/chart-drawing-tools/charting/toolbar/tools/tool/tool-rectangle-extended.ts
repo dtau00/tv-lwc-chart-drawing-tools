@@ -1,5 +1,5 @@
 import { IChartApi, ISeriesApi, SeriesType } from "lightweight-charts";
-import { RectangleDrawing } from "../../../drawings/rectangle/rectangle-drawing";
+import { RectangleExtendedDrawing } from "../../../drawings/rectangle-extended/rectangle-extended-drawing";
 import Tool from "../tool-base";
 import { SubToolColor } from "../../sub-tools/sub-tool/sub-tool-color";
 import { SubToolOpacity } from "../../sub-tools/sub-tool/sub-tool-opacity"
@@ -16,8 +16,8 @@ export class ToolRectangleExtended extends Tool {
         super(name, description, icon, toolType);
     }
 
-    getNewDrawingObject(chart: IChartApi, series: ISeriesApi<SeriesType>, symbolName: string): RectangleDrawing {
-        return new RectangleDrawing(chart, series, symbolName, true);
+    getNewDrawingObject(chart: IChartApi, series: ISeriesApi<SeriesType>, symbolName: string): RectangleExtendedDrawing {
+        return new RectangleExtendedDrawing(chart, series, symbolName);
     }
     
     setSubToolbarButtons(container: HTMLDivElement): HTMLDivElement[] {

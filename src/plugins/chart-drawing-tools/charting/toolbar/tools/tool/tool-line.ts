@@ -19,7 +19,7 @@ export class ToolLine extends Tool {
     }
 
     getNewDrawingObject(chart: IChartApi, series: ISeriesApi<SeriesType>, symbolName: string): LineDrawing {
-        return new LineDrawing(chart, series, symbolName, false);
+        return new LineDrawing(chart, series, symbolName);
     }
     
     setSubToolbarButtons(container: HTMLDivElement): HTMLDivElement[] {

@@ -1,5 +1,5 @@
 import { IChartApi, ISeriesApi, SeriesType } from "lightweight-charts";
-import { RectangleDrawing } from "../../drawings/rectangle/rectangle-drawing";
+import { ChartDrawingBase } from "../../drawings/chart-drawing-base";
 interface ITool {
     button: HTMLDivElement;
     name: string;
@@ -7,7 +7,7 @@ interface ITool {
     icon: string;
 
     setToolbarButton: (container: HTMLDivElement, listener?: (evt: MouseEvent) => void) => void;
-    getNewDrawingObject: (chart: IChartApi, series: ISeriesApi<SeriesType>, symbolName: string) => RectangleDrawing;
+    getNewDrawingObject: (chart: IChartApi, series: ISeriesApi<SeriesType>, symbolName: string) => ChartDrawingBase;
     setSubToolbarButtons: (container: HTMLDivElement) => HTMLDivElement[];
     dispose: () => void;
 }

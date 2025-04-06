@@ -32,7 +32,6 @@ export class RectangleExtendedDrawing extends ChartDrawingBase{
 					p1.time = end as Time; //(Number(p1.time) * 2) as Time;
 				else
 					p2.time = end as Time; //(Number(p2.time) * 2) as Time;
-				//console.log('p1', p1, 'p2', p2);
 				this.overrideDrawingPoints([p1, p2]);
 			}
 		}
@@ -101,7 +100,6 @@ export class RectangleExtendedDrawing extends ChartDrawingBase{
 				p2 = newPoints[1];
 			}
 
-			
 			// extend coordinates to the end of the chart
 			const end = this._chart.timeScale().getVisibleRange()?.to
 			if(end && p2.x !== null && p1.x !== null){

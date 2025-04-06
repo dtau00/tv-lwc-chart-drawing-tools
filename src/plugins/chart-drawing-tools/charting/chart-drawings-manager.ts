@@ -203,7 +203,6 @@ export class ChartDrawingsManager {
     private _addPrimativeToChartContainers(symbolName: string, primative: PluginBase): void {
         const containers = Array.from(this._chartContainers.values()).filter(c => c.symbolName === symbolName);
         for(const container of containers){
-            console.log("adding primative to container", container.chartId, primative);
             container.addDrawingPrimative(primative);
         }
     }
@@ -227,7 +226,6 @@ export class ChartDrawingsManager {
                 this._drawings.set(this._selectedDrawing.symbolName, [...drawings, this._selectedDrawing]);
                 this.saveDrawings(this._selectedDrawing.symbolName);
                 this._addPrimativeToChartContainers(this._selectedDrawing.symbolName, this._selectedDrawing.drawingView as PluginBase);
-                console.log("added primative to chart containers", this._selectedDrawing.symbolName, this._selectedDrawing);
             }
             this._creatingNewDrawingFromToolbar = false;
             this.unselectDrawing();
@@ -315,6 +313,7 @@ export class ChartDrawingsManager {
     }
 
     public onMouseMove(param: MouseEventParams): void {
+        //console.log('onMouseMove', param.point);
         if((!param.point))
             return;
 

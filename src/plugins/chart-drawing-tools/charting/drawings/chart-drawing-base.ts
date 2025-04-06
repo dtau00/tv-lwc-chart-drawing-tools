@@ -108,6 +108,7 @@ export abstract class ChartDrawingBase implements IChartDrawing {
    // get preview(): PluginBase | undefined{ return this._previewDrawing; }
     get drawingPoints(): DrawingPoint[] { return this._baseProps.drawingPoints; }
     set drawingPoints(points: DrawingPoint[]) { this._baseProps.drawingPoints = points; }
+
     get text(): string { return this._baseProps.text; }
     get secondsPerBar(): number { return this._baseProps.secondsPerBar; }
 
@@ -201,10 +202,8 @@ export abstract class ChartDrawingBase implements IChartDrawing {
 	}
 
     protected overrideDrawingPoints(points: DrawingPoint[]): void {
-        this.tmpDrawingPoints = points;
         this._baseProps.drawingPoints = points;
         this.drawingPoints = points;
-        this._points = points;
     }
 
     protected completeDrawing(): void {
@@ -242,6 +241,7 @@ export abstract class ChartDrawingBase implements IChartDrawing {
 	// at a time.*/
     protected removePreviewDrawing(force : boolean = false) {
 		if (force || !this._isCompleted) {
+			console.log('removePreviewDrawing', this.drawingView);
 			ensureDefined(this._series).detachPrimitive(this.drawingView as PluginBase);
 		}
 	}

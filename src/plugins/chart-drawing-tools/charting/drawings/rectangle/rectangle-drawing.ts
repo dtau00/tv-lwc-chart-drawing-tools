@@ -34,7 +34,7 @@ export class RectangleDrawing extends ChartDrawingBase{
 	// set the style when drawing is selected
 	select(): void {
 		this.view().applyOptions({ fillColor: 'rgba(100, 100, 100, 0.5)', })
-		super.select();
+		super.selected();
 	}
 
 	// update the position of the drawing, based on how its being resized

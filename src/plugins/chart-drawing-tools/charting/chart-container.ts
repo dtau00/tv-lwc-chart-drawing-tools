@@ -69,6 +69,7 @@ export class ChartContainer {
 
     // adds a new primative to the series
     addDrawingPrimative(primative: PluginBase) : void{
+        console.log('addDrawingPrimative', primative);
         ensureDefined(this._series).attachPrimitive(primative); // add to series, draws on the chart
     }
 
@@ -83,6 +84,7 @@ export class ChartContainer {
     removeDrawingPrimative(id: string) : void{
         const primative = this._primatives.find(p => p.baseId === id);
         if(primative){
+            console.log('removeDrawingPrimative', primative);
             ensureDefined(this._series).detachPrimitive(primative);
             this._primatives = this._primatives.filter(p => p.baseId !== id);
         }
@@ -91,6 +93,7 @@ export class ChartContainer {
     remPrim(primative?: PluginBase) : void{
         if(!primative)
             return
+        console.log('remPrim', primative);
         ensureDefined(this._series).detachPrimitive(primative);
     }
 
@@ -98,6 +101,7 @@ export class ChartContainer {
     // this is not ideal, its slow, so use sparingly
     // better to call the individual updates
     updatePrimatives(primatives: PluginBase[]) : void{
+        console.log('updatePrimatives', primatives);
         // remove all primatives
        for(const primate of this._primatives)
             ensureDefined(this._series).detachPrimitive(primate);

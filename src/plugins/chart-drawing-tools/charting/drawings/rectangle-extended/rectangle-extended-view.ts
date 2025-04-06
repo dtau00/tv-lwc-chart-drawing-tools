@@ -23,22 +23,6 @@ export class RectangleExtendedView extends ViewBase {
 		}
 	}
 
-	// override the base class method to extend the rectangle to the end of the chart
-	updateInitialPoint(p: DrawingPoint, param: MouseEventParams) {
-		if(!this.points[0])
-			return
-
-		this.points[0] = p;
-		let p2 = this.points[1];	
-		const end = this.chart.timeScale().getVisibleRange()?.to
-		if(end){
-			this.points[1] = {time: end, price: p2.price};
-		}
-
-		this._paneViews[0].update();
-		super.requestUpdate();
-	}
-
 	initializeDrawingViews(points: DrawingPoint[]) {
 		if(this.initalized)
 			return;
@@ -48,4 +32,20 @@ export class RectangleExtendedView extends ViewBase {
 
 		this._paneViews = [new RectanglePaneView(this)];	
 	}
+
+		// override the base class method to extend the rectangle to the end of the chart
+		updateInitialPoint(p: DrawingPoint, param: MouseEventParams) {
+			if(!this.points[0])
+				return
+	
+			this.points[0] = p;
+			let p2 = this.points[1];	
+			const end = this.chart.timeScale().getVisibleRange()?.to
+			if(end){
+				this.points[1] = {time: end, price: p2.price};
+			}
+	
+			this._paneViews[0].update();
+			super.requestUpdate();
+		}
 }

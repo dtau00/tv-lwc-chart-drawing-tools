@@ -9,6 +9,9 @@ import { eventBus } from '../../common/common.ts';
 import { ChartEvents } from '../../enums/events.ts';
 import { ToolRectangleExtended } from './tools/tool/tool-rectangle-extended.ts';
 import { ChartDrawingBase } from '../drawings/chart-drawing-base.ts';
+import { ToolLineHorizontalRay } from './tools/tool/tool-line-horizontal-ray.ts';
+import { ToolLineHorizontal } from './tools/tool/tool-line-horizontal.ts';
+import { ToolLineVertical } from './tools/tool/tool-line-vertical.ts';
 // This class is the main class for the chart drawing tools.
 
 export class ChartDrawingsToolbar {
@@ -73,9 +76,12 @@ export class ChartDrawingsToolbar {
 
 	private _initializeToolFactory(){
 		this._toolFactory.set(DrawingToolType.Rectangle, ToolRectangle);
-		this._toolFactory.set(DrawingToolType.Remove, ToolRemove);
 		this._toolFactory.set(DrawingToolType.RectangleExtended, ToolRectangleExtended);
 		this._toolFactory.set(DrawingToolType.Line, ToolLine);
+		this._toolFactory.set(DrawingToolType.HorizontalLineRay, ToolLineHorizontalRay);
+		this._toolFactory.set(DrawingToolType.HorizontalLine, ToolLineHorizontal);
+		this._toolFactory.set(DrawingToolType.VerticalLine, ToolLineVertical);
+		this._toolFactory.set(DrawingToolType.Remove, ToolRemove);
 	}
 
 	private _initializeToolbar() {

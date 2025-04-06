@@ -11,7 +11,9 @@ import { ChartEvents } from '../enums/events.ts';
 import { PluginBase } from '../../plugin-base.ts';
 import { getChartPointFromMouseEvent, getBoxHoverTarget, getCursorForBoxSide, BoxSide } from '../common/points.ts';
 import { LineDrawing } from './drawings/line/line-drawing.ts';
-
+import { LineHorizontalDrawing } from './drawings/line-horizontal/line-horizontal-drawing.ts';
+import { LineVerticalDrawing } from './drawings/line-vertical/line-vertical-drawing.ts';
+import { LineHorizontalRayDrawing } from './drawings/line-horizontal-ray/line-horizontal-ray-drawing.ts';
 // manage charts
     // when chart is created, register it with ChartManager
     // when chart is destroyed, unregister it from ChartManager
@@ -115,7 +117,7 @@ export class ChartDrawingsManager {
             console.log("loading drawings for ", symbolName);
             for(const item of data){
                 if(item.symbolName === symbolName){
-                    // TODO clean this up
+                    // TODO use tool to create object from a factoryMap
                     if(item.type === DrawingToolType.Rectangle){
                         const drawing = new RectangleDrawing(chartContainer.chart, chartContainer.series, symbolName, item);
                         this._drawings.get(symbolName)?.push(drawing);
@@ -128,6 +130,21 @@ export class ChartDrawingsManager {
                     }
                     else if(item.type === DrawingToolType.Line){
                         const drawing = new LineDrawing(chartContainer.chart, chartContainer.series, symbolName, item);
+                        this._drawings.get(symbolName)?.push(drawing);
+                        chartContainer.addDrawingPrimative(drawing.drawingView as PluginBase);
+                    }
+                    else if(item.type === DrawingToolType.HorizontalLine){
+                        const drawing = new LineHorizontalDrawing(chartContainer.chart, chartContainer.series, symbolName, item);
+                        this._drawings.get(symbolName)?.push(drawing);
+                        chartContainer.addDrawingPrimative(drawing.drawingView as PluginBase);
+                    }
+                    else if(item.type === DrawingToolType.VerticalLine){
+                        const drawing = new LineVerticalDrawing(chartContainer.chart, chartContainer.series, symbolName, item);
+                        this._drawings.get(symbolName)?.push(drawing);
+                        chartContainer.addDrawingPrimative(drawing.drawingView as PluginBase);
+                    }
+                    else if(item.type === DrawingToolType.HorizontalLineRay){
+                        const drawing = new LineHorizontalRayDrawing(chartContainer.chart, chartContainer.series, symbolName, item);
                         this._drawings.get(symbolName)?.push(drawing);
                         chartContainer.addDrawingPrimative(drawing.drawingView as PluginBase);
                     }

@@ -6,15 +6,17 @@ import {
     SeriesType,
 	Time,
 } from 'lightweight-charts';
-import { RectangleExtendedView } from './rectangle-extended-view';
-import { rectangleExtendedDrawingToolDefaultOptions as drawingToolDefaultOptions } from './rectangle-extended-options';
+
+import { LineHorizontal as View } from './line-horizontal-view';
+import { lineHorizontalDrawingToolDefaultOptions as drawingToolDefaultOptions, LineHorizontalDrawingToolOptions } from './line-horizontal-options';
 import { ChartDrawingBase, ChartDrawingBaseProps } from '../chart-drawing-base';
 import { DrawingToolType } from '../../toolbar/tools/drawing-tools';
-import { BoxSide, resizeBoxByHandle } from '../../../common/points';
-
-export class RectangleExtendedDrawing extends ChartDrawingBase{
-	private static readonly TOTAL_DRAWING_POINTS = 2; // Set the drawing points for this type of drawing.  A box will have 2, a line ray will have 1, etc...
+import { _isPointNearLine, BoxSide, resizeBoxByHandle } from '../../../common/points';
+import { DrawingPoint } from '../../../common/common';
+export class LineHorizontalDrawing extends ChartDrawingBase{
+	private static readonly TOTAL_DRAWING_POINTS = 1; // Set the drawing points for this type of drawing.  A box will have 2, a line ray will have 1, etc...
 	private _toolType: DrawingToolType; // = DrawingToolType.Rectangle; // set the tool type for the class
+
 	constructor(
 		chart: IChartApi,
 		series: ISeriesApi<SeriesType>,
@@ -24,30 +26,32 @@ export class RectangleExtendedDrawing extends ChartDrawingBase{
 
 		let _drawingFinished =()=>{
 			let p1 = this.drawingPoints[0];
-			let p2 = this.drawingPoints[1];
 			const end = this._chart?.timeScale().getVisibleRange()?.to;
-			if(end){
-				if(p1.time > p2.time)
-					p1.time = end as Time; //(Number(p1.time) * 2) as Time;
-				else
-					p2.time = end as Time; //(Number(p2.time) * 2) as Time;
-				this.overrideDrawingPoints([p1, p2]);
+			const start = this._chart?.timeScale().getVisibleRange()?.from;
+			if(end && start){
+				this.overrideDrawingPoints([{time: start, price: p1.price}, {time: end, price: p1.price}]);
 			}
 		}
 
-		// MAKE SURE TO UPDATE THIS WHEN CREATING NEW DRAWING TOOLS
-		const toolType = DrawingToolType.RectangleExtended
+        // MAKE SURE TO UPDATE THIS WHEN CREATING NEW DRAWING TOOLS
+		const toolType = DrawingToolType.HorizontalLine;
 
-		super( toolType, chart, series, symbolName, RectangleExtendedDrawing.TOTAL_DRAWING_POINTS, drawingToolDefaultOptions, baseProps, _drawingFinished);
+		super( toolType, chart, series, symbolName, LineHorizontalDrawing.TOTAL_DRAWING_POINTS, drawingToolDefaultOptions, baseProps, _drawingFinished);
 		this._toolType = toolType
-		this.drawingView = new RectangleExtendedView(chart, series, this._toolType, drawingToolDefaultOptions,  baseProps?.styleOptions, baseProps || this.baseProps, baseProps ? true : false ); 
+		this.drawingView = new View(chart, series, this._toolType, drawingToolDefaultOptions,  baseProps?.styleOptions, baseProps || this.baseProps, baseProps ? true : false ); 
 	}
 
 	// TODO dont make this hard coded
 	// set the style when drawing is selected
 	select(): void {
-		this.view().applyOptions({ fillColor: 'rgba(100, 100, 100, 0.5)', })
+		this.view().applyOptions({ lineColor: 'rgba(100, 100, 100, 0.5)', })
 		super.selected();
+	}
+
+    containsPoint(chart: IChartApi, series: ISeriesApi<SeriesType>, point: Point, points: DrawingPoint[]): boolean {
+        const options = this.drawingView?._options as LineHorizontalDrawingToolOptions;  
+        const offset = (options?.lineWidth || 1) + 3;
+		return _isPointNearLine(chart, series, point, points, offset);
 	}
 
 	// update the position of the drawing, based on how its being resized
@@ -98,28 +102,19 @@ export class RectangleExtendedDrawing extends ChartDrawingBase{
 				p2 = newPoints[1];
 			}
 
-			// extend coordinates to the end of the chart
-			const end = this._chart.timeScale().getVisibleRange()?.to
-			if(end && p2.x !== null && p1.x !== null){
-				if(p2.x > p1.x)
-					p2.x = this._chart.timeScale().timeToCoordinate(end)!
-				else
-					p1.x = this._chart.timeScale().timeToCoordinate(end)!
-			}
+            // convert back to drawing coordinates
+            if(p1.x !== null && p2.x !== null && p1.y !== null && p2.y !== null){
+                const newDrawingPoint1 = {time: this._chart.timeScale().coordinateToTime(p1.x)!, price: this._series.coordinateToPrice(p1.y)!};
+                const newDrawingPoint2 = {time: this._chart.timeScale().coordinateToTime(p2.x)!, price: this._series.coordinateToPrice(p2.y)!};
 
-			// convert back to drawing coordinates'
-			if(p1.x !== null && p2.x !== null && p1.y !== null && p2.y !== null){
-				const newDrawingPoint1 = {time: this._chart.timeScale().coordinateToTime(p1.x)!, price: this._series.coordinateToPrice(p1.y)!};
-				const newDrawingPoint2 = {time: this._chart.timeScale().coordinateToTime(p2.x)!, price: this._series.coordinateToPrice(p2.y)!};
+                // update the drawing
+                this.view().updatePoints([newDrawingPoint1, newDrawingPoint2]) 
 
-				// update the drawing
-				this.view().updatePoints([newDrawingPoint1, newDrawingPoint2]) 
-
-				//  store new points temporarily, we will set this back to the drawingPoints when the update is finished
-				// TODO we wont need this if we save directly from the class, consider adding save directly from the class
-				this.tmpDrawingPoints[0] = newDrawingPoint1
-				this.tmpDrawingPoints[1] =newDrawingPoint2
-			}
+                //  store new points temporarily, we will set this back to the drawingPoints when the update is finished
+                // TODO we wont need this if we save directly from the class, consider adding save directly from the class
+                this.tmpDrawingPoints[0] = newDrawingPoint1
+                this.tmpDrawingPoints[1] =newDrawingPoint2
+            }
 		}
 	}
 }

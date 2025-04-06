@@ -9,9 +9,9 @@ export enum DrawingToolType {
     Rectangle = 'rectangle',
     RectangleExtended = 'rectangle-extended',
     Line = 'line',
-    LineExtended = 'line-extended',
-    //Line = 'line',
-    //ExtendedLine = 'extended-line',
+    HorizontalLineRay = 'horizontal-line-ray',
+    HorizontalLine = 'horizontal-line',
+    VerticalLine = 'vertical-line',
     //Text = 'text',
     //Fibonacci = 'fibonacci',
     Remove = 'remove',
@@ -37,26 +37,26 @@ export const AVAILABLE_TOOLS: DrawingToolInfo[] = [
         icon: '/',
         description: 'Draw lines on the chart'
     },
-    {
-        type: DrawingToolType.Remove,
-        name: 'remove',
-        icon: '❌',
-        description: 'Remove the last drawing'
-    },
 
+    {
+        type: DrawingToolType.HorizontalLineRay,
+        name: 'horizontal-line-ray',
+        icon: ':-',
+        description: 'Draw horizontal line rays on the chart'
+    },
+    {
+        type: DrawingToolType.HorizontalLine,
+        name: 'horizontal-line',
+        icon: '─',
+        description: 'Draw horizontal lines on the chart'
+    },
+    {
+        type: DrawingToolType.VerticalLine,
+        name: 'vertical-line',
+        icon: ' | ',
+        description: 'Draw vertical lines on the chart'
+    },
     /*
-    {
-        type: DrawingToolType.Line,
-        name: 'Line',
-        icon: 'line-tool',
-        description: 'Draw lines on the chart'
-    },
-    {
-        type: DrawingToolType.ExtendedLine,
-        name: 'ExtendedLine',
-        icon: 'extended-line-tool',
-        description: 'Draw lines that extends all the way to the right'
-    },
     {
         type: DrawingToolType.Text,
         name: 'Text',
@@ -70,6 +70,12 @@ export const AVAILABLE_TOOLS: DrawingToolInfo[] = [
         icon: 'fibonacci-tool',
         description: 'Draw Fibonacci retracement levels'
     }*/
+    {
+        type: DrawingToolType.Remove,
+        name: 'remove',
+        icon: '❌',
+        description: 'Remove the last drawing'
+    },
 ];
 
 

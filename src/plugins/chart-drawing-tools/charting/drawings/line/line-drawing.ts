@@ -2,18 +2,14 @@ import {
 	Coordinate,
 	IChartApi,
 	ISeriesApi,
-	MouseEventParams,
     Point,
     SeriesType,
 } from 'lightweight-charts';
 
 import { Line as View } from './line-view';
 import { lineDrawingToolDefaultOptions as drawingToolDefaultOptions } from './line-options';
-import { DrawingPoint } from '../../../common/common';
-import { ensureDefined } from '../../../../../helpers/assertions';
 import { ChartDrawingBase, ChartDrawingBaseProps } from '../chart-drawing-base';
 import { DrawingToolType } from '../../toolbar/tools/drawing-tools';
-import { PluginBase } from '../../../../plugin-base';
 import { BoxSide, resizeBoxByHandle } from '../../../common/points';
 
 export class LineDrawing extends ChartDrawingBase{
@@ -45,7 +41,7 @@ export class LineDrawing extends ChartDrawingBase{
 		super.select();
 	}
 
-    	// update the position of the drawing, based on how its being resized
+	// update the position of the drawing, based on how its being resized
 	updatePosition(startPoint: Point, endPoint: Point, side: BoxSide): void {
 		if (!this._chart || this._isDrawing || !this._series || this.drawingPoints.length < 2) 
 			return;
@@ -58,54 +54,64 @@ export class LineDrawing extends ChartDrawingBase{
 		const drawingPoint1 = this.drawingPoints[0];
 		const drawingPoint2 = this.drawingPoints[1];
 
+
 		let pricePoint1 = this._series.priceToCoordinate(drawingPoint1.price);
 		let pricePoint2 = this._series.priceToCoordinate(drawingPoint2.price);
 		let timePoint1 = this._chart.timeScale().timeToCoordinate(drawingPoint1.time) 
 		let timePoint2 = this._chart.timeScale().timeToCoordinate(drawingPoint2.time)
 
-		if(timePoint1 !== null && timePoint2 !== null && pricePoint1 !== null && pricePoint2 !== null){
+		let p1 = {x: timePoint1, y: pricePoint1};
+		let p2 = {x: timePoint2, y: pricePoint2};
+
+		if(p1.x !== null && p2.x !== null && p1.y !== null && p2.y !== null){
 
 			// assume timepoint1 is always the start of the box
-			if(timePoint1 > timePoint2){
-				const tmp = timePoint1;
-				timePoint1 = timePoint2;
-				timePoint2 = tmp;
+			if(p1.x > p2.x){
+				const tmp = p1;
+				p1 = p2;
+				p2 = tmp;
 			}
 
 			// adjust coordinates based on the side
 			if(side === 'inside'){
-				timePoint1 = (timePoint1 + xOffset) as Coordinate;
-				timePoint2 = (timePoint2 + xOffset) as Coordinate;
-				pricePoint1 = (pricePoint1 + yOffset) as Coordinate;
-				pricePoint2 = (pricePoint2 + yOffset) as Coordinate;
+				if(p1.x !== null && p2.x !== null && p1.y !== null && p2.y !== null){
+					p1.x = (p1.x + xOffset) as Coordinate;
+					p2.x = (p2.x + xOffset) as Coordinate;
+					p1.y = (p1.y + yOffset) as Coordinate;
+					p2.y = (p2.y + yOffset) as Coordinate;
+				}
 			}
-			else{
-				const newPoints = resizeBoxByHandle({x: timePoint1, y: pricePoint1}, {x: timePoint2, y: pricePoint2}, side, endPoint);
-				timePoint1 = newPoints[0].x;
-				timePoint2 = newPoints[1].x;
-				pricePoint1 = newPoints[0].y;
-				pricePoint2 = newPoints[1].y;
+			else if(p1.x !== null && p2.x !== null && p1.y !== null && p2.y !== null){
+				const point1 = {x: p1.x, y: p1.y};		
+				const point2 = {x: p2.x, y: p2.y};
+				const newPoints = resizeBoxByHandle(point1, point2, side, endPoint);
+				p1 = newPoints[0];
+				p2 = newPoints[1];
 			}
 
 			if(this._isExtended){
 				const end = this._chart.timeScale().getVisibleRange()?.to
-				if(end)
-					if(timePoint2 > timePoint1)
-						timePoint2 = this._chart.timeScale().timeToCoordinate(end)!
+				if(end && p2.x !== null && p1.x !== null){
+					if(p2.x > p1.x)
+						p2.x = this._chart.timeScale().timeToCoordinate(end)!
 					else
-						timePoint1 = this._chart.timeScale().timeToCoordinate(end)!
+						p1.x = this._chart.timeScale().timeToCoordinate(end)!
+				}
 			}
-				// convert back to drawing coordinates
-			const newDrawingPoint1 = {time: this._chart.timeScale().coordinateToTime(timePoint1)!, price: this._series.coordinateToPrice(pricePoint1)!};
-			const newDrawingPoint2 = {time: this._chart.timeScale().coordinateToTime(timePoint2)!, price: this._series.coordinateToPrice(pricePoint2)!};
 
-			// update the drawing
-			this.view().updatePoints([newDrawingPoint1, newDrawingPoint2]) 
+            // convert back to drawing coordinates
+            if(p1.x !== null && p2.x !== null && p1.y !== null && p2.y !== null){
+                const newDrawingPoint1 = {time: this._chart.timeScale().coordinateToTime(p1.x)!, price: this._series.coordinateToPrice(p1.y)!};
+                const newDrawingPoint2 = {time: this._chart.timeScale().coordinateToTime(p2.x)!, price: this._series.coordinateToPrice(p2.y)!};
 
-			//  store new points temporarily, we will set this back to the drawingPoints when the update is finished
-			// TODO we wont need this if we save directly from the class, consider adding save directly from the class
-			this.tmpDrawingPoints[0] = newDrawingPoint1
-			this.tmpDrawingPoints[1] =newDrawingPoint2
+                // update the drawing
+                this.view().updatePoints([newDrawingPoint1, newDrawingPoint2]) 
+
+                //  store new points temporarily, we will set this back to the drawingPoints when the update is finished
+                // TODO we wont need this if we save directly from the class, consider adding save directly from the class
+                this.tmpDrawingPoints[0] = newDrawingPoint1
+                this.tmpDrawingPoints[1] =newDrawingPoint2
+            }
 		}
 	}
 }

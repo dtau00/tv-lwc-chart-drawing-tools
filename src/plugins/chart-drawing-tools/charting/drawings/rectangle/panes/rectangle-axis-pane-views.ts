@@ -43,8 +43,8 @@ abstract class RectangleAxisPaneView implements IPrimitivePaneView {
 export class RectanglePriceAxisPaneView extends RectangleAxisPaneView {
 	getPoints(): [Coordinate | null, Coordinate | null] {
 		const series = this._source.series;
-		const y1 = series.priceToCoordinate(this._source._p1.price);
-		const y2 = series.priceToCoordinate(this._source._p2.price);
+		const y1 = series.priceToCoordinate(this._source.points[0].price);
+		const y2 = series.priceToCoordinate(this._source.points[1].price);
 		return [y1, y2];
 	}
 }
@@ -52,8 +52,8 @@ export class RectanglePriceAxisPaneView extends RectangleAxisPaneView {
 export class RectangleTimeAxisPaneView extends RectangleAxisPaneView {
 	getPoints(): [Coordinate | null, Coordinate | null] {
 		const timeScale = this._source.chart.timeScale();
-		const x1 = timeScale.timeToCoordinate(this._source._p1.time);
-		const x2 = timeScale.timeToCoordinate(this._source._p2.time);
+		const x1 = timeScale.timeToCoordinate(this._source.points[0].time);
+		const x2 = timeScale.timeToCoordinate(this._source.points[1].time);
 		return [x1, x2];
 	}
 }

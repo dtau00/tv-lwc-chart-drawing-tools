@@ -1,22 +1,16 @@
 import { DrawingPoint } from '../../../common/common';
 import { RectangleDrawingToolOptions } from './rectangle-options';
 import { RectanglePaneView, } from './panes/rectangle-pane-view';
-import {     
-    RectanglePriceAxisPaneView, 
-    RectanglePriceAxisView, 
-    RectangleTimeAxisPaneView, 
-    RectangleTimeAxisView 
-} from './panes/rectangle-axis-pane-views';
 import {  ChartDrawingBaseProps } from '../chart-drawing-base';
-import { IChartApi, ISeriesApi, MouseEventParams, SeriesType } from 'lightweight-charts';
+import { IChartApi, ISeriesApi, SeriesType } from 'lightweight-charts';
 import { ViewBase } from '../drawing-view-base';
 import { DrawingToolType } from '../../toolbar/tools/drawing-tools';
 
 export class Rectangle extends ViewBase {
 	//private _options: Partial<RectangleDrawingToolOptions> = {};
-	_p1?: DrawingPoint | null;
-	_p2?: DrawingPoint | null;
-	_paneViews: RectanglePaneView[];
+	//_p1?: DrawingPoint | null;
+	//_p2?: DrawingPoint | null;
+	//_paneViews: RectanglePaneView[];
 	/* disable axis views
 	_timeAxisViews: RectangleTimeAxisView[];
 	_priceAxisViews: RectanglePriceAxisView[];
@@ -43,19 +37,29 @@ export class Rectangle extends ViewBase {
 		}
 	}
 
-	// initializes the drawing views on first click
-	// make sure you pass in the correct number of points for your drawing
-	// TODO enfore this
 	initializeDrawingViews(points: DrawingPoint[]) {
 		if(this.initalized)
 			return;
 		
 		this.initalized = true;
-		this._p1 = points[0];
-		this._p2 = points[1];
+		this.points = points;
 
 		this._paneViews = [new RectanglePaneView(this)];
-		/* disable axis views
+	}
+
+	// initializes the drawing views on first click
+	// make sure you pass in the correct number of points for your drawing
+	// TODO enfore this
+	/*
+	initializeDrawingViews(points: DrawingPoint[]) {
+		if(this.initalized)
+			return;
+		
+		this.initalized = true;
+		this.points = points;
+
+		this._paneViews = [new RectanglePaneView(this)];
+		disable axis views
 		this._timeAxisViews = [
 			new RectangleTimeAxisView(this, p1),
 			new RectangleTimeAxisView(this, p2),
@@ -65,9 +69,10 @@ export class Rectangle extends ViewBase {
 			new RectanglePriceAxisView(this, p2),
 		];
 		this._priceAxisPaneViews = [new RectanglePriceAxisPaneView(this, true)];
-		this._timeAxisPaneViews = [new RectangleTimeAxisPaneView(this, false)];*/
+		this._timeAxisPaneViews = [new RectangleTimeAxisPaneView(this, false)];
 	}
-
+	*/
+/*
 	updateInitialPoint(p: DrawingPoint, param: MouseEventParams) {
 		if(!this._p1)
 			return
@@ -89,7 +94,8 @@ export class Rectangle extends ViewBase {
 
 		super.requestUpdate();
 	}
-
+*/
+	/*
 	// update the points for the drawing, make sure you pass in the correct number of points
 	// TODO enforce the proper number of points
 	updatePoints(points: DrawingPoint[]) {
@@ -101,9 +107,9 @@ export class Rectangle extends ViewBase {
 		this._timeAxisViews[1].movePoint(p2);
 		this._priceAxisViews[0].movePoint(p1);
 		this._priceAxisViews[1].movePoint(p2);*/
-		super.requestUpdate();
-	}
-
+		/*super.requestUpdate();
+	}*/
+/*
 	updateAllViews() {
 		if(!this._p1 || !this._p2)
 			return
@@ -115,12 +121,12 @@ export class Rectangle extends ViewBase {
 		//this._priceAxisViews.forEach(pw => pw.update());
 		//	this._priceAxisPaneViews.forEach(pw => pw.update());
 		//	this._timeAxisPaneViews.forEach(pw => pw.update());
-	}
-
+	}*/
+/*
 	paneViews() {
 		return this._paneViews;
 	}
-
+*/
 	/*
 	timeAxisViews() {
 		return this._timeAxisViews;

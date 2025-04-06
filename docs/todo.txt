@@ -1,10 +1,11 @@
 v1
 --
 rectangle resize can sometimes get mixed up and pivot at the wrong corner
+ext rectangle doesnt draw properly initiall, doesnt extend
 drawing can crash by clicking around too much
+
 ext line, horizontal, vertical drawings
 fix line drawing selection
-lines dont save
 
 test when new data is added
   make sure whitespade is supported

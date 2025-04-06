@@ -6,16 +6,17 @@ import { DrawingToolType } from '../toolbar/tools/drawing-tools';
 import { ConfigStorage } from '../../data/data';
 import { removeUndefinedKeys } from '../../common/helper';
 import { ChartDrawingBaseProps } from './chart-drawing-base';
-
+import { PaneViewBase } from './drawing-pane-view-base';
 // Base class for all drawing views, handles the style options and updates
 export class ViewBase extends PluginBase {
     private _baseStyleOptions: {}; // base style, the one that's saved
     private _defaultStyleOptions: {}; // default style
     private _toolType: DrawingToolType;
     private _baseProps: ChartDrawingBaseProps;
-
+    protected _paneViews: PaneViewBase[] = [];
 	protected initalized: boolean = false;
 
+    public points: DrawingPoint[] = [];
     public _options: {}; // active style, could temporarily be different (like from selection)
 
     isEmpty = (obj: object) => !obj ||Object.keys(obj).length === 0;
@@ -37,10 +38,6 @@ export class ViewBase extends PluginBase {
         this._baseStyleOptions = this._options;
         this._baseProps = baseProps;
 	}
-        public updatePoints(points: DrawingPoint[]){
-            throw new Error("Method not implemented.  Overrite this methods in your class.");
-        }
-
         public getOverrideOptions(toolType: DrawingToolType, styleOptions: {}): any {
             const keyName = toolKeyName(toolType);
             //const overrides = isEmpty(styleOptions) ? ConfigStorage.loadConfig(keyName, {}) as Partial<T> : styleOptions;
@@ -85,16 +82,37 @@ export class ViewBase extends PluginBase {
             overrides = removeUndefinedKeys(overrides);
             return overrides;
         }
+
+        updateInitialPoint(p: DrawingPoint, param: MouseEventParams) {
+            if(!this.points[0])
+                return
+    
+            this.points[0] = p;
+            this._paneViews[0].update();
+            super.requestUpdate();
+        }
+    
+        // update the points for the drawing, make sure you pass in the correct number of points
+        // TODO enforce the proper number of points
+        public updatePoints(points: DrawingPoint[]) {
+            this.points = points;
+            this._paneViews[0].update();
+            super.requestUpdate();
+        }
+    
+        updateAllViews() {
+            this._paneViews.forEach(pv => pv.update());
+        }
+    
+        paneViews() {
+            return this._paneViews;
+        }
     
         public getStyleOptions(): any {
             return this.transformRgbaOptions(this._baseStyleOptions);
         }
 
         public initializeDrawingViews(points: DrawingPoint[]): void{
-            throw new Error("Method not implemented.  Overrite this methods in your class.");
-        }
-
-        public updateInitialPoint(p: DrawingPoint, param: MouseEventParams) {
             throw new Error("Method not implemented.  Overrite this methods in your class.");
         }
 

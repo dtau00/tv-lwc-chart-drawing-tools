@@ -8,7 +8,8 @@ import { ChartContainer } from './chart-container.ts';
 import Tool from './toolbar/tools/tool-base.ts';
 import { ChartEvents } from '../enums/events.ts';
 import { PluginBase } from '../../plugin-base.ts';
-import { containsPoints, getChartPointFromMouseEvent, getBoxHoverTarget, getCursorForBoxSide, BoxSide } from '../common/points.ts';
+import { getChartPointFromMouseEvent, getBoxHoverTarget, getCursorForBoxSide, BoxSide } from '../common/points.ts';
+import { LineDrawing } from './drawings/line/line-drawing.ts';
 
 // manage charts
     // when chart is created, register it with ChartManager
@@ -121,6 +122,11 @@ export class ChartDrawingsManager {
                     }
                     else if(item.type === DrawingToolType.RectangleExtended){
                         const drawing = new RectangleDrawing(chartContainer.chart, chartContainer.series, symbolName, true, item);
+                        this._drawings.get(symbolName)?.push(drawing);
+                        chartContainer.addDrawingPrimative(drawing.drawingView as PluginBase);
+                    }
+                    else if(item.type === DrawingToolType.Line){
+                        const drawing = new LineDrawing(chartContainer.chart, chartContainer.series, symbolName, false, item);
                         this._drawings.get(symbolName)?.push(drawing);
                         chartContainer.addDrawingPrimative(drawing.drawingView as PluginBase);
                     }

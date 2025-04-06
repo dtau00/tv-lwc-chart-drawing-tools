@@ -26,6 +26,49 @@ export function containsPoints(chart: IChartApi, series: ISeriesApi<SeriesType>,
     return false;
 }
 
+export function _isPointNearLine(
+	chart: IChartApi,
+	series: ISeriesApi<SeriesType>,
+	point: Point,
+	points: DrawingPoint[],
+	offset: number = 5
+): boolean {
+	if (points.length !== 2) return false;
+
+	const [p1, p2] = points;
+	const price1 = series.priceToCoordinate(p1.price);
+	const price2 = series.priceToCoordinate(p2.price);
+	const timeScale = chart.timeScale();
+	const x1 = timeScale.timeToCoordinate(p1.time);
+	const x2 = timeScale.timeToCoordinate(p2.time);
+
+	if (x1 === null || x2 === null || price1 === null || price2 === null) return false;
+
+	const lineStart = { x: x1, y: price1 };
+	const lineEnd = { x: x2, y: price2 };
+
+	// Distance from point to line segment
+	const dx = lineEnd.x - lineStart.x;
+	const dy = lineEnd.y - lineStart.y;
+	const lengthSq = dx * dx + dy * dy;
+
+	if (lengthSq === 0) {
+		// line is a point
+		const distSq = (point.x - lineStart.x) ** 2 + (point.y - lineStart.y) ** 2;
+		return distSq <= offset * offset;
+	}
+
+	let t = ((point.x - lineStart.x) * dx + (point.y - lineStart.y) * dy) / lengthSq;
+	t = Math.max(0, Math.min(1, t));
+
+	const closestX = lineStart.x + t * dx;
+	const closestY = lineStart.y + t * dy;
+
+	const distSq = (point.x - closestX) ** 2 + (point.y - closestY) ** 2;
+
+	return distSq <= offset * offset;
+}
+
 function _isWithin2Points(chart: IChartApi, series: ISeriesApi<SeriesType>, point: Point, points: DrawingPoint[], offset: number = 0){
     const topBottom = topBottomPoints(points);
     const leftRight = leftRightPoints(points);

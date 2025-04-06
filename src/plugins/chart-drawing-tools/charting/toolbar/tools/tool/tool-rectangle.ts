@@ -11,7 +11,6 @@ import { createSpacer } from "../../../../common/html";
 export class ToolRectangle extends Tool {
     private readonly  _totalColors: number = 3
     private readonly  _totalOpacities: number = 3
-    private readonly  _totalThicknesses: number = 3
 
     constructor(name: string, description: string, icon: string, toolType: DrawingToolType) {
         super(name, description, icon, toolType);

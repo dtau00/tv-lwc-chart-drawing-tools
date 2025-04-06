@@ -185,8 +185,8 @@ export class ChartDrawingsManager {
     }
 
     public startToolDrawing(tool: Tool): void {
-        if(!tool || !this._currentChartContainer) 
-            return;
+       // if(!tool || !this._currentChartContainer) 
+        //    return;
         this._selectedDrawing?.stopDrawing();
         this._creatingNewDrawingFromToolbar = true;
         this._currentDrawingTool = tool;

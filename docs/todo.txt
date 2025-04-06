@@ -1,6 +1,5 @@
 v1
 --
-sometimes click dont register in the beginning
 rectangle resize can sometimes get mixed up and pivot at the wrong corner
 drawing can crash by clicking around too much
 ext line drawings

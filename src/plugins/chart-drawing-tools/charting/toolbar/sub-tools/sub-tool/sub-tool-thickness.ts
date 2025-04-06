@@ -3,7 +3,7 @@ import { DrawingSubToolType } from "../drawing-sub-tools";
 
 export class SubToolThickness extends SubTool {
     constructor(propertyName: string, parentTool: string, name: string, description: string, icon: string, index: number, valueUpdatedCallback?: (value: any) => void) {
-        super(propertyName, parentTool, name, description, icon, index, DrawingSubToolType.Thickness, valueUpdatedCallback);
+        super(propertyName, parentTool, 'div', name, description, icon, index, DrawingSubToolType.Thickness, valueUpdatedCallback);
     }
 
     mouseListener(evt: MouseEvent, index?: number): void {

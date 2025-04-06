@@ -1,13 +1,13 @@
 import { ConfigStorage } from "../../../data/data";
 import { DrawingSubTools, DrawingSubToolType } from "./drawing-sub-tools";
 import { unselectAllDivsForGroup } from "../../../common/html.ts";
-import { createToolbarButton } from "../common.ts";
+import { createToolbarButton, ToolbarButton } from "../common.ts";
 import ISubTool from "./sub-tool-interface";
 import { eventBus } from "../../../common/common";
 import { ChartEvents } from "../../../enums/events";
 
 abstract class SubTool implements ISubTool {
-    private _div: HTMLDivElement;
+    private _div: HTMLDivElement | HTMLInputElement;
     private _name: string;
     private _description: string;
     private _icon: string;
@@ -19,16 +19,18 @@ abstract class SubTool implements ISubTool {
     private _container: HTMLDivElement;
     private _mouseListener: (evt: MouseEvent) => void;
     private _valueUpdatedCallback?: (value: any) => void;
+    private _buttonType: ToolbarButton;
 
     get value(): any { return this._value; }
     get name(): string { return this._name; }
     get description(): string { return this._description; }
     get icon(): string { return this._icon; }
-    get div(): HTMLDivElement { return this._div; }
+    get div(): HTMLDivElement | HTMLInputElement { return this._div; }
     get type(): DrawingSubToolType { return this._type; }
     get parentTool(): string { return this._parentTool; }
+    get buttonType(): ToolbarButton { return this._buttonType; }
 
-    constructor(propertyName: string, parentTool: string, name: string, description: string, icon: string, index: number, type: DrawingSubToolType, valueUpdatedCallback?: (value: any) => void) {
+    constructor(propertyName: string, parentTool: string, buttonType: ToolbarButton, name: string, description: string, icon: string, index: number, type: DrawingSubToolType, valueUpdatedCallback?: (value: any) => void) {
         this._name = name;
         this._description = description;
         this._icon = icon;
@@ -36,6 +38,7 @@ abstract class SubTool implements ISubTool {
         this._type = type;
         this._parentTool = parentTool;
         this._propertyName = propertyName;
+        this._buttonType = buttonType;
         this._valueUpdatedCallback = valueUpdatedCallback;
 
         this._loadValue();
@@ -44,15 +47,19 @@ abstract class SubTool implements ISubTool {
 
     abstract updateDiv(): void;
     abstract mouseListener(evt: MouseEvent, index?: number): void;
+    
+    init(): void{
+        
+    }
 
     setToolbarButton(container: HTMLDivElement): void {
         this._container = container;
-        this._div = createToolbarButton(this._name, this._description, this._icon, (evt: MouseEvent) => this.mouseListener(evt, this._index), 'mousedown', container!);
+        this._div = createToolbarButton(this._name, this._description, this._icon, this._buttonType, (evt: MouseEvent) => this.mouseListener(evt, this._index), 'mousedown', container!);
         this.updateDiv()
     }
 
     dispose(): void {
-        this._div.removeEventListener('mousedown', this.mouseListener);
+       this._div.removeEventListener('mousedown', this.mouseListener);
     }
 
     setValue(value?: any, initiateCallback: boolean = true): void {

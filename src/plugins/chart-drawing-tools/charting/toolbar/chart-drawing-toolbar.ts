@@ -21,19 +21,21 @@ export class ChartDrawingsToolbar {
 	private _toolButtons: Map<HTMLDivElement, EventListener> = new Map();
 	private _initialized: boolean = false;
 	private _chartId: string | undefined;
-
 	constructor(
 		chartDrawingsManager: ChartDrawingsManager,
 		drawingsToolbarContainer: HTMLDivElement,
+		drawingsSubToolbarContainer: HTMLDivElement,
 		chartId?: string,
 	) {
 		this._chartId = chartId;
 		this._chartDrawingsManager = chartDrawingsManager;
 		this._drawingsToolbarContainer = drawingsToolbarContainer;
-		this._drawingsToolbarContainer.addEventListener("contextmenu", this._disableRightClick); // we want to change behavior of right click on toolbar
+		this._drawingsSubToolbarContainer = drawingsSubToolbarContainer;
 
 		this._initializeToolFactory();
 		this._initializeToolbar();
+
+		this._initializeMouseEvents();
 		this._listenForChartEvents();
 	}
 
@@ -42,11 +44,23 @@ export class ChartDrawingsToolbar {
 		return eventBus;
 	}
 
+	private _initializeMouseEvents(){
+		this._drawingsToolbarContainer?.addEventListener("contextmenu", this._disableRightClick); // we want to change behavior of right click on toolbar
+		this._drawingsSubToolbarContainer?.addEventListener("contextmenu", this._disableRightClick); // we want to change behavior of right click on toolbar
+	}
+
 	// TODO: dispose should be called when the chart is destroyed
 	dispose(){
 		this._drawingsToolbarContainer?.removeEventListener("contextmenu", this._disableRightClick);
+		this._drawingsSubToolbarContainer?.removeEventListener("contextmenu", this._disableRightClick);
+		this._removeButton?.removeEventListener('click', this._onClickRemoveDrawingTool);
+
 		this._removeButton?.removeEventListener('click', this._onClickRemoveDrawingTool);
 		eventBus.removeEventListener(ChartEvents.NewDrawingCompleted, this._listenForChartEvents);
+		eventBus.removeEventListener(ChartEvents.CompletedDrawingSelected, this._listenForChartEvents);
+		eventBus.removeEventListener(ChartEvents.CompletedDrawingUnSelected, this._listenForChartEvents);
+		eventBus.removeEventListener(ChartEvents.UnsetToolbar, this._listenForChartEvents);
+		eventBus.removeEventListener(ChartEvents.SetToolbarTool, this._listenForChartEvents);
 		// todo verify events are being removed
 		this._toolButtons.forEach((handler, button) => {
 			button.removeEventListener('click', handler);
@@ -66,7 +80,8 @@ export class ChartDrawingsToolbar {
 		if (!this._drawingsToolbarContainer) return;
 		
 		this._initializeDrawingTools();
-		this._initializeSubToolbar();
+		//this._addColorPicker(this._drawingsSubToolbarContainer!);
+		//this._initializeSubToolbar();
 		this._initialized = true;
 	}
 

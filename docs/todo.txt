@@ -1,26 +1,30 @@
 v1
 --
-sub-tool bar to allow additional customization of drawing 
-rclick on subtool open color wheel
-allow users to modify styling
-allow user to modify drawing size and position
-  - adjust shape
-  - move
-  - add text
-allow selected drawing tool to persist between charts
-support drawings beyond availalbe data / projection
-We have a drawing object, that applies the drawing, but then we have to apply it to multiple charts
-    whenever a drawing is updated, we have apply 
-    that to all relevant charts (add, update, remove).  We dont need to do this for every drawing.
-deselect selected drawing on rclick
+
+- unclick if rclick hover over drawing
+- seperate subtool bar to div
+- position chart to near front of available data
+- prevent rclick on subtoolbar
+- rclick on subtool open color wheel
+
+position can be weird, maybe we should force save pos so left bottom most is first point
+drawing can crash by clicking around too much
+
+
+line, and ext line drawings
+
+test when new data is added
+  make sure whitespade is supported
+
 more drawings to get a feel of how to further break down drawing class and views
 check dispsol of all event handlers (tools, subtools, charts, etc..)
-the plumbing of primaties is not right.  charts is still messing with it
-do i even need to track primatives?  can i apply the same primitive to different charts?  add, modify, remove?  and it
-will be internally handled by chart
 
 v2
 --
+multi chart support of same symbol, synced drawings
+add text to drawing
+allow users to modify styling
+sub-tool bar to allow additional customization of drawing 
 more drawings!
 new context menu when r-clicking a drawing, to allow additional functions
     - change styling (colors, opacity, )

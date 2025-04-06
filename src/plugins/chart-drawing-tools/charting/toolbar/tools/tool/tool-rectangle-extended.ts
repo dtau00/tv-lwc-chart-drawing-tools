@@ -7,6 +7,7 @@ import { SubToolThickness } from "../../sub-tools/sub-tool/sub-tool-thickness";
 import { DrawingSubToolType, DrawingSubTools } from "../../sub-tools/drawing-sub-tools";
 import { DrawingToolType } from "../drawing-tools";
 import { setSubToolbarButton } from "../../common";
+import { createSpacer } from "../../../../common/html";
 
 export class ToolRectangleExtended extends Tool {
     private readonly  _totalColors: number = 3
@@ -29,6 +30,8 @@ export class ToolRectangleExtended extends Tool {
             const subTool = new SubToolColor("fillColor", this.name, type?.name || '', type?.description || '', type?.icon || '', i, this.valueUpdatedCallback);
             setSubToolbarButton(subTool, this.subTools, container);
         }
+
+        container.appendChild(createSpacer());
 
         type = DrawingSubTools.get(DrawingSubToolType.Opacity);
         for(let i = 0; i < this._totalOpacities; i++){

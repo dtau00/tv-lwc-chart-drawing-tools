@@ -30,7 +30,7 @@ abstract class Tool implements ITool {
 
     setToolbarButton(container: HTMLDivElement, listener?: (evt: MouseEvent) => void): HTMLDivElement {
         this._listener = listener || this.defaultMouseListener;
-        this.button = createToolbarButton(this.name, this.description, this.icon, (evt: MouseEvent) => this._listener(evt), 'click', container!);
+        this.button = createToolbarButton(this.name, this.description, this.icon, 'div', (evt: MouseEvent) => this._listener(evt), 'click', container!);
         return this.button;
     }
 

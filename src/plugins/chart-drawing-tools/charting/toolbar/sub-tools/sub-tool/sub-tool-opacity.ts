@@ -3,7 +3,7 @@ import { DrawingSubToolType } from "../drawing-sub-tools";
 
 export class SubToolOpacity extends SubTool {
     constructor(propertyName: string, parentTool: string, name: string, description: string, icon: string, index: number, valueUpdatedCallback?: (value: any) => void) {
-        super(propertyName, parentTool, name, description, icon, index, DrawingSubToolType.Opacity, valueUpdatedCallback);
+        super(propertyName, parentTool, 'div', name, description, icon, index, DrawingSubToolType.Opacity, valueUpdatedCallback);
     }
 
     mouseListener(evt: MouseEvent, index?: number): void {
@@ -20,7 +20,7 @@ export class SubToolOpacity extends SubTool {
         if (!this.div) return
         this.div.style.borderRadius = '50%';
         this.div.style.width = '20px';
-        this.div.style.height = '15px';
+        this.div.style.height = '20px';
         this.div.style.border = '1px solid #000';
         this.div.style.backgroundColor = 'black';
         this.div.style.opacity = this.value;

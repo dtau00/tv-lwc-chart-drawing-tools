@@ -6,11 +6,11 @@ import {dataSample} from './data-sample.ts';
 const data : CandlestickData[] = JSON.parse(dataSample) // using hard coded data for consistency
 //const data = generateCandlestickData(); // or use randomized data each time on load
 
-const plugin1 = generateChart('chartId1', 'AAPL', 1, 'chart1', 'toolbar1', data);
-const plugin2 = generateChart('chartId2', 'BTC', 1, 'chart2', 'toolbar2', data);
-//const plugin3 = generateChart('chartId3', 'BTC', 5, 'chart3', 'toolbar3', data);
+const plugin1 = generateChart('chartId1', 'AAPL', 1, 'chart1', 'toolbar1', 'subtoolbar1', data);
+const plugin2 = generateChart('chartId2', 'BTC', 1, 'chart2', 'toolbar2', 'subtoolbar2', data);
+//const plugin3 = generateChart('chartId3', 'BTC', 5, 'chart3', 'toolbar3', 'subtoolbar3', data);
 
-function generateChart(id: string, symbol: string, secondsPerBar: number, chartContainerId : string, toolbarContainerId : string, data: CandlestickData[]) : ChartDrawingToolsPlugin {
+function generateChart(id: string, symbol: string, secondsPerBar: number, chartContainerId : string, toolbarContainerId : string, subToolbarContainerId : string, data: CandlestickData[]) : ChartDrawingToolsPlugin {
 	// create the chart
 	const chart = ((window as unknown as any).chart = createChart(chartContainerId, {
 		autoSize: true,
@@ -41,6 +41,7 @@ function generateChart(id: string, symbol: string, secondsPerBar: number, chartC
 		secondsPerBar,
 		document.querySelector<HTMLDivElement>(`#${chartContainerId}`)!,
 		document.querySelector<HTMLDivElement>(`#${toolbarContainerId}`)!,
+		document.querySelector<HTMLDivElement>(`#${subToolbarContainerId}`)!,
 		id, 
 	); 
 }

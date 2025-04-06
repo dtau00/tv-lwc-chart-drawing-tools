@@ -16,14 +16,14 @@ export const DrawingSubTools: Map<DrawingSubToolType, DrawingSubToolInfo> = new 
     [DrawingSubToolType.Color, {
         type: DrawingSubToolType.Color,
         name: 'color',
-        icon: '◯',
+        icon: '',
         description: 'Color of drawing.  Right click to change color.',
         defaultValue: 'rgba(255, 116, 108, 1)'
     }],
     [DrawingSubToolType.Opacity, {
         type: DrawingSubToolType.Opacity,
         name: 'opacity',
-        icon: '◐',
+        icon: '',
         description: 'Transparency of drawing.  Right click to change transparency level.',
         defaultValue: 0.75
     }],

@@ -4,7 +4,8 @@
     gap: 10px;
     padding-inline-start: 10px;
     box-sizing: border-box;
-    padding: 10px;
+    padding: 3px;
+    padding-left: 7px;
     background-color: rgba(224, 227, 235, 1);
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;

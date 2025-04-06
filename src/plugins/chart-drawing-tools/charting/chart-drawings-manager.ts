@@ -154,6 +154,7 @@ export class ChartDrawingsManager {
         this._drawings.set(this._selectedDrawing.symbolName, drawings.filter(d => d !== this._selectedDrawing));
         this.saveDrawings(this._selectedDrawing.symbolName);
         this.unselectDrawing();
+        document.body.style.cursor = 'default';
     }
 
     public destroy(): void {
@@ -328,12 +329,13 @@ export class ChartDrawingsManager {
             this.unselectTool()
             return;
         }
-
+        this.unselectDrawing();
+        /*
         // Deselect if right click is outside of drawing
         const point = getChartPointFromMouseEvent(evt, chartContainer.chartDivContainer);  
         if(point && !containsPoints(chartContainer.chart, chartContainer.series, point, this._selectedDrawing.drawingPoints)){
             this.unselectDrawing();
-        }
+        }*/
     }
 
     private _onKeyDown = (evt: KeyboardEvent): void => {

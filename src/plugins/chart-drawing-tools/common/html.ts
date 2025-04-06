@@ -16,3 +16,12 @@ export function unselectAllDivsForGroup(container: HTMLDivElement, names: string
         }
     }
 }
+
+export function createSpacer(): HTMLSpanElement {
+    const spacer = document.createElement('span');
+    spacer.style.width = '5px';
+    spacer.style.display = 'inline-block';
+    spacer.style.textAlign = 'center';
+    spacer.style.verticalAlign = 'top';
+    return spacer;
+}

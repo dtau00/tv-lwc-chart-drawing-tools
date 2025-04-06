@@ -29,3 +29,16 @@ p {
     line-height: 1.6;
     color: #42526E;
 } 
+
+input[type="color"]::-moz-color-swatch {
+    border: none;
+  }
+  
+  input[type="color"]::-webkit-color-swatch-wrapper {
+    padding: 0;
+    border-radius: 0;
+  }
+  
+  input[type="color"]::-webkit-color-swatch {
+    border: none;
+  }

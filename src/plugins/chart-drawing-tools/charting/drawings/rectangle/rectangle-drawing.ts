@@ -147,49 +147,8 @@ export class RectangleDrawing extends ChartDrawingBase{
 			this.tmpDrawingPoints[0] = newDrawingPoint1
 			this.tmpDrawingPoints[1] =newDrawingPoint2
 		}
-
-
-		/*
-		// Note we can't directly update the drawingPoints or the time value will be off , so always have to calculate from the initial points
-		let xOffset = endPoint.x - startPoint.x;
-		let yOffset = endPoint.y - startPoint.y;
-
-		// So we dont want to update the drawingPoints until the update is finished, we will use tmpDrawingPoints to store the new points
-		const drawingPoint1 = this.drawingPoints[0];
-		const drawingPoint2 = this.drawingPoints[1];
-
-		// convert to coordinates
-		let pricePoint1 = this._series.priceToCoordinate(drawingPoint1.price);
-		let pricePoint2 = this._series.priceToCoordinate(drawingPoint2.price);
-		let timePoint1 = this._chart.timeScale().timeToCoordinate(drawingPoint1.time) 
-		let timePoint2 = this._chart.timeScale().timeToCoordinate(drawingPoint2.time)
-
-		if(timePoint1 !== null && timePoint2 !== null && pricePoint1 !== null && pricePoint2 !== null){
-			// offset coordinates
-			timePoint1 = (timePoint1 + xOffset) as Coordinate;
-			timePoint2 = (timePoint2 + xOffset) as Coordinate;
-			pricePoint1 = (pricePoint1 + yOffset) as Coordinate;
-			pricePoint2 = (pricePoint2 + yOffset) as Coordinate;
-
-			if(this._isExtended){
-				const end = this._chart.timeScale().getVisibleRange()?.to
-				if(end)
-					timePoint2 = this._chart.timeScale().timeToCoordinate(end)!
-			}
-				// convert back to drawing coordinates
-			const newDrawingPoint1 = {time: this._chart.timeScale().coordinateToTime(timePoint1)!, price: this._series.coordinateToPrice(pricePoint1)!};
-			const newDrawingPoint2 = {time: this._chart.timeScale().coordinateToTime(timePoint2)!, price: this._series.coordinateToPrice(pricePoint2)!};
-
-			// update the drawing
-			this._view().updatePoints( newDrawingPoint1, newDrawingPoint2) 
-
-			//  store new points temporarily, we will set this back to the drawingPoints when the update is finished
-			// TODO we wont need this if we save directly from the class, consider adding save directly from the class
-			this.tmpDrawingPoints[0] = newDrawingPoint1;
-			this.tmpDrawingPoints[1] = newDrawingPoint2;
-		}
-			*/
 	}
+
 
 	private _view(): Rectangle {
 		return this.drawingView as Rectangle;

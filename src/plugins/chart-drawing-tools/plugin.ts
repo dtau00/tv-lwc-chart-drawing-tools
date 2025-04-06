@@ -17,6 +17,7 @@ export class ChartDrawingToolsPlugin {
 	private _toolbar: ChartDrawingsToolbar;
 	private _chartDrawingsManager: ChartDrawingsManager;
 	private _whiteSpaceTotal: number = 100;
+	private _startCandlePosition: number = 5;
 	private _whiteSpaceSeries: ISeriesApi<SeriesType>;
 	private _chart: IChartApi;
 	private _series: ISeriesApi<SeriesType>;
@@ -31,6 +32,7 @@ export class ChartDrawingToolsPlugin {
 		secondsPerBar: number,
 		chartDivContainer: HTMLDivElement,
 		drawingsToolbarContainer: HTMLDivElement,
+		subToolbarContainer: HTMLDivElement,
 		id?: string,
 		tags?: string[] | [],
 	) {
@@ -48,7 +50,7 @@ export class ChartDrawingToolsPlugin {
 		this._chartDrawingsManager.registerChart(chartDivContainer,chart, series, chartId, symbolName, secondsPerBar, tags || []);
 
 		// Create the toolbar
-		this._toolbar = new ChartDrawingsToolbar(this._chartDrawingsManager, drawingsToolbarContainer, chartId);
+		this._toolbar = new ChartDrawingsToolbar(this._chartDrawingsManager, drawingsToolbarContainer, subToolbarContainer, chartId);
 	}
 
 	// Expose the event bus so others can listen for chart and drawing events
@@ -61,6 +63,7 @@ export class ChartDrawingToolsPlugin {
 		if(data && data.length > 0){
 			this._data = data
 			this._whiteSpaceSeries = this._initWhitespaceSeries(data)
+			this._chart.timeScale().scrollToPosition(-(this._whiteSpaceTotal - this._startCandlePosition), false);
 		}
 	}
 

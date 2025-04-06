@@ -1,3 +1,5 @@
+import { ToolbarButton } from "../common";
+
 interface ISubTool {
     div: HTMLDivElement;
     name: string;
@@ -10,6 +12,7 @@ interface ISubTool {
     setToolbarButton: (container: HTMLDivElement, listener?: (evt: MouseEvent) => void) => void;
     updateDiv: () => void;
     dispose(): void;
+    init(): void;
 }
 
 export default ISubTool;

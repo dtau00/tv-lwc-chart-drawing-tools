@@ -53,24 +53,28 @@ export class LineVerticalDrawing extends ChartDrawingBase{
 		return _isPointNearLine(chart, series, point, points, offset);
 	}
 
-	onHoverWhenSelected(point: Point): BoxSide {
-		return this._setCursor(point);
+	onHoverWhenSelected(point: Point) : void {
+		this._setCursor(point);
 	}
 
-	onDrag(param: MouseEventParams, startPoint: Point, endPoint: Point, side: BoxSide): void {
+	onDrag(param: MouseEventParams, startPoint: Point, endPoint: Point): void {
 		if(!param.point)
 			return;
 
-		this._updatePosition(startPoint, endPoint, side);
+		this._updatePosition(startPoint, endPoint);
 	}
 
-	private _setCursor(point: Point): BoxSide | null {
-		document.body.style.cursor = 'ew-resize';
-		return 'inside'
+	private _setCursor(point: Point): void{
+		if(this.containsPoint(this._chart!, this._series!, point, this.drawingPoints)){
+			document.body.style.cursor = 'ew-resize';
+		}
+		else{
+			document.body.style.cursor = 'default';
+		}
 	}
 
 	// update the position of the drawing, based on how its being resized
-	private _updatePosition(startPoint: Point, endPoint: Point, side: BoxSide): void {
+	private _updatePosition(startPoint: Point, endPoint: Point): void {
 		if (!this._chart || this._isDrawing || !this._series || this.drawingPoints.length < 2) 
 			return;
 

@@ -23,8 +23,8 @@ export interface IChartDrawing {
     select(): void;
     deselect(): void;
     onMouseMove(event: MouseEventParams): void;
-    onHoverWhenSelected(point: Point): BoxSide;
-    onDrag(param: MouseEventParams, startPoint: Point, endPoint: Point, side: BoxSide): void;
+    onHoverWhenSelected(point: Point): void;
+    onDrag(param: MouseEventParams, startPoint: Point, endPoint: Point): void;
     onClick(event: MouseEventParams): void;
     //updatePosition(startPoint: Point, endPoint: Point, side: BoxSide): void;
 

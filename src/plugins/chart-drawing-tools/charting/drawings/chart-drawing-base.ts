@@ -120,8 +120,8 @@ export abstract class ChartDrawingBase implements IChartDrawing {
     //abstract getBounds(): { top: number; bottom: number; left: number; right: number };
     //abstract updatePosition(startPoint: Point, endPoint: Point, side: BoxSide): void;
     abstract select(): void;
-    abstract onDrag(param: MouseEventParams, startPoint: Point, endPoint: Point, side: BoxSide): void;
-    abstract onHoverWhenSelected(point: Point): BoxSide;   
+    abstract onDrag(param: MouseEventParams, startPoint: Point, endPoint: Point): void;
+    abstract onHoverWhenSelected(point: Point): void;   
 
     // set the style options to base properties, this is used when loading from config
     public setBaseStyleOptionsFromConfig() {    

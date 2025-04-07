@@ -11,12 +11,12 @@ import { Line as View } from './line-view';
 import { lineDrawingToolDefaultOptions as drawingToolDefaultOptions, LineDrawingToolOptions } from './line-options';
 import { ChartDrawingBase, ChartDrawingBaseProps } from '../chart-drawing-base';
 import { DrawingToolType } from '../../toolbar/tools/drawing-tools';
-import { _isPointNearLine, BoxSide, getBoxHoverTarget, getCursorForBoxSide, resizeBoxByHandle } from '../../../common/points';
+import { _isPointNearLine, getClosestHandleOnLine, LineHandle, resizeBoxByHandle, resizeLineByHandle } from '../../../common/points';
 import { DrawingPoint } from '../../../common/common';
 export class LineDrawing extends ChartDrawingBase{
 	private static readonly TOTAL_DRAWING_POINTS = 2; // Set the drawing points for this type of drawing.  A box will have 2, a line ray will have 1, etc...
 	private _toolType: DrawingToolType; // = DrawingToolType.Rectangle; // set the tool type for the class
-
+	private _side : LineHandle;
 
 	constructor(
 		chart: IChartApi,
@@ -45,25 +45,33 @@ export class LineDrawing extends ChartDrawingBase{
 		return _isPointNearLine(chart, series, point, points, offset);
 	}
 
-	onHoverWhenSelected(point: Point): BoxSide {
-		return this._setCursor(point);
+	onHoverWhenSelected(point: Point) : void {
+		this._setCursor(point);
 	}
 
-	onDrag(param: MouseEventParams, startPoint: Point, endPoint: Point, side: BoxSide): void {
+	onDrag(param: MouseEventParams, startPoint: Point, endPoint: Point): void {
 		if(!param.point)
 			return;
 
-		this._updatePosition(startPoint, endPoint, side);
+		this._updatePosition(startPoint, endPoint, this._side);
 	}
 
-	private _setCursor(point: Point): BoxSide | null {
-		const side = getBoxHoverTarget(this._chart!, this._series!, this.drawingPoints[0], this.drawingPoints[1], point);
-		document.body.style.cursor = getCursorForBoxSide(side);
-		return side
+	private _setCursor(point: Point): void {
+		// todo offset to handle thickness
+		this._side = getClosestHandleOnLine(this._chart!, this._series!, this.drawingPoints[0], this.drawingPoints[1], point);
+		if(this._side === null){
+			document.body.style.cursor = 'default';
+		}
+		else if(this._side === 'middle'){
+			document.body.style.cursor = 'move';
+		}
+		else{	
+			document.body.style.cursor = 'col-resize';
+		}
 	}
 
 	// update the position of the drawing, based on how its being resized
-	private _updatePosition(startPoint: Point, endPoint: Point, side: BoxSide): void {
+	private _updatePosition(startPoint: Point, endPoint: Point, side: LineHandle): void {
 		if (!this._chart || this._isDrawing || !this._series || this.drawingPoints.length < 2) 
 			return;
 
@@ -94,7 +102,7 @@ export class LineDrawing extends ChartDrawingBase{
 			}
 
 			// adjust coordinates based on the side
-			if(side === 'inside'){
+			if(side === 'middle'){
 				if(p1.x !== null && p2.x !== null && p1.y !== null && p2.y !== null){
 					p1.x = (p1.x + xOffset) as Coordinate;
 					p2.x = (p2.x + xOffset) as Coordinate;
@@ -105,7 +113,7 @@ export class LineDrawing extends ChartDrawingBase{
 			else if(p1.x !== null && p2.x !== null && p1.y !== null && p2.y !== null){
 				const point1 = {x: p1.x, y: p1.y};		
 				const point2 = {x: p2.x, y: p2.y};
-				const newPoints = resizeBoxByHandle(point1, point2, side, endPoint);
+				const newPoints = resizeLineByHandle(point1, point2, side, endPoint);
 				p1 = newPoints[0];
 				p2 = newPoints[1];
 			}
@@ -126,3 +134,4 @@ export class LineDrawing extends ChartDrawingBase{
 		}
 	}
 }
+

@@ -16,6 +16,8 @@ import { BoxSide, getBoxHoverTarget, getCursorForBoxSide, resizeBoxByHandle } fr
 export class RectangleExtendedDrawing extends ChartDrawingBase{
 	private static readonly TOTAL_DRAWING_POINTS = 2; // Set the drawing points for this type of drawing.  A box will have 2, a line ray will have 1, etc...
 	private _toolType: DrawingToolType; // = DrawingToolType.Rectangle; // set the tool type for the class
+	private _side: BoxSide;
+
 	constructor(
 		chart: IChartApi,
 		series: ISeriesApi<SeriesType>,
@@ -53,21 +55,19 @@ export class RectangleExtendedDrawing extends ChartDrawingBase{
 		super.selected();
 	}
 
-	onHoverWhenSelected(point: Point): BoxSide {
-		return this._setCursor(point);
+	onHoverWhenSelected(point: Point) : void {
+		this._setCursor(point);
 	}
 
-	onDrag(param: MouseEventParams, startPoint: Point, endPoint: Point, side: BoxSide): void {
+	onDrag(param: MouseEventParams, startPoint: Point, endPoint: Point): void {
 		if(!param.point)
 			return;
-
-		this._updatePosition(startPoint, endPoint, side);
+		this._updatePosition(startPoint, endPoint, this._side);
 	}
 
-	private _setCursor(point: Point): BoxSide | null {
-		const side = getBoxHoverTarget(this._chart!, this._series!, this.drawingPoints[0], this.drawingPoints[1], point);
-		document.body.style.cursor = getCursorForBoxSide(side);
-		return side;
+	private _setCursor(point: Point): void {
+		this._side = getBoxHoverTarget(this._chart!, this._series!, this.drawingPoints[0], this.drawingPoints[1], point);
+		document.body.style.cursor = getCursorForBoxSide(this._side);
 	}
 
 	// update the position of the drawing, based on how its being resized

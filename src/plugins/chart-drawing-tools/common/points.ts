@@ -360,6 +360,7 @@ export function resizeBoxByHandle(
 
   return [{x: newP1.x as Coordinate, y: newP1.y as Coordinate}, {x: newP2.x as Coordinate, y: newP2.y as Coordinate}  ];
   // Optional: Normalize again if your rendering expects top-left -> bottom-right
+  /*
   const finalP1 = {
     x: Math.min(newP1.x, newP2.x),
     y: Math.min(newP1.y, newP2.y),
@@ -369,7 +370,84 @@ export function resizeBoxByHandle(
     y: Math.max(newP1.y, newP2.y),
   };
 
-  return [finalP1, finalP2];
+  return [finalP1, finalP2];*/
+}
+
+export type LineHandle = 'point1' | 'point2' | 'middle' | null;
+
+export function resizeLineByHandle(
+  p1: Point,
+  p2: Point,
+  handle: LineHandle,
+  mouse: Point
+): [Point, Point] {
+  let newP1 = { ...p1 };
+  let newP2 = { ...p2 };
+
+  switch (handle) {
+    case 'point1':
+      newP1 = { ...mouse };
+      break;
+    case 'point2':
+      newP2 = { ...mouse };
+      break;
+    case 'middle':
+      const dx = mouse.x - (p1.x + p2.x) / 2;
+      const dy = mouse.y - (p1.y + p2.y) / 2;
+      newP1 = { x: p1.x + dx as Coordinate, y: p1.y + dy as Coordinate };
+      newP2 = { x: p2.x + dx as Coordinate, y: p2.y + dy as Coordinate };
+      break;
+  }
+
+  return [newP1, newP2];
+}
+
+export function getClosestHandleOnLine(
+  chart: IChartApi,
+  series: ISeriesApi<SeriesType>,
+  p1: DrawingPoint,
+  p2: DrawingPoint,
+  mouse: Point,
+  offset = 5
+): LineHandle {
+  const timeScale = chart.timeScale();
+  const priceScale = series;
+
+  const x1 = timeScale.timeToCoordinate(p1.time);
+  const y1 = priceScale.priceToCoordinate(p1.price);
+  const x2 = timeScale.timeToCoordinate(p2.time);
+  const y2 = priceScale.priceToCoordinate(p2.price);
+
+  if (x1 === null || y1 === null || x2 === null || y2 === null) return null;
+
+  // Helper: distance from mouse to a point
+  const dist = (pt: Point) => Math.hypot(mouse.x - pt.x, mouse.y - pt.y);
+
+  // Check endpoints
+  const d1 = dist({ x: x1, y: y1 });
+  if (d1 <= offset) return 'point1';
+
+  const d2 = dist({ x: x2, y: y2 });
+  if (d2 <= offset) return 'point2';
+
+  // Project mouse onto line segment
+  const dx = x2 - x1;
+  const dy = y2 - y1;
+  const lengthSq = dx * dx + dy * dy;
+
+  if (lengthSq === 0) return null; // Degenerate line
+
+  const t = ((mouse.x - x1) * dx + (mouse.y - y1) * dy) / lengthSq;
+  const clampedT = Math.max(0, Math.min(1, t));
+
+  const closestX = x1 + clampedT * dx;
+  const closestY = y1 + clampedT * dy;
+
+  const distanceToLine = Math.hypot(mouse.x - closestX, mouse.y - closestY);
+
+  if (distanceToLine <= offset) return 'middle';
+
+  return null;
 }
 export function getCursorForBoxSide(side: BoxSide): string {
     switch (side) {

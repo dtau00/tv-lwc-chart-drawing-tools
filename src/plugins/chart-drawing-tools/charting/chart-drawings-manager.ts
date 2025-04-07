@@ -1,4 +1,4 @@
-import { IChartApi, ISeriesApi, MouseEventParams, Point, SeriesType, Coordinate } from 'lightweight-charts';
+import { IChartApi, ISeriesApi, MouseEventParams, Point, SeriesType } from 'lightweight-charts';
 import { ChartDrawingBase, ChartDrawingBaseProps } from './drawings/chart-drawing-base.ts';
 import { DrawingToolType } from './toolbar/tools/drawing-tools.ts';
 import { RectangleExtendedDrawing } from './drawings/rectangle-extended/rectangle-extended-drawing.ts';
@@ -9,7 +9,7 @@ import { ChartContainer } from './chart-container.ts';
 import Tool from './toolbar/tools/tool-base.ts';
 import { ChartEvents } from '../enums/events.ts';
 import { PluginBase } from '../../plugin-base.ts';
-import { getChartPointFromMouseEvent, getBoxHoverTarget, getCursorForBoxSide, BoxSide } from '../common/points.ts';
+import { getChartPointFromMouseEvent } from '../common/points.ts';
 import { LineDrawing } from './drawings/line/line-drawing.ts';
 import { LineHorizontalDrawing } from './drawings/line-horizontal/line-horizontal-drawing.ts';
 import { LineVerticalDrawing } from './drawings/line-vertical/line-vertical-drawing.ts';
@@ -39,7 +39,7 @@ export class ChartDrawingsManager {
 
     private _mouseDownStartPoint: Point | null = null;
     private _mousePosition: Point | null = null;
-    private _mouseDragginSide: BoxSide;
+    private _isMouseDragging: boolean = false;
     private _mouseHoldTimer: NodeJS.Timeout | null = null;
 
     private constructor() {
@@ -307,13 +307,9 @@ export class ChartDrawingsManager {
         if(!this._mouseDownStartPoint || !p1 || !p2)
             return false;
 
-        //if(this._hasMouseMoved())
-        //    return;
-        // this._mouseHoldTimer = setTimeout(() => this._mouseHoldTimeout(chartContainer.chart), ChartDrawingsManager.MouseHoldTimeMs);
-        const side = getBoxHoverTarget(chartContainer.chart, chartContainer.series, p1, p2, this._mouseDownStartPoint);
-        //console.log('onMouseDown side', side);
-        if(side){
-            this._mouseDragginSide = this._selectedDrawing.onHoverWhenSelected(this._mouseDownStartPoint); // sets the cursor
+        if(this._selectedDrawing.containsPoint(chartContainer.chart, chartContainer.series, this._mouseDownStartPoint, this._selectedDrawing.drawingPoints)){
+            this._isMouseDragging = true;
+            this._selectedDrawing.onHoverWhenSelected(this._mouseDownStartPoint); // sets the cursor
             this._setChartDragging(chartContainer.chart, false);
         }
 
@@ -321,7 +317,7 @@ export class ChartDrawingsManager {
     }
 
     public onMouseUp(evt: MouseEvent): void {
-        if(this._mouseDragginSide){
+        if(this._isMouseDragging){
             this._selectedDrawing?.setTmpToNewDrawingPoints();
             this.saveDrawings(this._selectedDrawing?.symbolName || '');
         }
@@ -334,13 +330,13 @@ export class ChartDrawingsManager {
             return;
 
         this._mousePosition = param.point || null; 
-        if(this._mouseDragginSide && this._mouseDownStartPoint && this._selectedDrawing){
+        if(this._isMouseDragging && this._mouseDownStartPoint && this._selectedDrawing){
             // move drawing
-            this._selectedDrawing.onDrag(param, this._mouseDownStartPoint, param.point, this._mouseDragginSide);
+            this._selectedDrawing.onDrag(param, this._mouseDownStartPoint, param.point);
            // this._selectedDrawing?.updatePosition(this._mouseDownStartPoint, param.point, this._isMouseDragging);
         }
         else if(this._selectedDrawing && this._selectedDrawing.isCompleted){
-            this._mouseDragginSide = this._selectedDrawing.onHoverWhenSelected(param.point); // sets the cursor
+           this._selectedDrawing.onHoverWhenSelected(param.point); // sets the cursor
         }
     }
 
@@ -396,7 +392,7 @@ export class ChartDrawingsManager {
 
     private _resetMouseDragControls(): void {
         this._mouseDownStartPoint = null;
-        this._mouseDragginSide = null;
+        this._isMouseDragging = false;
         if(this._mouseHoldTimer)
             clearTimeout(this._mouseHoldTimer);
 

@@ -247,6 +247,7 @@ export function resizeBoxByHandle(
   return [newP1, newP2];
 }
 */
+/*
 export function resizeBoxByHandle(
     p1: Point,
     p2: Point,
@@ -302,7 +303,74 @@ export function resizeBoxByHandle(
   
     return [newP1, newP2];
   }
+*/
+export function resizeBoxByHandle(
+  p1: Point,
+  p2: Point,
+  handle: BoxSide,
+  mouse: Point
+): [Point, Point] {
+  // Normalize the box
+  const minX = Math.min(p1.x, p2.x);
+  const maxX = Math.max(p1.x, p2.x);
+  const minY = Math.min(p1.y, p2.y);
+  const maxY = Math.max(p1.y, p2.y);
 
+  let newP1 = { x: minX, y: minY };
+  let newP2 = { x: maxX, y: maxY };
+
+  switch (handle) {
+    case 'top-left':
+      newP1.x = mouse.x;
+      newP1.y = mouse.y;
+      break;
+    case 'top':
+      newP1.y = mouse.y;
+      break;
+    case 'top-right':
+      newP2.x = mouse.x;
+      newP1.y = mouse.y;
+      break;
+    case 'left':
+      newP1.x = mouse.x;
+      break;
+    case 'right':
+      newP2.x = mouse.x;
+      break;
+    case 'bottom-left':
+      newP1.x = mouse.x;
+      newP2.y = mouse.y;
+      break;
+    case 'bottom':
+      newP2.y = mouse.y;
+      break;
+    case 'bottom-right':
+      newP2.x = mouse.x;
+      newP2.y = mouse.y;
+      break;
+    case 'inside':
+      const dx = mouse.x - (minX + (maxX - minX) / 2);
+      const dy = mouse.y - (minY + (maxY - minY) / 2);
+      newP1.x += dx;
+      newP1.y += dy;
+      newP2.x += dx;
+      newP2.y += dy;
+      break;
+  }
+
+  return [{x: newP1.x as Coordinate, y: newP1.y as Coordinate}, {x: newP2.x as Coordinate, y: newP2.y as Coordinate}  ];
+  // Optional: Normalize again if your rendering expects top-left -> bottom-right
+  const finalP1 = {
+    x: Math.min(newP1.x, newP2.x),
+    y: Math.min(newP1.y, newP2.y),
+  };
+  const finalP2 = {
+    x: Math.max(newP1.x, newP2.x),
+    y: Math.max(newP1.y, newP2.y),
+  };
+
+  return [finalP1, finalP2];
+}
 export function getCursorForBoxSide(side: BoxSide): string {
     switch (side) {
       case 'top-left':

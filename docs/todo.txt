@@ -1,6 +1,5 @@
 v1
 --
-rectangle resize can sometimes get mixed up and pivot at the wrong corner
 pivot line drawing correctly if grabbed from corner
 vert, horizon, and ray only draw to visible area, doesn't extend to the edge
 predraw single click drawings (vert, horiz, etc...)

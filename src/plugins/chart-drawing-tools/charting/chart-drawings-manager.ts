@@ -39,7 +39,7 @@ export class ChartDrawingsManager {
 
     private _mouseDownStartPoint: Point | null = null;
     private _mousePosition: Point | null = null;
-    private _isMouseDragging: BoxSide = null;
+    private _mouseDragginSide: BoxSide;
     private _mouseHoldTimer: NodeJS.Timeout | null = null;
 
     private constructor() {
@@ -313,8 +313,7 @@ export class ChartDrawingsManager {
         const side = getBoxHoverTarget(chartContainer.chart, chartContainer.series, p1, p2, this._mouseDownStartPoint);
         //console.log('onMouseDown side', side);
         if(side){
-            this._isMouseDragging = side;
-            document.body.style.cursor = getCursorForBoxSide(side);
+            this._mouseDragginSide = this._selectedDrawing.onHoverWhenSelected(this._mouseDownStartPoint); // sets the cursor
             this._setChartDragging(chartContainer.chart, false);
         }
 
@@ -322,7 +321,7 @@ export class ChartDrawingsManager {
     }
 
     public onMouseUp(evt: MouseEvent): void {
-        if(this._isMouseDragging){
+        if(this._mouseDragginSide){
             this._selectedDrawing?.setTmpToNewDrawingPoints();
             this.saveDrawings(this._selectedDrawing?.symbolName || '');
         }
@@ -335,13 +334,13 @@ export class ChartDrawingsManager {
             return;
 
         this._mousePosition = param.point || null; 
-        if(this._isMouseDragging && this._mouseDownStartPoint && this._selectedDrawing){
+        if(this._mouseDragginSide && this._mouseDownStartPoint && this._selectedDrawing){
             // move drawing
-            this._selectedDrawing?.updatePosition(this._mouseDownStartPoint, param.point, this._isMouseDragging);
+            this._selectedDrawing.onDrag(param, this._mouseDownStartPoint, param.point, this._mouseDragginSide);
+           // this._selectedDrawing?.updatePosition(this._mouseDownStartPoint, param.point, this._isMouseDragging);
         }
         else if(this._selectedDrawing && this._selectedDrawing.isCompleted){
-            const side = getBoxHoverTarget(this._currentChartContainer?.chart!, this._currentChartContainer?.series!, this._selectedDrawing.drawingPoints[0], this._selectedDrawing.drawingPoints[1], param.point);
-            document.body.style.cursor = getCursorForBoxSide(side);
+            this._mouseDragginSide = this._selectedDrawing.onHoverWhenSelected(param.point); // sets the cursor
         }
     }
 
@@ -396,9 +395,8 @@ export class ChartDrawingsManager {
     }
 
     private _resetMouseDragControls(): void {
-        //document.body.style.cursor = 'default';
         this._mouseDownStartPoint = null;
-        this._isMouseDragging = null;
+        this._mouseDragginSide = null;
         if(this._mouseHoldTimer)
             clearTimeout(this._mouseHoldTimer);
 

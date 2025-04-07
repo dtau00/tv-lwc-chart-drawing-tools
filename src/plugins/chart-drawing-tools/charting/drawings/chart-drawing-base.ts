@@ -118,13 +118,15 @@ export abstract class ChartDrawingBase implements IChartDrawing {
     // Abstract methods that must be implemented by derived classes
     //abstract draw(chart: IChartApi, series: ISeriesApi<SeriesType>): void;
     //abstract getBounds(): { top: number; bottom: number; left: number; right: number };
-    abstract updatePosition(startPoint: Point, endPoint: Point, side: BoxSide): void;
+    //abstract updatePosition(startPoint: Point, endPoint: Point, side: BoxSide): void;
     abstract select(): void;
+    abstract onDrag(param: MouseEventParams, startPoint: Point, endPoint: Point, side: BoxSide): void;
+    abstract onHoverWhenSelected(point: Point): BoxSide;   
 
-        // set the style options to base properties, this is used when loading from config
-        public setBaseStyleOptionsFromConfig() {
-            this.drawingView?.setBaseStyleOptionsFromConfig();
-        }
+    // set the style options to base properties, this is used when loading from config
+    public setBaseStyleOptionsFromConfig() {    
+        this.drawingView?.setBaseStyleOptionsFromConfig();
+    }
 
     containsPoint(chart: IChartApi, series: ISeriesApi<SeriesType>, point: Point, points: DrawingPoint[]): boolean {
 		return containsPoints(chart, series, point, points);
@@ -165,6 +167,9 @@ export abstract class ChartDrawingBase implements IChartDrawing {
 
     // TODO we can get rid of this by saving directly from the class, rather than from Manager
     setTmpToNewDrawingPoints(): void {
+        if(this.tmpDrawingPoints.length === 0)
+            return;
+
 		this.drawingPoints = this.tmpDrawingPoints;
 		this.tmpDrawingPoints = [];
 	}
@@ -177,7 +182,7 @@ export abstract class ChartDrawingBase implements IChartDrawing {
 
 		// if initial drawing is not completed, add the point
 		if(!this._isCompleted && price !== null){
-			this._addPoint({
+			this.addPoint({
 				time: param.time,
 				price,
 			});
@@ -185,6 +190,7 @@ export abstract class ChartDrawingBase implements IChartDrawing {
 	}
 
 	onMouseMove(param: MouseEventParams) {
+        //console.log('onMouseMove', param.point);
 		if (!this._chart || this._isDrawing || !this._series || !param.point) 
 			return;
 
@@ -256,21 +262,40 @@ export abstract class ChartDrawingBase implements IChartDrawing {
 		return this.drawingView as ViewBase;
 	}
 
-    private _addPoint(p: DrawingPoint) {
+    protected addPoint(p: DrawingPoint) {
 		this._points.push(p);
+        //this._points = this._reorderPoints(this._points);
 		this._setNewDrawing();
 	}
 
 	private _setNewDrawing(){
-		if(this._points.length === 1){
+        if (this._points.length >= this._totalDrawingPoints) {
+			this.completeDrawing();
+		}
+		else if(this._points.length === 1){
 			this.view().initializeDrawingViews([this._points[0], this._points[0]]);
 			this.setStyleOptions();
 
 			// we are only drawing this for the preview
 			ensureDefined(this._series).attachPrimitive(this.drawingView as PluginBase);
 		}
-		else if (this._points.length >= this._totalDrawingPoints) {
-			this.completeDrawing();
-		}
 	}
+
+    /*
+    // reorder 2 points from bottom left to top right
+    private _reorderPoints(points: DrawingPoint[]): DrawingPoint[] {
+        if(points.length !== 2)
+            return points;
+
+        const lowPrice = Math.min(...points.map(p => p.price));
+        const highPrice = Math.max(...points.map(p => p.price));
+
+        const lowTime = Math.min(...points.map(p => Number(p.time)));
+        const highTime = Math.max(...points.map(p => Number(p.time)));
+
+        const p1 : DrawingPoint = {time: lowTime as Time, price: lowPrice};
+        const p2 : DrawingPoint = {time: highTime, price: highPrice};
+
+        return [p1, p2];
+    }*/
 } 

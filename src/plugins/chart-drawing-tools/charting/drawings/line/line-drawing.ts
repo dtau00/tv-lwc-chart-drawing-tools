@@ -2,6 +2,7 @@ import {
 	Coordinate,
 	IChartApi,
 	ISeriesApi,
+    MouseEventParams,
     Point,
     SeriesType,
 } from 'lightweight-charts';
@@ -10,7 +11,7 @@ import { Line as View } from './line-view';
 import { lineDrawingToolDefaultOptions as drawingToolDefaultOptions, LineDrawingToolOptions } from './line-options';
 import { ChartDrawingBase, ChartDrawingBaseProps } from '../chart-drawing-base';
 import { DrawingToolType } from '../../toolbar/tools/drawing-tools';
-import { _isPointNearLine, BoxSide, resizeBoxByHandle } from '../../../common/points';
+import { _isPointNearLine, BoxSide, getBoxHoverTarget, getCursorForBoxSide, resizeBoxByHandle } from '../../../common/points';
 import { DrawingPoint } from '../../../common/common';
 export class LineDrawing extends ChartDrawingBase{
 	private static readonly TOTAL_DRAWING_POINTS = 2; // Set the drawing points for this type of drawing.  A box will have 2, a line ray will have 1, etc...
@@ -44,8 +45,25 @@ export class LineDrawing extends ChartDrawingBase{
 		return _isPointNearLine(chart, series, point, points, offset);
 	}
 
+	onHoverWhenSelected(point: Point): BoxSide {
+		return this._setCursor(point);
+	}
+
+	onDrag(param: MouseEventParams, startPoint: Point, endPoint: Point, side: BoxSide): void {
+		if(!param.point)
+			return;
+
+		this._updatePosition(startPoint, endPoint, side);
+	}
+
+	private _setCursor(point: Point): BoxSide | null {
+		const side = getBoxHoverTarget(this._chart!, this._series!, this.drawingPoints[0], this.drawingPoints[1], point);
+		document.body.style.cursor = getCursorForBoxSide(side);
+		return side
+	}
+
 	// update the position of the drawing, based on how its being resized
-	updatePosition(startPoint: Point, endPoint: Point, side: BoxSide): void {
+	private _updatePosition(startPoint: Point, endPoint: Point, side: BoxSide): void {
 		if (!this._chart || this._isDrawing || !this._series || this.drawingPoints.length < 2) 
 			return;
 

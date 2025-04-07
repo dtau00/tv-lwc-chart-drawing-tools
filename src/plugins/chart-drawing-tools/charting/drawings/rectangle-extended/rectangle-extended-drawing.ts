@@ -2,6 +2,7 @@ import {
 	Coordinate,
 	IChartApi,
 	ISeriesApi,
+    MouseEventParams,
     Point,
     SeriesType,
 	Time,
@@ -10,7 +11,7 @@ import { RectangleExtendedView } from './rectangle-extended-view';
 import { rectangleExtendedDrawingToolDefaultOptions as drawingToolDefaultOptions } from './rectangle-extended-options';
 import { ChartDrawingBase, ChartDrawingBaseProps } from '../chart-drawing-base';
 import { DrawingToolType } from '../../toolbar/tools/drawing-tools';
-import { BoxSide, resizeBoxByHandle } from '../../../common/points';
+import { BoxSide, getBoxHoverTarget, getCursorForBoxSide, resizeBoxByHandle } from '../../../common/points';
 
 export class RectangleExtendedDrawing extends ChartDrawingBase{
 	private static readonly TOTAL_DRAWING_POINTS = 2; // Set the drawing points for this type of drawing.  A box will have 2, a line ray will have 1, etc...
@@ -22,7 +23,7 @@ export class RectangleExtendedDrawing extends ChartDrawingBase{
 		baseProps?: ChartDrawingBaseProps,
 	) {
 
-		let _drawingFinished =()=>{
+		const _finalizeDrawingPoints =()=>{
 			let p1 = this.drawingPoints[0];
 			let p2 = this.drawingPoints[1];
 			const end = this._chart?.timeScale().getVisibleRange()?.to;
@@ -38,9 +39,11 @@ export class RectangleExtendedDrawing extends ChartDrawingBase{
 		// MAKE SURE TO UPDATE THIS WHEN CREATING NEW DRAWING TOOLS
 		const toolType = DrawingToolType.RectangleExtended
 
-		super( toolType, chart, series, symbolName, RectangleExtendedDrawing.TOTAL_DRAWING_POINTS, drawingToolDefaultOptions, baseProps, _drawingFinished);
+		super( toolType, chart, series, symbolName, RectangleExtendedDrawing.TOTAL_DRAWING_POINTS, drawingToolDefaultOptions, baseProps, _finalizeDrawingPoints);
+		
+		const initializeFromStorage = baseProps ? true : false;
 		this._toolType = toolType
-		this.drawingView = new RectangleExtendedView(chart, series, this._toolType, drawingToolDefaultOptions,  baseProps?.styleOptions, baseProps || this.baseProps, baseProps ? true : false ); 
+		this.drawingView = new RectangleExtendedView(chart, series, this._toolType, drawingToolDefaultOptions,  baseProps?.styleOptions, baseProps || this.baseProps, initializeFromStorage); 
 	}
 
 	// TODO dont make this hard coded
@@ -50,8 +53,25 @@ export class RectangleExtendedDrawing extends ChartDrawingBase{
 		super.selected();
 	}
 
+	onHoverWhenSelected(point: Point): BoxSide {
+		return this._setCursor(point);
+	}
+
+	onDrag(param: MouseEventParams, startPoint: Point, endPoint: Point, side: BoxSide): void {
+		if(!param.point)
+			return;
+
+		this._updatePosition(startPoint, endPoint, side);
+	}
+
+	private _setCursor(point: Point): BoxSide | null {
+		const side = getBoxHoverTarget(this._chart!, this._series!, this.drawingPoints[0], this.drawingPoints[1], point);
+		document.body.style.cursor = getCursorForBoxSide(side);
+		return side;
+	}
+
 	// update the position of the drawing, based on how its being resized
-	updatePosition(startPoint: Point, endPoint: Point, side: BoxSide): void {
+	private _updatePosition(startPoint: Point, endPoint: Point, side: BoxSide): void {
 		if (!this._chart || this._isDrawing || !this._series || this.drawingPoints.length < 2) 
 			return;
 
@@ -118,7 +138,7 @@ export class RectangleExtendedDrawing extends ChartDrawingBase{
 				//  store new points temporarily, we will set this back to the drawingPoints when the update is finished
 				// TODO we wont need this if we save directly from the class, consider adding save directly from the class
 				this.tmpDrawingPoints[0] = newDrawingPoint1
-				this.tmpDrawingPoints[1] =newDrawingPoint2
+				this.tmpDrawingPoints[1] = newDrawingPoint2
 			}
 		}
 	}

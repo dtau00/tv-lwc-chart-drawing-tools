@@ -17,6 +17,14 @@ function generateChart(id: string, symbol: string, secondsPerBar: number, chartC
 		layout: {
 			background: { type: ColorType.Solid, color: 'charcoal' },
 		},
+		grid: {
+			vertLines: {
+			  visible: false,
+			},
+			horzLines: {
+			  visible: false,
+			},
+		  },
 	}));
 	
 	const candlestickSeries = chart.addSeries(CandlestickSeries);

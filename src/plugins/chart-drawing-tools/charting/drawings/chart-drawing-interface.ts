@@ -23,8 +23,11 @@ export interface IChartDrawing {
     select(): void;
     deselect(): void;
     onMouseMove(event: MouseEventParams): void;
+    onHoverWhenSelected(point: Point): BoxSide;
+    onDrag(param: MouseEventParams, startPoint: Point, endPoint: Point, side: BoxSide): void;
     onClick(event: MouseEventParams): void;
-    updatePosition(startPoint: Point, endPoint: Point, side: BoxSide): void;
+    //updatePosition(startPoint: Point, endPoint: Point, side: BoxSide): void;
+
     //updateStyle(style: Partial<DrawingStyle>): void;
     //getBounds(): { top: number; bottom: number; left: number; right: number };
     //containsPoint(chart: IChartApi, series: ISeriesApi<SeriesType>, point: Point, points: DrawingPoint[]): boolean

@@ -2,6 +2,7 @@ import {
 	Coordinate,
 	IChartApi,
 	ISeriesApi,
+    MouseEventParams,
     Point,
     SeriesType,
 } from 'lightweight-charts';
@@ -13,7 +14,7 @@ import { DrawingToolType } from '../../toolbar/tools/drawing-tools';
 import { _isPointNearLine, BoxSide, resizeBoxByHandle } from '../../../common/points';
 import { DrawingPoint } from '../../../common/common';
 export class LineHorizontalRayDrawing extends ChartDrawingBase{
-	private static readonly TOTAL_DRAWING_POINTS = 1; // Set the drawing points for this type of drawing.  A box will have 2, a line ray will have 1, etc...
+	private static readonly TOTAL_DRAWING_POINTS = 2; // Set the drawing points for this type of drawing.  A box will have 2, a line ray will have 1, etc...
 	private _toolType: DrawingToolType; // = DrawingToolType.Rectangle; // set the tool type for the class
 
 
@@ -23,18 +24,19 @@ export class LineHorizontalRayDrawing extends ChartDrawingBase{
 		symbolName: string,
 		baseProps?: ChartDrawingBaseProps,
 	) {
-		let _drawingFinished =()=>{
+		const _finalizeDrawingPoints =()=>{
 			let points = this.drawingPoints;
 			const end = this._chart?.timeScale().getVisibleRange()?.to;
 			if(end){
-				const price = points[0].price;
+				const time = points[1].time
+				const price = points[1].price;
 				if(points[0].time > points[1].time){
 					points[0] = {time: end, price};
-					points[1] = {time: points[1].time, price};
+					points[1] = {time: time, price};
 				}
 				else{
 					points[1] = {time: end, price};
-					points[0] = {time: points[0].time, price};
+					points[0] = {time: time, price};
 				}
 				this.overrideDrawingPoints([points[0],points[1]]);
 			}
@@ -43,9 +45,11 @@ export class LineHorizontalRayDrawing extends ChartDrawingBase{
         // MAKE SURE TO UPDATE THIS WHEN CREATING NEW DRAWING TOOLS
 		const toolType = DrawingToolType.HorizontalLineRay;
 
-		super( toolType, chart, series, symbolName, LineHorizontalRayDrawing.TOTAL_DRAWING_POINTS, drawingToolDefaultOptions, baseProps, _drawingFinished);
+		super( toolType, chart, series, symbolName, LineHorizontalRayDrawing.TOTAL_DRAWING_POINTS, drawingToolDefaultOptions, baseProps, _finalizeDrawingPoints);
+		
+		const initializeFromStorage = baseProps ? true : false;
 		this._toolType = toolType
-		this.drawingView = new View(chart, series, this._toolType, drawingToolDefaultOptions,  baseProps?.styleOptions, baseProps || this.baseProps, baseProps ? true : false ); 
+		this.drawingView = new View(chart, series, this._toolType, drawingToolDefaultOptions,  baseProps?.styleOptions, baseProps || this.baseProps, initializeFromStorage); 
 	}
 
 	// TODO dont make this hard coded
@@ -61,8 +65,24 @@ export class LineHorizontalRayDrawing extends ChartDrawingBase{
 		return _isPointNearLine(chart, series, point, points, offset);
 	}
 
+	onHoverWhenSelected(point: Point): BoxSide {
+		return this._setCursor(point);
+	}
+
+	onDrag(param: MouseEventParams, startPoint: Point, endPoint: Point, side: BoxSide): void {
+		if(!param.point)
+			return;
+
+		this._updatePosition(startPoint, endPoint, side);
+	}
+
+	private _setCursor(point: Point): BoxSide | null {
+		document.body.style.cursor = 'move';
+		return 'inside'
+	}
+
 	// update the position of the drawing, based on how its being resized
-	updatePosition(startPoint: Point, endPoint: Point, side: BoxSide): void {
+	private _updatePosition(startPoint: Point, endPoint: Point, side: BoxSide): void {
 		if (!this._chart || this._isDrawing || !this._series || this.drawingPoints.length < 2) 
 			return;
 
@@ -74,7 +94,7 @@ export class LineHorizontalRayDrawing extends ChartDrawingBase{
 		const drawingPoint1 = this.drawingPoints[0];
 		const drawingPoint2 = this.drawingPoints[1];
 
-
+		// convert to chart coordinates
 		let pricePoint1 = this._series.priceToCoordinate(drawingPoint1.price);
 		let pricePoint2 = this._series.priceToCoordinate(drawingPoint2.price);
 		let timePoint1 = this._chart.timeScale().timeToCoordinate(drawingPoint1.time) 
@@ -84,29 +104,15 @@ export class LineHorizontalRayDrawing extends ChartDrawingBase{
 		let p2 = {x: timePoint2, y: pricePoint2};
 
 		if(p1.x !== null && p2.x !== null && p1.y !== null && p2.y !== null){
-
-			// assume timepoint1 is always the start of the box
-			if(p1.x > p2.x){
-				const tmp = p1;
-				p1 = p2;
-				p2 = tmp;
-			}
-
 			// adjust coordinates based on the side
-			if(side === 'inside'){
-				if(p1.x !== null && p2.x !== null && p1.y !== null && p2.y !== null){
+			if(p1.x !== null && p2.x !== null && p1.y !== null && p2.y !== null){
+				if(p1.x < p2.x)
 					p1.x = (p1.x + xOffset) as Coordinate;
+				else
 					p2.x = (p2.x + xOffset) as Coordinate;
-					p1.y = (p1.y + yOffset) as Coordinate;
-					p2.y = (p2.y + yOffset) as Coordinate;
-				}
-			}
-			else if(p1.x !== null && p2.x !== null && p1.y !== null && p2.y !== null){
-				const point1 = {x: p1.x, y: p1.y};		
-				const point2 = {x: p2.x, y: p2.y};
-				const newPoints = resizeBoxByHandle(point1, point2, side, endPoint);
-				p1 = newPoints[0];
-				p2 = newPoints[1];
+
+				p1.y = (p1.y + yOffset) as Coordinate;
+				p2.y = (p2.y + yOffset) as Coordinate;
 			}
 
             // convert back to drawing coordinates

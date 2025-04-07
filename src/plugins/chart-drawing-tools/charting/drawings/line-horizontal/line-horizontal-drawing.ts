@@ -2,19 +2,19 @@ import {
 	Coordinate,
 	IChartApi,
 	ISeriesApi,
+    MouseEventParams,
     Point,
     SeriesType,
-	Time,
 } from 'lightweight-charts';
 
 import { LineHorizontal as View } from './line-horizontal-view';
 import { lineHorizontalDrawingToolDefaultOptions as drawingToolDefaultOptions, LineHorizontalDrawingToolOptions } from './line-horizontal-options';
 import { ChartDrawingBase, ChartDrawingBaseProps } from '../chart-drawing-base';
 import { DrawingToolType } from '../../toolbar/tools/drawing-tools';
-import { _isPointNearLine, BoxSide, resizeBoxByHandle } from '../../../common/points';
+import { _isPointNearLine, BoxSide } from '../../../common/points';
 import { DrawingPoint } from '../../../common/common';
 export class LineHorizontalDrawing extends ChartDrawingBase{
-	private static readonly TOTAL_DRAWING_POINTS = 1; // Set the drawing points for this type of drawing.  A box will have 2, a line ray will have 1, etc...
+	private static readonly TOTAL_DRAWING_POINTS = 2; // Set the drawing points for this type of drawing.  A box will have 2, a line ray will have 1, etc...
 	private _toolType: DrawingToolType; // = DrawingToolType.Rectangle; // set the tool type for the class
 
 	constructor(
@@ -24,21 +24,23 @@ export class LineHorizontalDrawing extends ChartDrawingBase{
 		baseProps?: ChartDrawingBaseProps,
 	) {
 
-		let _drawingFinished =()=>{
-			let p1 = this.drawingPoints[0];
+		const _finalizeDrawingPoints =()=>{
+			const price =  this.drawingPoints[1].price
 			const end = this._chart?.timeScale().getVisibleRange()?.to;
 			const start = this._chart?.timeScale().getVisibleRange()?.from;
 			if(end && start){
-				this.overrideDrawingPoints([{time: start, price: p1.price}, {time: end, price: p1.price}]);
+				this.overrideDrawingPoints([{time: start, price}, {time: end, price}]);
 			}
 		}
 
         // MAKE SURE TO UPDATE THIS WHEN CREATING NEW DRAWING TOOLS
 		const toolType = DrawingToolType.HorizontalLine;
 
-		super( toolType, chart, series, symbolName, LineHorizontalDrawing.TOTAL_DRAWING_POINTS, drawingToolDefaultOptions, baseProps, _drawingFinished);
+		super( toolType, chart, series, symbolName, LineHorizontalDrawing.TOTAL_DRAWING_POINTS, drawingToolDefaultOptions, baseProps, _finalizeDrawingPoints);
+		
+		const initializeFromStorage = baseProps ? true : false;
 		this._toolType = toolType
-		this.drawingView = new View(chart, series, this._toolType, drawingToolDefaultOptions,  baseProps?.styleOptions, baseProps || this.baseProps, baseProps ? true : false ); 
+		this.drawingView = new View(chart, series, this._toolType, drawingToolDefaultOptions,  baseProps?.styleOptions, baseProps || this.baseProps, initializeFromStorage); 
 	}
 
 	// TODO dont make this hard coded
@@ -54,19 +56,33 @@ export class LineHorizontalDrawing extends ChartDrawingBase{
 		return _isPointNearLine(chart, series, point, points, offset);
 	}
 
+	onHoverWhenSelected(point: Point): BoxSide {
+		return this._setCursor(point);
+	}
+
+	onDrag(param: MouseEventParams, startPoint: Point, endPoint: Point, side: BoxSide): void {
+		if(!param.point)
+			return;
+
+		this._updatePosition(startPoint, endPoint, side);
+	}
+
+	private _setCursor(point: Point): BoxSide | null {
+		document.body.style.cursor = 'ns-resize';
+		return 'inside'
+	}
+
 	// update the position of the drawing, based on how its being resized
-	updatePosition(startPoint: Point, endPoint: Point, side: BoxSide): void {
+	private _updatePosition(startPoint: Point, endPoint: Point, side: BoxSide): void {
 		if (!this._chart || this._isDrawing || !this._series || this.drawingPoints.length < 2) 
 			return;
 
 		// Note we can't directly update the drawingPoints or the time value will be off , so always have to calculate from the initial points
-		let xOffset = endPoint.x - startPoint.x;
 		let yOffset = endPoint.y - startPoint.y;
 
 		// So we dont want to update the drawingPoints until the update is finished, we will use tmpDrawingPoints to store the new points
 		const drawingPoint1 = this.drawingPoints[0];
 		const drawingPoint2 = this.drawingPoints[1];
-
 
 		let pricePoint1 = this._series.priceToCoordinate(drawingPoint1.price);
 		let pricePoint2 = this._series.priceToCoordinate(drawingPoint2.price);
@@ -77,30 +93,11 @@ export class LineHorizontalDrawing extends ChartDrawingBase{
 		let p2 = {x: timePoint2, y: pricePoint2};
 
 		if(p1.x !== null && p2.x !== null && p1.y !== null && p2.y !== null){
-
-			// assume timepoint1 is always the start of the box
-			if(p1.x > p2.x){
-				const tmp = p1;
-				p1 = p2;
-				p2 = tmp;
-			}
-
 			// adjust coordinates based on the side
-			if(side === 'inside'){
 				if(p1.x !== null && p2.x !== null && p1.y !== null && p2.y !== null){
-					p1.x = (p1.x + xOffset) as Coordinate;
-					p2.x = (p2.x + xOffset) as Coordinate;
 					p1.y = (p1.y + yOffset) as Coordinate;
 					p2.y = (p2.y + yOffset) as Coordinate;
 				}
-			}
-			else if(p1.x !== null && p2.x !== null && p1.y !== null && p2.y !== null){
-				const point1 = {x: p1.x, y: p1.y};		
-				const point2 = {x: p2.x, y: p2.y};
-				const newPoints = resizeBoxByHandle(point1, point2, side, endPoint);
-				p1 = newPoints[0];
-				p2 = newPoints[1];
-			}
 
             // convert back to drawing coordinates
             if(p1.x !== null && p2.x !== null && p1.y !== null && p2.y !== null){
@@ -113,7 +110,7 @@ export class LineHorizontalDrawing extends ChartDrawingBase{
                 //  store new points temporarily, we will set this back to the drawingPoints when the update is finished
                 // TODO we wont need this if we save directly from the class, consider adding save directly from the class
                 this.tmpDrawingPoints[0] = newDrawingPoint1
-                this.tmpDrawingPoints[1] =newDrawingPoint2
+                this.tmpDrawingPoints[1] = newDrawingPoint2
             }
 		}
 	}

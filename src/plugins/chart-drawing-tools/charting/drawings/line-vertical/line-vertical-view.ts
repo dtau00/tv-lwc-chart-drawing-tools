@@ -4,7 +4,7 @@ import { IChartApi, ISeriesApi, SeriesType } from 'lightweight-charts';
 import { ViewBase } from '../drawing-view-base';
 import { DrawingToolType } from '../../toolbar/tools/drawing-tools';
 import { LinePaneView } from '../line/views/line-pane-view';
-import { LineVerticalDrawingToolOptions } from './line-vertical-options';
+import { LineDrawingToolOptions } from '../line/line-options';
 import { MouseEventParams } from 'lightweight-charts';
 export class LineVertical extends ViewBase {
 	_p1?: DrawingPoint | null = null;
@@ -15,7 +15,7 @@ export class LineVertical extends ViewBase {
 		series: ISeriesApi<SeriesType>,
 		toolType: DrawingToolType,
 		defaultOptions: {},
-		options: Partial<LineVerticalDrawingToolOptions> = {},
+		options: Partial<LineDrawingToolOptions> = {},
 		baseProps: ChartDrawingBaseProps,
 		initializedFromStorage: boolean,
 	) {

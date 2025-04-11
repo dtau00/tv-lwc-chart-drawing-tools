@@ -1,13 +1,17 @@
 v1
 --
-pivot line drawing correctly if grabbed from corner
 vert, horizon, and ray only draw to visible area, doesn't extend to the edge
 predraw single click drawings (vert, horiz, etc...)
+  * a tool should have a prop that tells it if it initiates immediately
+  * on first chart over, select that chart, then create the drawing and first point (as if a click as been performed)
 test when new data is added
   make sure whitespade is supported
+unclick with left click doesnt work right, uses box detection rather than line detection
 
+test toolbar behavior when switching charts, tools, drawings, selections...
 drawings often misses clicks, or drawing style not updated.  not sure if this is due to
 our internal handling of mouse events, or something with TV
+seperate mouse handlers for chart manager, use DI?  then we'll start a lot of private stuff, not sure if we want this.
 
 check dispsol of all event handlers (tools, subtools, charts, etc..)
 

@@ -28,8 +28,6 @@ export class FibonacciPaneRenderer implements IPrimitivePaneRenderer {
 			const y1 = this._p1.y;
 			const y2 = this._p2.y;
 
-            console.log(x1,x2)
-
 			const high = Math.min(y1, y2);
 			const low = Math.max(y1, y2);
 			const height = low - high;

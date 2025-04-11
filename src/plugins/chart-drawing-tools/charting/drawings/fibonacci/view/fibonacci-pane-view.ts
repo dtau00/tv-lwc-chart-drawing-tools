@@ -14,20 +14,6 @@ export class FibonacciPaneView extends PaneViewBase implements IPrimitivePaneVie
 		this._source = source;
 	}
 
-    /*
-	update() {
-		const series = this._source.series;
-		const timeScale = this._source.chart.timeScale();
-		this._p1 = {
-			x: timeScale.timeToCoordinate(this._source.points[0].time),
-			y: series.priceToCoordinate(this._source.points[0].price),
-		};
-		this._p2 = {
-			x: timeScale.timeToCoordinate(this._source.points[1].time),
-			y: series.priceToCoordinate(this._source.points[1].price),
-		};
-	}*/
-
     update() {
         const { series, points, chart } = this._source;
         const timeScale = chart.timeScale();

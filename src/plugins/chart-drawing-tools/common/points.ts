@@ -196,114 +196,78 @@ export function getBoxHoverTarget(
   return null;
 }
 
-/*
-export function resizeBoxByHandle(
-  p1: DrawingPoint,
-  p2: DrawingPoint,
-  handle: BoxSide,
-  newMousePoint: DrawingPoint
-): [DrawingPoint, DrawingPoint] {
-  let newP1 = { ...p1 };
-  let newP2 = { ...p2 };
-
-  switch (handle) {
-    case 'top-left':
-      newP1.time = newMousePoint.time;
-      newP1.price = newMousePoint.price;
-      break;
-
-    case 'top':
-      newP1.price = newMousePoint.price;
-      break;
-
-    case 'top-right':
-      newP2.time = newMousePoint.time;
-      newP1.price = newMousePoint.price;
-      break;
-
-    case 'left':
-      newP1.time = newMousePoint.time;
-      break;
-
-    case 'right':
-      newP2.time = newMousePoint.time;
-      break;
-
-    case 'bottom-left':
-      newP1.time = newMousePoint.time;
-      newP2.price = newMousePoint.price;
-      break;
-
-    case 'bottom':
-      newP2.price = newMousePoint.price;
-      break;
-
-    case 'bottom-right':
-      newP2.time = newMousePoint.time;
-      newP2.price = newMousePoint.price;
-      break;
-  }
-
-  return [newP1, newP2];
+export function pointToDrawingPoints(p : Point, chart: IChartApi, series: ISeriesApi<SeriesType>) : DrawingPoint{
+  return {
+    time: chart.timeScale().coordinateToTime(p.x)!, 
+    price: series.coordinateToPrice(p.y)!
+  } as DrawingPoint
 }
-*/
-/*
-export function resizeBoxByHandle(
-    p1: Point,
-    p2: Point,
-    handle: BoxSide,
-    mouse: Point
-  ): [Point, Point] {
-    let newP1 = { ...p1 };
-    let newP2 = { ...p2 };
-  
-    switch (handle) {
-      case 'top-left':
-        newP1.x = mouse.x;
-        newP1.y = mouse.y;
-        break;
-  
-      case 'top':
-        newP1.y = mouse.y;
-        break;
-  
-      case 'top-right':
-        newP2.x = mouse.x;
-        newP1.y = mouse.y;
-        break;
-  
-      case 'left':
-        newP1.x = mouse.x;
-        break;
-  
-      case 'right':
-        newP2.x = mouse.x;
-        break;
-  
-      case 'bottom-left':
-        newP1.x = mouse.x;
-        newP2.y = mouse.y;
-        break;
-  
-      case 'bottom':
-        newP2.y = mouse.y;
-        break;
-  
-      case 'bottom-right':
-        newP2.x = mouse.x;
-        newP2.y = mouse.y;
-        break;
-      case 'inside':
-        newP1.x = mouse.x;
-        newP1.y = mouse.y;
-        newP2.x = mouse.x;
-        newP2.y = mouse.y;
-        break;
-    }
-  
-    return [newP1, newP2];
+
+export function drawingPointToPoint(drawingPoint : DrawingPoint, chart: IChartApi, series: ISeriesApi<SeriesType>) : Point{
+  return { 
+    x : chart.timeScale().timeToCoordinate(drawingPoint.time),
+    y  : series.priceToCoordinate(drawingPoint.price)
+  } as Point
+}
+
+export function convertAndNormalizeDrawingPointsToPoint(dp1 : DrawingPoint, dp2 : DrawingPoint, chart: IChartApi, series: ISeriesApi<SeriesType>) : [Point, Point]{
+  let p1 = drawingPointToPoint(dp1, chart, series)
+  let p2 = drawingPointToPoint(dp2, chart, series)
+
+  // normalize
+  if(p1.x > p2.x){
+    const tmp = p1;
+    p1 = p2;
+    p2 = tmp;
   }
-*/
+
+  return [p1, p2]
+}
+
+export function  offsetPoints(startPoint : Point, endPoint : Point, point1 : Point, point2 : Point) : [Point, Point]{
+  const xOffset = endPoint.x - startPoint.x;
+  const yOffset = endPoint.y - startPoint.y;
+
+  let p1 = {...point1}
+  let p2 = {...point2}
+  
+    p1.x = (p1.x + xOffset) as Coordinate;
+    p2.x = (p2.x + xOffset) as Coordinate;
+    p1.y = (p1.y + yOffset) as Coordinate;
+    p2.y = (p2.y + yOffset) as Coordinate;
+
+    return [p1, p2]
+}
+
+export function updateBoxPosition(startPoint: Point, endPoint: Point, drawingPoints1 : DrawingPoint, drawingPoints2 : DrawingPoint, side: BoxSide, chart : IChartApi, series :  ISeriesApi<SeriesType>, extend : boolean) : [DrawingPoint, DrawingPoint]{
+  let p1: Point, p2: Point;
+	
+  // covert drawing points to points
+  [p1,p2] = convertAndNormalizeDrawingPointsToPoint(drawingPoints1, drawingPoints2, chart, series)
+
+  // move points based on type of resize
+  if(side === 'inside')
+    [p1, p2] = offsetPoints(startPoint, endPoint, p1, p2)
+  else
+    [p1,p2] = resizeBoxByHandle(p1, p2, side, endPoint);
+
+  // extend coordinates to the end of the chart
+  if(extend){
+    const end : Time= chart.timeScale().getVisibleRange()?.to as Time
+    const endCoordinate = chart.timeScale().timeToCoordinate(end)
+    if (p2.x > p1.x) 
+      p2 = { ...p2, x: endCoordinate! };  
+    else 
+      p1 = { ...p1, x: endCoordinate! };  
+  }
+
+  // convert back to drawing coordinates
+  const dp1 = pointToDrawingPoints(p1, chart, series)
+  const dp2 = pointToDrawingPoints(p2, chart, series)
+
+  return [dp1, dp2]
+}
+
 export function resizeBoxByHandle(
   p1: Point,
   p2: Point,

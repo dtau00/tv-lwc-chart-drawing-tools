@@ -2,38 +2,45 @@ import SubTool from "./sub-tools/sub-tool-base";
 
 export type ToolbarButton = 'div' | 'color'
 
+// TODO make this configurable
+const toolButtonWidth = '15px';
+const toolButtonHeight = '20px;'
+
 export function createSubToolbarButton(name: string, description: string, icon: string, type: ToolbarButton, container?: HTMLDivElement): HTMLDivElement | HTMLInputElement {
   return createToolbarButton(name, description, icon, type, () => void 0, '', container);
 }
 
 export function createToolbarButton(name: string, description: string, icon: string, type: ToolbarButton, listener: (evt: MouseEvent) => void, eventType: 'click' | 'mousedown' | 'mouseup' | '' = '', container?: HTMLDivElement): HTMLDivElement | HTMLInputElement {
+  let div : HTMLInputElement | HTMLDivElement
 
-    if(type === 'color'){
-        const colorPicker : HTMLInputElement = document.createElement('input');
-        colorPicker.className = `toolbar-item ${name}`;
-        colorPicker.type = 'color';
-        colorPicker.style.border = 'none';
-        colorPicker.title = description;
-		    container?.appendChild(colorPicker);
-        if(eventType !== ''){
-          colorPicker.addEventListener(eventType, listener);
+  if(type === 'color'){
+      div = document.createElement('input') as HTMLInputElement;
+      if (div instanceof HTMLInputElement) { // make sure TS knows the type
+        div.type = 'color';
+        div.style.border = 'none';
+        if(eventType) {// TODO move this down to base properties.  There's a type issue
+          div.addEventListener(eventType, listener);
         }
-        return colorPicker as HTMLInputElement;
-    }
-    else if(type === 'div'){
-        const button : HTMLDivElement = document.createElement('div');
-        button.className = `toolbar-item ${name}`;
-        button.title = description;
-        button.innerHTML = icon;
-        if(eventType !== ''){
-          button.addEventListener(eventType, listener);
-        }
-        container?.appendChild(button);
-        return button;
-    }
-    
-    // returns empty div
-    return document.createElement('div');
+      }
+  }
+  else if(type === 'div'){
+      div = document.createElement('div') as HTMLDivElement;
+      div.innerHTML = icon;
+      if(eventType){ // TODO move this down to base properties.  There's a type issue
+        div.addEventListener(eventType, listener);
+      }
+  }
+  else
+    throw Error(`unknown type while creating toolbar: ${type}`)
+
+  // set base properties
+  div.className = `toolbar-item ${name}`;
+  div.title = description;
+  div.style.width = toolButtonWidth;
+  div.style.height = toolButtonHeight;
+  container?.appendChild(div);
+  
+  return div
 }
 
 export function setSubToolbarButton(subTool: SubTool, subTools: SubTool[], container: HTMLDivElement){

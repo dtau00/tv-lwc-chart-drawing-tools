@@ -12,6 +12,7 @@ import { ChartDrawingBase } from '../drawings/chart-drawing-base.ts';
 import { ToolLineHorizontalRay } from './tools/tool/tool-line-horizontal-ray.ts';
 import { ToolLineHorizontal } from './tools/tool/tool-line-horizontal.ts';
 import { ToolLineVertical } from './tools/tool/tool-line-vertical.ts';
+import { ToolFibonacci } from './tools/tool/tool-fibonacci.ts';
 // This class is the main class for the chart drawing tools.
 
 export class ChartDrawingsToolbar {
@@ -75,6 +76,7 @@ export class ChartDrawingsToolbar {
 	}
 
 	private _initializeToolFactory(){
+		this._toolFactory.set(DrawingToolType.Fibonacci, ToolFibonacci);
 		this._toolFactory.set(DrawingToolType.Rectangle, ToolRectangle);
 		this._toolFactory.set(DrawingToolType.RectangleExtended, ToolRectangleExtended);
 		this._toolFactory.set(DrawingToolType.Line, ToolLine);

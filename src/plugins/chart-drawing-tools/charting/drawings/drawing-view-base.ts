@@ -78,7 +78,8 @@ export class ViewBase extends PluginBase {
             // TODO fill this out with more rgba color properties
             // TODO just look for the setting, and see if there's an xxxOpacity setting with it
             overrides.fillColor = this.getRgbaOverrideColorFromOptions(this._toolType, 'fillColor', 'fillColorOpacity', this._defaultStyleOptions, overrides);
-            overrides.color = this.getRgbaOverrideColorFromOptions(this._toolType, 'lineColor', 'lineColorOpacity', this._defaultStyleOptions, overrides);
+            overrides.lineColor = this.getRgbaOverrideColorFromOptions(this._toolType, 'lineColor', 'lineColorOpacity', this._defaultStyleOptions, overrides);
+            overrides.color = this.getRgbaOverrideColorFromOptions(this._toolType, 'color', 'colorOpacity', this._defaultStyleOptions, overrides);
             overrides = removeUndefinedKeys(overrides);
             return overrides;
         }

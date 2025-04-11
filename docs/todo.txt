@@ -1,26 +1,23 @@
 v1
 --
 
-  * a tool should have a prop that tells it if it initiates immediately
-  * on first chart over, select that chart, then create the drawing and first point (as if a click as been performed)
-test when new data is added
-  make sure whitespade is supported
+don't autoscroll if user is dragging
 
-test toolbar behavior when switching charts, tools, drawings, selections...
-drawings often misses clicks, or drawing style not updated.  not sure if this is due to
-our internal handling of mouse events, or something with TV
 seperate mouse handlers for chart manager, use DI?  then we'll start a lot of private stuff, not sure if we want this.
 
+dont allow access to baseprops, use getters and setters
 check dispsol of all event handlers (tools, subtools, charts, etc..)
 
 vert, horizon, and ray only draw to visible area, doesn't extend to the edge
-predraw single click drawings (vert, horiz, etc...)
+
+break up _updatePosition
 
 properly handle historical days for secondsperbar
-don't autoscroll if user is dragging
 
 v2
 --
+priorizie chart drawing selection
+configurable subtools per drawing
 slider for opacity change
 fix rectangles showing at edges of pane
 multi chart support of same symbol, synced drawings
@@ -69,9 +66,19 @@ Adding New drawing
       Add to _initializeToolFactory : add to factory so the toolbar knows about your drawing
     iii. /tools/tool
       create new class for your tool (new file) .Follow the others a s a template. 
-        Add subtools you need for your tool (there are 3 types you can use for different properties)
-        This also defines the property the subtool is configuring (color, fillColor, lineWeight, etc...)
- 2. Create custom subtool (optional)
+        Add subtools you need for your tool (there are a few pre-defined types you can use) *see below for creating your own subtool
+        This also defines the property the subtool is configuring (color, fillColor, lineWeight, etc...).  
+2. Implement views and renders /src/plugins/chart-drawing-tools/charting/drawings/
+  a. Add new folder for your drawing
+  b. Implement using rectangle as a template
+    xxx-options.ts : define the properties for your drawings.  You may reference the options for a base shape rather than creating your own (for example, a line ray may just use the line options since they are exactly the same).
+    xxx-drawing.ts : drawing class that handles the logic for your drawing
+    xxx-view.ts : a seperate object every chartDrawing has that controls the view and rendering
+    /panes : contains all the panes and renderers for your view
+3. Add to load ... chart-data-manager -> _loadDrawings
+  // add how to load your drawing type
+
+   *. Create custom subtool (optional)
   i. /sub-tools/drawing-sub-tools.ts
     Add to DrawingSubToolType : add new subtool type
     Define in DrawingSubTools map : define your subtool
@@ -79,15 +86,6 @@ Adding New drawing
     create new class for your sub-tool (new file).  Follow the others as a template. Most to set the configurable propertly value
       define the mouse behaviors of your subtool
       define the styling of your subtool (as the values change)
-3. Implement views and renders /src/plugins/chart-drawing-tools/charting/drawings/
-  a. Add new folder for your drawing
-  b. Implement using rectangle as a template
-    xxx-options.ts : define the properties for your drawings
-    xxx-drawing.ts : drawing class that handles the logic for your drawing
-    xxx-view.ts : a seperate object every chartDrawing has that controls the view and rendering
-    /panes : contains all the panes and renderers for your view
-4. Add to load ... chart-data-manager -> _loadDrawings
-  // add how to load your drawing type
 
   * the framework generally handles one and two points for most cases, since these are the most common.  
   if you are doing something more complex, or need more points, you will need to override the appropriate 

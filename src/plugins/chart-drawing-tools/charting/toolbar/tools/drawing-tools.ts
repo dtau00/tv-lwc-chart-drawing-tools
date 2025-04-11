@@ -13,15 +13,17 @@ export enum DrawingToolType {
     HorizontalLine = 'horizontal-line',
     VerticalLine = 'vertical-line',
     //Text = 'text',
-    //Fibonacci = 'fibonacci',
+    //Circle = 'circle',
+    Fibonacci = 'fibonacci',
     Remove = 'remove',
     None = 'none'  // For when no tool is selected
 }
 
+// Make sure the name  matches the enum value above, and capitalization
 export const AVAILABLE_TOOLS: DrawingToolInfo[] = [
     {
         type: DrawingToolType.Rectangle,
-        name: 'rectangle',
+        name: 'rectangle', 
         icon: '▭',
         description: 'Draw rectangles on the chart'
     },
@@ -59,17 +61,25 @@ export const AVAILABLE_TOOLS: DrawingToolInfo[] = [
     /*
     {
         type: DrawingToolType.Text,
-        name: 'Text',
+        name: 'text',
         icon: 'text-tool',
         description: 'Add text annotations'
     },
+    {
+        type: DrawingToolType.Circle,
+        name: 'circle',
+        icon: 'text-tool',
+        description: 'Draw a circle'
+    },
+    
+    */
 
     {
         type: DrawingToolType.Fibonacci,
-        name: 'Fibonacci',
-        icon: 'fibonacci-tool',
+        name: 'fibonacci',
+        icon: '୭',
         description: 'Draw Fibonacci retracement levels'
-    }*/
+    },
     {
         type: DrawingToolType.Remove,
         name: 'remove',

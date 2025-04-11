@@ -17,7 +17,8 @@ import { LineHorizontalDrawing } from './drawings/line-horizontal/line-horizonta
 import { LineVerticalDrawing } from './drawings/line-vertical/line-vertical-drawing.ts';
 import { LineHorizontalRayDrawing } from './drawings/line-horizontal-ray/line-horizontal-ray-drawing.ts';
 import { LineDrawingToolOptions, normalizeLineDrawingToolOptions } from './drawings/line/line-options.ts';
-
+import { FibonacciDrawing } from './drawings/fibonacci/fibonacci-drawing.ts';
+import { FibonacciDrawingToolOptions, normalizeFibonacciDrawingToolOptions } from './drawings/fibonacci/fibonacci-options.ts';
 // manage charts
     // when chart is created, register it with ChartManager
     // when chart is destroyed, unregister it from ChartManager
@@ -155,6 +156,12 @@ export class ChartDrawingsManager {
                     else if(item.type === DrawingToolType.HorizontalLineRay){
                         item.styleOptions =  normalizeLineDrawingToolOptions(item.styleOptions as LineDrawingToolOptions)
                         const drawing = new LineHorizontalRayDrawing(chartContainer.chart, chartContainer.series, symbolName, item);
+                        this._drawings.get(symbolName)?.push(drawing);
+                        chartContainer.addDrawingPrimative(drawing.drawingView as PluginBase);
+                    }
+                    else if(item.type === DrawingToolType.Fibonacci){
+                        item.styleOptions =  normalizeFibonacciDrawingToolOptions(item.styleOptions as FibonacciDrawingToolOptions)
+                        const drawing = new FibonacciDrawing(chartContainer.chart, chartContainer.series, symbolName, item);
                         this._drawings.get(symbolName)?.push(drawing);
                         chartContainer.addDrawingPrimative(drawing.drawingView as PluginBase);
                     }

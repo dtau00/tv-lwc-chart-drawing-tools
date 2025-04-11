@@ -45,15 +45,14 @@ This is a very early preview build; the architecture and structure is still bein
 ## Features
 * Toolbar for selecting drawings
 * Sub-tool bar for styling the drawing (color, opacity)
-* Draw, Select, Delete
+* Draw, Select, Delete, Edit
 * Auto save/load configuration and drawings
 * Synced toolbar control between charts
 * Synced drawings of the same symbol (buggy)
+* Support for basic shapes : line, ray, vertical, horizontal, rectangle, rectangle-extended, etc...
 
 Things to finish for v1 Release
 ---------------------------------
-- Implement a couple more basic drawings (line, extended, line)
-- More OOP modularization of the ChartDrawing (breaking down example from Rectangle plugin tutorial)
 - Verify handlers are properly disposed (mem leak)
 - Add test cases
 

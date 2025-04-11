@@ -38,6 +38,9 @@ export function createToolbarButton(name: string, description: string, icon: str
   div.title = description;
   div.style.width = toolButtonWidth;
   div.style.height = toolButtonHeight;
+  div.style.display = 'flex';
+  div.style.alignItems = 'center';
+  div.style.justifyContent = 'center';
   container?.appendChild(div);
   
   return div

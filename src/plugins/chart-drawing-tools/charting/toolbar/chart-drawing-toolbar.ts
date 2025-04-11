@@ -170,11 +170,14 @@ export class ChartDrawingsToolbar {
 	private _listenForChartEvents=()=> {
 		// new drawing completed, we assume user dont want to add more drawings, deactivate the toolbar
         eventBus.addEventListener(ChartEvents.NewDrawingCompleted, (event: Event) => {
+			const customEvent = event as CustomEvent<string>;
+			console.log('ChartEvents.NewDrawingCompleted', customEvent.detail)
             this._unselectTool()
         });
 
 		eventBus.addEventListener(ChartEvents.CompletedDrawingSelected, (event: Event) => {
             const customEvent = event as CustomEvent<string>;
+			console.log('ChartEvents.NewDrawingCompleted', customEvent.detail)
 			const selectedDrawing = this._chartDrawingsManager.selectedDrawing;
             //console.log(`Chart Manager: Chart ${customEvent.detail} modify drawing`, selectedDrawing);
             if(selectedDrawing){  
@@ -184,21 +187,24 @@ export class ChartDrawingsToolbar {
 
 		eventBus.addEventListener(ChartEvents.CompletedDrawingUnSelected, (event: Event) => {
             const customEvent = event as CustomEvent<string>;
+			console.log('ChartEvents.NewDrawingCompleted', customEvent.detail)
 			this._unselectTool(true);
         });
 
-
 		// request to unset toolbar, remove it from view.  Used while a drawing tool is active, but switching chart
 		eventBus.addEventListener(ChartEvents.UnsetToolbar, (event: Event) => {
-			const customEvent = event as CustomEvent; // No type checking here
-            if(customEvent.detail.chartId === this._chartId){
-				this._unselectTool(true);
-			}
+			const customEvent = event as CustomEvent;  // No type checking here
+			const detail = customEvent.detail
+			console.log('ChartEvents.UnsetToolbar', detail)
+            //if(detail.chartId === this._chartId){
+				this._unselectTool(!detail.closeAll);
+			//}
         });
 
 		// request to set toolbar for  given chart.  Used when a drawing tool is active, and switching to active chart
 		eventBus.addEventListener(ChartEvents.SetToolbarTool, (event: Event) => {
 			const customEvent = event as CustomEvent; // No type checking here
+			console.log('ChartEvents.SetToolbarTool', customEvent.detail)
             if(customEvent.detail.chartId === this._chartId){
 				if(customEvent.detail.toolType !== DrawingToolType.None)
 					this._selectTool(customEvent.detail.toolType);
@@ -219,9 +225,12 @@ export class ChartDrawingsToolbar {
 	// Make sure the clicks bubble up back to here so we can adjust the toolbar
 	// An event bus would be cleaner, but we might have a lot of events firing if we have hundreds of charts
 	private _onClickDrawingTool(toolType: DrawingToolType): void {
-		if(this._selectedDrawingTool === toolType)
+		if(this._selectedDrawingTool === toolType){
+			console.log('_onClickDrawingTool', 'same clicked',toolType)
 			this._unselectTool();
+		}
 		else {
+			console.log('_onClickDrawingTool', 'new clicked',toolType)
 			this._selectTool(toolType);
 			this._startDrawingTool(toolType);
 		}

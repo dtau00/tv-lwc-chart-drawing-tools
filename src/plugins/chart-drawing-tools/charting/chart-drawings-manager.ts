@@ -206,7 +206,7 @@ export class ChartDrawingsManager {
         if(container !== this._currentChartContainer){ 
             console.log("changing current chart container", container);
             if(this._currentChartContainer?.chartId)
-                this._emitCloseToolbarEvent(this._currentChartContainer.chartId);
+                this._emitCloseToolbarEvent(this._currentChartContainer.chartId, false);
             if(container?.chartId)
                 this._emitOpenToolbarEvent(container.chartId, this._currentDrawingTool?.toolType || DrawingToolType.None);
             this._currentChartContainer = container;
@@ -236,8 +236,8 @@ export class ChartDrawingsManager {
 
     // Event Bus Handlers ------------------------------------------------------------  
 
-    private _emitCloseToolbarEvent(chartId: string): void {
-        eventBus.dispatchEvent(new CustomEvent(ChartEvents.UnsetToolbar, { detail: {chartId: chartId} }));
+    private _emitCloseToolbarEvent(chartId: string, closeAll: boolean): void {
+        eventBus.dispatchEvent(new CustomEvent(ChartEvents.UnsetToolbar, { detail: {chartId: chartId, closeAll} }));
     }
 
     private _emitOpenToolbarEvent(chartId: string, toolType: DrawingToolType): void {
@@ -352,7 +352,7 @@ export class ChartDrawingsManager {
 
     public onRightClick(evt: MouseEvent, chartContainer: ChartContainer): void {
         if(!this._selectedDrawing || !chartContainer.chart || !chartContainer.series){
-            this._emitCloseToolbarEvent(chartContainer.chartId);
+            this._emitCloseToolbarEvent(chartContainer.chartId, true);
             this.unselectTool()
             return;
         }

@@ -268,9 +268,10 @@ export class ChartDrawingsManager {
         eventBus.addEventListener(ChartEvents.SubToolSet, (event: Event) => {
             const customEvent = event as CustomEvent<string>;
             console.log("subtool set", customEvent.detail);
-            if(this._selectedDrawing && this._selectedDrawing.isCompleted){  
+            if(this._selectedDrawing){  
                 this._selectedDrawing.setBaseStyleOptionsFromConfig();
-                this.saveDrawings(this._selectedDrawing.symbolName);
+                if(this._selectedDrawing.isCompleted)
+                 this.saveDrawings(this._selectedDrawing.symbolName);
                 //this._addPrimativeToChartContainers(this._selectedDrawing.symbolName, this._selectedDrawing.drawingView as PluginBase);
             }
         });
@@ -303,7 +304,7 @@ export class ChartDrawingsManager {
         console.log('onMouseUp', 'chart-drawings-manager', chartContainer.chartId);
         if(evt.button === 2)
             return;
-        
+
         if(this._isMouseDragging){
             this._selectedDrawing?.setTmpToNewDrawingPoints();
             this.saveDrawings(this._selectedDrawing?.symbolName || '');

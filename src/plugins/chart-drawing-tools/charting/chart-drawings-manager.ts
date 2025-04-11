@@ -129,6 +129,7 @@ export class ChartDrawingsManager {
                         chartContainer.addDrawingPrimative(drawing.drawingView as PluginBase);
                     }
                     else if(item.type === DrawingToolType.RectangleExtended){
+                        item.styleOptions =  normalizeRectangleDrawingToolOptions(item.styleOptions as RectangleDrawingToolOptions)
                         const drawing = new RectangleExtendedDrawing(chartContainer.chart, chartContainer.series, symbolName, item);
                         this._drawings.get(symbolName)?.push(drawing);
                         chartContainer.addDrawingPrimative(drawing.drawingView as PluginBase);

@@ -177,7 +177,7 @@ export class ChartDrawingsToolbar {
 
 		eventBus.addEventListener(ChartEvents.CompletedDrawingSelected, (event: Event) => {
             const customEvent = event as CustomEvent<string>;
-			console.log('ChartEvents.NewDrawingCompleted', customEvent.detail)
+			console.log('ChartEvents.CompletedDrawingSelected', customEvent.detail)
 			const selectedDrawing = this._chartDrawingsManager.selectedDrawing;
             //console.log(`Chart Manager: Chart ${customEvent.detail} modify drawing`, selectedDrawing);
             if(selectedDrawing){  
@@ -187,7 +187,7 @@ export class ChartDrawingsToolbar {
 
 		eventBus.addEventListener(ChartEvents.CompletedDrawingUnSelected, (event: Event) => {
             const customEvent = event as CustomEvent<string>;
-			console.log('ChartEvents.NewDrawingCompleted', customEvent.detail)
+			console.log('ChartEvents.CompletedDrawingUnSelected', customEvent.detail)
 			this._unselectTool(true);
         });
 

@@ -1,4 +1,4 @@
-import { IChartApi, ISeriesApi, MouseEventParams, Point, SeriesType } from 'lightweight-charts';
+import { IChartApi, ISeriesApi, MouseEventParams, Point, SeriesType, Time } from 'lightweight-charts';
 import { ChartDrawingBase, ChartDrawingBaseProps } from './drawings/chart-drawing-base.ts';
 import { DrawingToolType } from './toolbar/tools/drawing-tools.ts';
 import { RectangleExtendedDrawing } from './drawings/rectangle-extended/rectangle-extended-drawing.ts';
@@ -277,12 +277,7 @@ export class ChartDrawingsManager {
         console.log('onChartClick', chartContainer.chartId);
 
         if(this.creatingNewDrawingFromToolbar){
-            if(!this.selectedDrawing){ // start of new drawing
-                const drawing =this.currentDrawingTool?.getNewDrawingObject(chartContainer.chart, chartContainer.series, chartContainer.symbolName);
-                this.selectDrawing(drawing!);
-                console.log('new drawing initiated', drawing, chartContainer.chartId);
-            }
-            this.selectedDrawing?.onClick(param); // pass onclick to drawing for more processing
+            this._processNewToolbarDrawingOnChartMouseEvent(chartContainer, param)
         }
         else if(!this.selectedDrawing || this.selectedDrawing.isCompleted){
             if(param?.point){
@@ -340,7 +335,12 @@ export class ChartDrawingsManager {
             return;
 
         this._mousePosition = param.point || null; 
-        if(this._isMouseDragging && this._mouseDownStartPoint && this._selectedDrawing){
+
+        // if newToolbarDrawing is ImmeidatelyStartDrawing type and has not been initiated
+        if(this.creatingNewDrawingFromToolbar && this._currentDrawingTool && this._currentDrawingTool.immediatelyStartDrawing && !this._selectedDrawing && this._currentChartContainer){
+            this._processNewToolbarDrawingOnChartMouseEvent(this._currentChartContainer, param)
+        }
+        else if(this._isMouseDragging && this._mouseDownStartPoint && this._selectedDrawing){
             // move drawing
             this._selectedDrawing.onDrag(param, this._mouseDownStartPoint, param.point);
            // this._selectedDrawing?.updatePosition(this._mouseDownStartPoint, param.point, this._isMouseDragging);
@@ -351,18 +351,34 @@ export class ChartDrawingsManager {
     }
 
     public onRightClick(evt: MouseEvent, chartContainer: ChartContainer): void {
+        console.log('rclick', 'chart-drawing-manager')
         if(!this._selectedDrawing || !chartContainer.chart || !chartContainer.series){
-            this._emitCloseToolbarEvent(chartContainer.chartId, true);
             this.unselectTool()
+            this._emitCloseToolbarEvent(chartContainer.chartId, true);
             return;
         }
+
+
         this.unselectDrawing();
+        this.unselectTool();
+        this._emitCloseToolbarEvent(chartContainer.chartId, true);
         /*
         // Deselect if right click is outside of drawing
         const point = getChartPointFromMouseEvent(evt, chartContainer.chartDivContainer);  
         if(point && !containsPoints(chartContainer.chart, chartContainer.series, point, this._selectedDrawing.drawingPoints)){
             this.unselectDrawing();
         }*/
+    }
+
+    private _processNewToolbarDrawingOnChartMouseEvent = (chartContainer : ChartContainer, param : MouseEventParams) : void =>{
+        if(!this.selectedDrawing){ // if start of new drawing
+            const drawing =this.currentDrawingTool?.getNewDrawingObject(chartContainer.chart, chartContainer.series, chartContainer.symbolName);
+            this.selectDrawing(drawing!);
+            console.log('new drawing initiated', drawing, chartContainer.chartId);
+        }
+
+        // pass click coordinates to drawing for more processing
+        this.selectedDrawing?.onClick(param); 
     }
 
     private _onKeyDown = (evt: KeyboardEvent): void => {

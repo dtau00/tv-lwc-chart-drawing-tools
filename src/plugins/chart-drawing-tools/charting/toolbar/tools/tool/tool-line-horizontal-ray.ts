@@ -15,7 +15,7 @@ export class ToolLineHorizontalRay extends Tool {
     private readonly  _totalThicknesses: number = 3
 
     constructor(name: string, description: string, icon: string, toolType: DrawingToolType) {
-        super(name, description, icon, toolType);
+        super(name, description, icon, toolType, true);
     }
 
     getNewDrawingObject(chart: IChartApi, series: ISeriesApi<SeriesType>, symbolName: string): LineHorizontalRayDrawing {

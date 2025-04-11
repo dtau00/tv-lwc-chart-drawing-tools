@@ -141,6 +141,7 @@ export abstract class ChartDrawingBase implements IChartDrawing {
     deselect(): void {
         this.drawingView?.setBaseStyleOptions()
 		this.removePreviewDrawing();
+        this.stopDrawing();
         this._isSelected = false;
         eventBus.dispatchEvent(new CustomEvent(ChartEvents.CompletedDrawingUnSelected, { detail: this.id }));
         //this.draw(this._chart!, this._series!);
@@ -174,6 +175,7 @@ export abstract class ChartDrawingBase implements IChartDrawing {
 	}
 
     onClick(param: MouseEventParams) {
+        console.log('onClick', 'chart-drawing-base',param.point);
 		if (this._isDrawing || !param.point || !param.time || !this._series) 
 			return;
 
@@ -189,7 +191,6 @@ export abstract class ChartDrawingBase implements IChartDrawing {
 	}
 
 	onMouseMove(param: MouseEventParams) {
-        //console.log('onMouseMove', param.point);
 		if (!this._chart || this._isDrawing || !this._series || !param.point) 
 			return;
 
@@ -246,6 +247,7 @@ export abstract class ChartDrawingBase implements IChartDrawing {
 	// at a time.*/
     protected removePreviewDrawing(force : boolean = false) {
 		if (force || !this._isCompleted) {
+            this.stopDrawing();
 			console.log('removePreviewDrawing', this.drawingView);
 			ensureDefined(this._series).detachPrimitive(this.drawingView as PluginBase);
 		}

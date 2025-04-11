@@ -13,14 +13,20 @@ abstract class Tool implements ITool {
     description: string;
     icon: string;
     button: HTMLDivElement;
+    private _immediatelyStartDrawing: boolean; // immediately starts drawing after first chart is selected.  Often used for single user input drawings.
     protected subTools: SubTool[] = [];
     private _listener: (evt: MouseEvent) => void;
 
-    constructor(name: string, description: string, icon: string, toolType: DrawingToolType) {
+    constructor(name: string, description: string, icon: string, toolType: DrawingToolType, immediatelyStartDrawing? : boolean) {
         this.name = name;
         this.description = description;
         this.icon = icon;
         this.toolType = toolType;
+        this._immediatelyStartDrawing = immediatelyStartDrawing ?? false
+    }
+
+    get immediatelyStartDrawing(){
+        return this._immediatelyStartDrawing
     }
 
     abstract getNewDrawingObject(chart: IChartApi, series: ISeriesApi<SeriesType>, symbolName: string): any;

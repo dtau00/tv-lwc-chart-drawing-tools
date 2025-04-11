@@ -44,7 +44,7 @@ export class LineVerticalDrawing extends ChartDrawingBase{
 	}
 
     containsPoint(chart: IChartApi, series: ISeriesApi<SeriesType>, point: Point, points: DrawingPoint[]): boolean {
-        const options = this.drawingView?._options as LineDrawingToolOptions;  
+        const options = this.styleOptions as LineDrawingToolOptions
         const offset = (options?.lineWidth || 1) + 3;
 		return _isPointNearLine(chart, series, point, points, offset);
 	}

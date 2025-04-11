@@ -29,7 +29,6 @@ export abstract class ChartDrawingBase implements IChartDrawing {
     protected _baseProps: ChartDrawingBaseProps;
     protected _chart: IChartApi | undefined;
     protected _series: ISeriesApi<SeriesType> | undefined;
-	protected _options: {};//RectangleDrawingToolOptions;
     protected _defaultOptions: {};//RectangleDrawingToolOptions;
 
     protected _isDrawing: boolean;

@@ -7,7 +7,6 @@ import { ViewBase } from '../drawing-view-base';
 import { DrawingToolType } from '../../toolbar/tools/drawing-tools';
 
 export class Rectangle extends ViewBase {
-	//private _options: Partial<RectangleDrawingToolOptions> = {};
 	//_p1?: DrawingPoint | null;
 	//_p2?: DrawingPoint | null;
 	//_paneViews: RectanglePaneView[];

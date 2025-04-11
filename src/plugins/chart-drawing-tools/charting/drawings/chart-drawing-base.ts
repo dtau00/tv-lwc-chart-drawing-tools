@@ -35,7 +35,8 @@ export abstract class ChartDrawingBase implements IChartDrawing {
     protected _isDrawing: boolean;
     protected _isCompleted: boolean;
     protected _isSelected: boolean;
-
+    //protected toolType : DrawingToolType;
+    protected initializeFromStorage : boolean;
     //protected _baseDrawing: PluginBase | undefined;
     //protected _previewDrawing: PluginBase | undefined;
     protected _points: DrawingPoint[] = []; // points as the drawing is being created
@@ -95,6 +96,7 @@ export abstract class ChartDrawingBase implements IChartDrawing {
     get endPrice(): number { return topBottomPoints(this._baseProps.drawingPoints)?.top || 0; }
     get id(): string { return this._baseProps.id; }
     get type(): DrawingToolType { return this._baseProps.type; }
+    get toolType(): DrawingToolType { return this._baseProps.type; }
     get symbolName(): string { return this._baseProps.symbolName; }
     get userId(): string { return this._baseProps.userId; }
     get tags(): string[] { return this._baseProps.tags; }
@@ -121,9 +123,11 @@ export abstract class ChartDrawingBase implements IChartDrawing {
     abstract select(): void;
     abstract onDrag(param: MouseEventParams, startPoint: Point, endPoint: Point): void;
     abstract onHoverWhenSelected(point: Point): void;   
+    abstract normalizeStyleOptions(options: {}): void;  
 
     // set the style options to base properties, this is used when loading from config
     public setBaseStyleOptionsFromConfig() {    
+        this.normalizeStyleOptions(this.styleOptions)
         this.drawingView?.setBaseStyleOptionsFromConfig();
     }
 
@@ -206,6 +210,13 @@ export abstract class ChartDrawingBase implements IChartDrawing {
 			}, param);
 		}
 	}
+
+    protected initialize(baseProps?: ChartDrawingBaseProps){
+        if(baseProps){
+            this.initializeFromStorage = true
+            this.normalizeStyleOptions(this.styleOptions);
+        }
+    }
 
     protected overrideDrawingPoints(points: DrawingPoint[]): void {
         this._baseProps.drawingPoints = points;

@@ -8,14 +8,13 @@ import {
 } from 'lightweight-charts';
 
 import { Line as View } from './line-view';
-import { lineDrawingToolDefaultOptions as drawingToolDefaultOptions, LineDrawingToolOptions } from './line-options';
+import { lineDrawingToolDefaultOptions as drawingToolDefaultOptions, LineDrawingToolOptions, normalizeLineDrawingToolOptions } from './line-options';
 import { ChartDrawingBase, ChartDrawingBaseProps } from '../chart-drawing-base';
 import { DrawingToolType } from '../../toolbar/tools/drawing-tools';
 import { _isPointNearLine, convertAndNormalizeDrawingPointsToPoint, getClosestHandleOnLine, LineHandle, offsetPoints, resizeLineByHandle } from '../../../common/points';
 import { DrawingPoint } from '../../../common/common';
 export class LineDrawing extends ChartDrawingBase{
 	private static readonly TOTAL_DRAWING_POINTS = 2; // Set the drawing points for this type of drawing.  A box will have 2, a line ray will have 1, etc...
-	private _toolType: DrawingToolType; // = DrawingToolType.Rectangle; // set the tool type for the class
 	private _side : LineHandle;
 
 	constructor(
@@ -24,14 +23,15 @@ export class LineDrawing extends ChartDrawingBase{
 		symbolName: string,
 		baseProps?: ChartDrawingBaseProps,
 	) {
-        // MAKE SURE TO UPDATE THIS WHEN CREATING NEW DRAWING TOOLS
-		const toolType = DrawingToolType.Line;
-
-		super( toolType, chart, series, symbolName, LineDrawing.TOTAL_DRAWING_POINTS, drawingToolDefaultOptions, baseProps);
-		this._toolType = toolType
-		this.drawingView = new View(chart, series, this._toolType, drawingToolDefaultOptions,  baseProps?.styleOptions, baseProps || this.baseProps, baseProps ? true : false ); 
+		super( DrawingToolType.Line, chart, series, symbolName, LineDrawing.TOTAL_DRAWING_POINTS, drawingToolDefaultOptions, baseProps);
+		
+		this.initialize(baseProps);
+		this.drawingView = new View(chart, series, this.toolType, drawingToolDefaultOptions,  baseProps?.styleOptions, baseProps || this.baseProps, baseProps ? true : false ); 
 	}
 
+	normalizeStyleOptions(options : any){
+		this.styleOptions = normalizeLineDrawingToolOptions(options)
+	}
 	// TODO dont make this hard coded
 	// set the style when drawing is selected
 	select(): void {

@@ -6,14 +6,13 @@ import {
     SeriesType,
 } from 'lightweight-charts';
 import { Rectangle } from './rectangle-view';
-import { rectangleDrawingToolDefaultOptions as drawingToolDefaultOptions } from './rectangle-options';
+import { rectangleDrawingToolDefaultOptions as drawingToolDefaultOptions, normalizeRectangleDrawingToolOptions } from './rectangle-options';
 import { ChartDrawingBase, ChartDrawingBaseProps } from '../chart-drawing-base';
 import { DrawingToolType } from '../../toolbar/tools/drawing-tools';
 import { BoxSide, getBoxHoverTarget, getCursorForBoxSide, getUpdateBoxPosition  } from '../../../common/points';
 
 export class RectangleDrawing extends ChartDrawingBase{
 	private static readonly TOTAL_DRAWING_POINTS = 2; // Set the drawing points for this type of drawing.  A box will have 2, a line ray will have 1, etc...
-	private _toolType: DrawingToolType; // = DrawingToolType.Rectangle; // set the tool type for the class
 	private _side: BoxSide;
 	constructor(
 		chart: IChartApi,
@@ -22,13 +21,15 @@ export class RectangleDrawing extends ChartDrawingBase{
 		baseProps?: ChartDrawingBaseProps,
 	) {
 		// MAKE SURE TO UPDATE THIS WHEN CREATING NEW DRAWING TOOLS
-		const toolType =  DrawingToolType.Rectangle;
-		
-		super( toolType, chart, series, symbolName, RectangleDrawing.TOTAL_DRAWING_POINTS, drawingToolDefaultOptions, baseProps);
-		
-		const initializeFromStorage = baseProps ? true : false;
-		this._toolType = toolType
-		this.drawingView = new Rectangle(chart, series, this._toolType, drawingToolDefaultOptions,  baseProps?.styleOptions, baseProps || this.baseProps, initializeFromStorage); 
+
+		super( DrawingToolType.Rectangle, chart, series, symbolName, RectangleDrawing.TOTAL_DRAWING_POINTS, drawingToolDefaultOptions, baseProps);
+
+		this.initialize(baseProps)
+		this.drawingView = new Rectangle(chart, series, this.toolType, drawingToolDefaultOptions,  baseProps?.styleOptions, baseProps || this.baseProps, this.initializeFromStorage); 
+	}
+	
+	normalizeStyleOptions(options : any){
+		this.styleOptions = normalizeRectangleDrawingToolOptions(options)
 	}
 
 	// TODO dont make this hard coded

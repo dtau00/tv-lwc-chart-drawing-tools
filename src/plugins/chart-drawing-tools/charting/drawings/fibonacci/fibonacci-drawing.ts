@@ -6,15 +6,14 @@ import {
     Point,
     SeriesType,
 } from 'lightweight-charts';
-import { Fibonacci } from './fibonacci-view';
-import { fibonacciDrawingToolDefaultOptions as drawingToolDefaultOptions } from './fibonacci-options';
+import { Fibonacci as View} from './fibonacci-view';
+import { fibonacciDrawingToolDefaultOptions as drawingToolDefaultOptions, normalizeFibonacciDrawingToolOptions } from './fibonacci-options';
 import { ChartDrawingBase, ChartDrawingBaseProps } from '../chart-drawing-base';
 import { DrawingToolType } from '../../toolbar/tools/drawing-tools';
 import { BoxSide, getBoxHoverTarget, getCursorForBoxSide, getUpdateBoxPosition } from '../../../common/points';
 
 export class FibonacciDrawing extends ChartDrawingBase{
 	private static readonly TOTAL_DRAWING_POINTS = 2; // Set the drawing points for this type of drawing.  A box will have 2, a line ray will have 1, etc...
-	private _toolType: DrawingToolType; // = DrawingToolType.Rectangle; // set the tool type for the class
 	private _side: BoxSide;
 	constructor(
 		chart: IChartApi,
@@ -22,16 +21,16 @@ export class FibonacciDrawing extends ChartDrawingBase{
 		symbolName: string,
 		baseProps?: ChartDrawingBaseProps,
 	) {
-		// MAKE SURE TO UPDATE THIS WHEN CREATING NEW DRAWING TOOLS
-		const toolType =  DrawingToolType.Fibonacci;
+		super( DrawingToolType.Fibonacci, chart, series, symbolName, FibonacciDrawing.TOTAL_DRAWING_POINTS, drawingToolDefaultOptions, baseProps);
 		
-		super( toolType, chart, series, symbolName, FibonacciDrawing.TOTAL_DRAWING_POINTS, drawingToolDefaultOptions, baseProps);
-		
-		const initializeFromStorage = baseProps ? true : false;
-		this._toolType = toolType
-		this.drawingView = new Fibonacci(chart, series, this._toolType, drawingToolDefaultOptions,  baseProps?.styleOptions, baseProps || this.baseProps, initializeFromStorage); 
+		this.initialize(baseProps)
+		this.drawingView = new View(chart, series, this.toolType, drawingToolDefaultOptions,  baseProps?.styleOptions, baseProps || this.baseProps, this.initializeFromStorage); 
 	}
 
+	normalizeStyleOptions(options : any){
+		//this.styleOptions = normalizeFibonacciDrawingToolOptions(options)
+	}
+	
 	// TODO dont make this hard coded
 	// set the style when drawing is selected
 	select(): void {

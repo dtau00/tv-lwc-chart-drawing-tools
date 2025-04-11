@@ -24,6 +24,8 @@ export interface IChartDrawing {
     onHoverWhenSelected(point: Point): void;
     onDrag(param: MouseEventParams, startPoint: Point, endPoint: Point): void;
     onClick(point?: Point, time? : Time): void;
+    normalizeStyleOptions(styleOptions : {}):void;
+
     //updatePosition(startPoint: Point, endPoint: Point, side: BoxSide): void;
 
     //updateStyle(style: Partial<DrawingStyle>): void;

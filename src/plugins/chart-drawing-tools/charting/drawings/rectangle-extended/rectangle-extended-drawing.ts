@@ -8,14 +8,13 @@ import {
 	Time,
 } from 'lightweight-charts';
 import { RectangleExtendedView } from './rectangle-extended-view';
-import { rectangleDrawingToolDefaultOptions as drawingToolDefaultOptions } from '../rectangle/rectangle-options';
+import { rectangleDrawingToolDefaultOptions as drawingToolDefaultOptions, normalizeRectangleDrawingToolOptions } from '../rectangle/rectangle-options';
 import { ChartDrawingBase, ChartDrawingBaseProps } from '../chart-drawing-base';
 import { DrawingToolType } from '../../toolbar/tools/drawing-tools';
 import { BoxSide, getBoxHoverTarget, getCursorForBoxSide, getUpdateBoxPosition } from '../../../common/points';
 
 export class RectangleExtendedDrawing extends ChartDrawingBase{
 	private static readonly TOTAL_DRAWING_POINTS = 2; // Set the drawing points for this type of drawing.  A box will have 2, a line ray will have 1, etc...
-	private _toolType: DrawingToolType; // = DrawingToolType.Rectangle; // set the tool type for the class
 	private _side: BoxSide;
 
 	constructor(
@@ -37,17 +36,16 @@ export class RectangleExtendedDrawing extends ChartDrawingBase{
 				this.overrideDrawingPoints([p1, p2]);
 			}
 		}
-
-		// MAKE SURE TO UPDATE THIS WHEN CREATING NEW DRAWING TOOLS
-		const toolType = DrawingToolType.RectangleExtended
-
-		super( toolType, chart, series, symbolName, RectangleExtendedDrawing.TOTAL_DRAWING_POINTS, drawingToolDefaultOptions, baseProps, _finalizeDrawingPoints);
+		super( DrawingToolType.RectangleExtended, chart, series, symbolName, RectangleExtendedDrawing.TOTAL_DRAWING_POINTS, drawingToolDefaultOptions, baseProps, _finalizeDrawingPoints);
 		
-		const initializeFromStorage = baseProps ? true : false;
-		this._toolType = toolType
-		this.drawingView = new RectangleExtendedView(chart, series, this._toolType, drawingToolDefaultOptions,  baseProps?.styleOptions, baseProps || this.baseProps, initializeFromStorage); 
+		this.initialize(baseProps);
+		this.drawingView = new RectangleExtendedView(chart, series, this.toolType, drawingToolDefaultOptions,  baseProps?.styleOptions, baseProps || this.baseProps, this.initializeFromStorage); 
 	}
 
+	normalizeStyleOptions(options : any){
+		this.styleOptions = normalizeRectangleDrawingToolOptions(options)
+	}
+	
 	// TODO dont make this hard coded
 	// set the style when drawing is selected
 	select(): void {

@@ -124,43 +124,43 @@ export class ChartDrawingsManager {
                 if(item.symbolName === symbolName){
                     // TODO use tool to create object from a factoryMap
                     if(item.type === DrawingToolType.Rectangle){
-                        item.styleOptions =  normalizeRectangleDrawingToolOptions(item.styleOptions as RectangleDrawingToolOptions)
+                        //item.styleOptions =  normalizeRectangleDrawingToolOptions(item.styleOptions)
                         const drawing = new RectangleDrawing(chartContainer.chart, chartContainer.series, symbolName, item);
                         this._drawings.get(symbolName)?.push(drawing);
                         chartContainer.addDrawingPrimative(drawing.drawingView as PluginBase);
                     }
                     else if(item.type === DrawingToolType.RectangleExtended){
-                        item.styleOptions =  normalizeRectangleDrawingToolOptions(item.styleOptions as RectangleDrawingToolOptions)
+                        //item.styleOptions =  normalizeRectangleDrawingToolOptions(item.styleOptions)
                         const drawing = new RectangleExtendedDrawing(chartContainer.chart, chartContainer.series, symbolName, item);
                         this._drawings.get(symbolName)?.push(drawing);
                         chartContainer.addDrawingPrimative(drawing.drawingView as PluginBase);
                     }
                     else if(item.type === DrawingToolType.Line){
-                        item.styleOptions =  normalizeLineDrawingToolOptions(item.styleOptions as LineDrawingToolOptions)
+                       // item.styleOptions =  normalizeLineDrawingToolOptions(item.styleOptions)
                         const drawing = new LineDrawing(chartContainer.chart, chartContainer.series, symbolName, item);
                         this._drawings.get(symbolName)?.push(drawing);
                         chartContainer.addDrawingPrimative(drawing.drawingView as PluginBase);
                     }
                     else if(item.type === DrawingToolType.HorizontalLine){
-                        item.styleOptions =  normalizeLineDrawingToolOptions(item.styleOptions as LineDrawingToolOptions)
+                        //item.styleOptions =  normalizeLineDrawingToolOptions(item.styleOptions)
                         const drawing = new LineHorizontalDrawing(chartContainer.chart, chartContainer.series, symbolName, item);
                         this._drawings.get(symbolName)?.push(drawing);
                         chartContainer.addDrawingPrimative(drawing.drawingView as PluginBase);
                     }
                     else if(item.type === DrawingToolType.VerticalLine){
-                        item.styleOptions =  normalizeLineDrawingToolOptions(item.styleOptions as LineDrawingToolOptions)
+                       // item.styleOptions =  normalizeLineDrawingToolOptions(item.styleOptions)
                         const drawing = new LineVerticalDrawing(chartContainer.chart, chartContainer.series, symbolName, item);
                         this._drawings.get(symbolName)?.push(drawing);
                         chartContainer.addDrawingPrimative(drawing.drawingView as PluginBase);
                     }
                     else if(item.type === DrawingToolType.HorizontalLineRay){
-                        item.styleOptions =  normalizeLineDrawingToolOptions(item.styleOptions as LineDrawingToolOptions)
+                      //  item.styleOptions =  normalizeLineDrawingToolOptions(item.styleOptions)
                         const drawing = new LineHorizontalRayDrawing(chartContainer.chart, chartContainer.series, symbolName, item);
                         this._drawings.get(symbolName)?.push(drawing);
                         chartContainer.addDrawingPrimative(drawing.drawingView as PluginBase);
                     }
                     else if(item.type === DrawingToolType.Fibonacci){
-                        item.styleOptions =  normalizeFibonacciDrawingToolOptions(item.styleOptions as FibonacciDrawingToolOptions)
+                     //   item.styleOptions =  normalizeFibonacciDrawingToolOptions(item.styleOptions)
                         const drawing = new FibonacciDrawing(chartContainer.chart, chartContainer.series, symbolName, item);
                         this._drawings.get(symbolName)?.push(drawing);
                         chartContainer.addDrawingPrimative(drawing.drawingView as PluginBase);

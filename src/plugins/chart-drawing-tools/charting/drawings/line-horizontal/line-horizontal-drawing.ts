@@ -8,14 +8,13 @@ import {
 } from 'lightweight-charts';
 
 import { LineHorizontal as View } from './line-horizontal-view';
-import { lineDrawingToolDefaultOptions as drawingToolDefaultOptions, LineDrawingToolOptions } from '../line/line-options';
+import { lineDrawingToolDefaultOptions as drawingToolDefaultOptions, LineDrawingToolOptions, normalizeLineDrawingToolOptions } from '../line/line-options';
 import { ChartDrawingBase, ChartDrawingBaseProps } from '../chart-drawing-base';
 import { DrawingToolType } from '../../toolbar/tools/drawing-tools';
 import { _isPointNearLine, convertAndNormalizeDrawingPointsToPoint } from '../../../common/points';
 import { DrawingPoint } from '../../../common/common';
 export class LineHorizontalDrawing extends ChartDrawingBase{
 	private static readonly TOTAL_DRAWING_POINTS = 2; // Set the drawing points for this type of drawing.  A box will have 2, a line ray will have 1, etc...
-	private _toolType: DrawingToolType; // = DrawingToolType.Rectangle; // set the tool type for the class
 
 	constructor(
 		chart: IChartApi,
@@ -32,17 +31,15 @@ export class LineHorizontalDrawing extends ChartDrawingBase{
 				this.overrideDrawingPoints([{time: start, price}, {time: end, price}]);
 			}
 		}
-
-        // MAKE SURE TO UPDATE THIS WHEN CREATING NEW DRAWING TOOLS
-		const toolType = DrawingToolType.HorizontalLine;
-
-		super( toolType, chart, series, symbolName, LineHorizontalDrawing.TOTAL_DRAWING_POINTS, drawingToolDefaultOptions, baseProps, _finalizeDrawingPoints);
+		super( DrawingToolType.HorizontalLine, chart, series, symbolName, LineHorizontalDrawing.TOTAL_DRAWING_POINTS, drawingToolDefaultOptions, baseProps, _finalizeDrawingPoints);
 		
-		const initializeFromStorage = baseProps ? true : false;
-		this._toolType = toolType
-		this.drawingView = new View(chart, series, this._toolType, drawingToolDefaultOptions,  baseProps?.styleOptions, baseProps || this.baseProps, initializeFromStorage); 
+		this.initialize(baseProps);
+		this.drawingView = new View(chart, series, this.toolType, drawingToolDefaultOptions,  baseProps?.styleOptions, baseProps || this.baseProps, this.initializeFromStorage); 
 	}
 
+	normalizeStyleOptions(options : any){
+		this.styleOptions = normalizeLineDrawingToolOptions(options)
+	}
 	// TODO dont make this hard coded
 	// set the style when drawing is selected
 	select(): void {

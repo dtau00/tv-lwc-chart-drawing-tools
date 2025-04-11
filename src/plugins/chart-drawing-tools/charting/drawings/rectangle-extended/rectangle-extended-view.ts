@@ -1,5 +1,5 @@
 import { DrawingPoint } from '../../../common/common';
-import { RectangleExtendedDrawingToolOptions } from './rectangle-extended-options';
+import { RectangleDrawingToolOptions } from '../rectangle/rectangle-options';
 import { RectanglePaneView, } from '../rectangle/panes/rectangle-pane-view';
 import {  ChartDrawingBaseProps } from '../chart-drawing-base';
 import { IChartApi, ISeriesApi, MouseEventParams, SeriesType } from 'lightweight-charts';
@@ -12,7 +12,7 @@ export class RectangleExtendedView extends ViewBase {
 		series: ISeriesApi<SeriesType>,
 		toolType: DrawingToolType,
 		defaultOptions: {},
-		options: Partial<RectangleExtendedDrawingToolOptions> = {},
+		options: Partial<RectangleDrawingToolOptions> = {},
 		baseProps: ChartDrawingBaseProps,
 		initializedFromStorage: boolean,
 	) {

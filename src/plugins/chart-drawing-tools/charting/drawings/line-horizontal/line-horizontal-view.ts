@@ -4,7 +4,7 @@ import { IChartApi, ISeriesApi, MouseEventParams, SeriesType, Time } from 'light
 import { ViewBase } from '../drawing-view-base';
 import { DrawingToolType } from '../../toolbar/tools/drawing-tools';
 import { LinePaneView } from '../line/views/line-pane-view';
-import { LineHorizontalDrawingToolOptions } from './line-horizontal-options';
+import { LineDrawingToolOptions } from '../line/line-options';
 
 export class LineHorizontal extends ViewBase {
 	_p1?: DrawingPoint | null = null;
@@ -15,7 +15,7 @@ export class LineHorizontal extends ViewBase {
 		series: ISeriesApi<SeriesType>,
 		toolType: DrawingToolType,
 		defaultOptions: {},
-		options: Partial<LineHorizontalDrawingToolOptions> = {},
+		options: Partial<LineDrawingToolOptions> = {},
 		baseProps: ChartDrawingBaseProps,
 		initializedFromStorage: boolean,
 	) {

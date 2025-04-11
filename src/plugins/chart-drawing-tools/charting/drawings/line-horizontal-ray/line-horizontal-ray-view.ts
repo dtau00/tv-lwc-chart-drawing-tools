@@ -4,7 +4,7 @@ import { IChartApi, ISeriesApi, SeriesType } from 'lightweight-charts';
 import { ViewBase } from '../drawing-view-base';
 import { DrawingToolType } from '../../toolbar/tools/drawing-tools';
 import { LinePaneView } from '../line/views/line-pane-view';
-import { LineHorizontalRayDrawingToolOptions } from './line-horizontal-ray-options';
+import { LineDrawingToolOptions } from '../line/line-options';
 import { MouseEventParams } from 'lightweight-charts';
 
 export class LineHorizontalRay extends ViewBase {
@@ -16,7 +16,7 @@ export class LineHorizontalRay extends ViewBase {
 		series: ISeriesApi<SeriesType>,
 		toolType: DrawingToolType,
 		defaultOptions: {},
-		options: Partial<LineHorizontalRayDrawingToolOptions> = {},
+		options: Partial<LineDrawingToolOptions> = {},
 		baseProps: ChartDrawingBaseProps,
 		initializedFromStorage: boolean,
 	) {

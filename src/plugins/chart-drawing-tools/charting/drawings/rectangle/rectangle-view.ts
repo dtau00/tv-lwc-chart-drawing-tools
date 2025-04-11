@@ -33,17 +33,13 @@ export class Rectangle extends ViewBase {
 			this.initializeDrawingViews([baseProps.drawingPoints[0], baseProps.drawingPoints[1]]);
 		}
 	}
-
 	initializeDrawingViews(points: DrawingPoint[]) {
-		if(this.initalized)
+		if(this._paneViews.length > 0)
 			return;
-		
-		this.initalized = true;
-		this.points = points;
 
+		this.points = points;
 		this._paneViews = [new RectanglePaneView(this)];
 	}
-
 	// initializes the drawing views on first click
 	// make sure you pass in the correct number of points for your drawing
 	// TODO enfore this

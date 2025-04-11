@@ -7,9 +7,6 @@ import { LinePaneView } from '../line/views/line-pane-view';
 import { LineDrawingToolOptions } from '../line/line-options';
 
 export class LineHorizontal extends ViewBase {
-	_p1?: DrawingPoint | null = null;
-	_p2?: DrawingPoint | null = null;
-
 	constructor(
 		chart: IChartApi,
 		series: ISeriesApi<SeriesType>,
@@ -29,15 +26,13 @@ export class LineHorizontal extends ViewBase {
 
 	// make sure you pass in the correct number of points for your drawing
 	// TODO enfore this
-    initializeDrawingViews(points: DrawingPoint[]) {
-        if(this.initalized)
+	initializeDrawingViews(points: DrawingPoint[]) {
+		if(this._paneViews.length > 0)
 			return;
 
-        this.initalized = true;	
-        this.points = points;
-
-        this._paneViews = [new LinePaneView(this)];
-    }
+		this.points = points;
+		this._paneViews = [new LinePaneView(this)];
+	}
 
 	// override the base class method to extend the vertical line
 	updateInitialPoint(p: DrawingPoint, param: MouseEventParams) {

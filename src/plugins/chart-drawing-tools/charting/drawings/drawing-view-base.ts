@@ -14,7 +14,6 @@ export class ViewBase extends PluginBase {
     private _toolType: DrawingToolType;
     private _baseProps: ChartDrawingBaseProps;
     protected _paneViews: PaneViewBase[] = [];
-	protected initalized: boolean = false;
 
     public points: DrawingPoint[] = [];
     public _options: {}; // active style, could temporarily be different (like from selection)

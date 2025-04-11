@@ -1,5 +1,5 @@
 import { DrawingPoint } from '../../../common/common';
-import { FibonacciPaneView } from './view/fibonacci-pane-view';
+import { FibonacciPaneView } from './fibonacci-view-pane';
 import { ChartDrawingBaseProps } from '../chart-drawing-base';
 import { IChartApi, ISeriesApi, SeriesType } from 'lightweight-charts';
 import { ViewBase } from '../drawing-view-base';
@@ -23,8 +23,9 @@ export class Fibonacci extends ViewBase {
 	}
 
 	initializeDrawingViews(points: DrawingPoint[]) {
-		if (this.initalized) return;
-		this.initalized = true;
+		if(this._paneViews.length > 0)
+			return;
+
 		this.points = points;
 		this._paneViews = [new FibonacciPaneView(this)];
 	}

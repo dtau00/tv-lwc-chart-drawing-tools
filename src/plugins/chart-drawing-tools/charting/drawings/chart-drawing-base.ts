@@ -100,7 +100,11 @@ export abstract class ChartDrawingBase implements IChartDrawing {
     get symbolName(): string { return this._baseProps.symbolName; }
     get userId(): string { return this._baseProps.userId; }
     get tags(): string[] { return this._baseProps.tags; }
-    get styleOptions(): {} { return this._baseProps.styleOptions; }
+    get styleOptions(): {} { 
+        // TODO kind of heavy to do this every time
+        this.normalizeStyleOptions(this._baseProps.styleOptions)
+        return this._baseProps.styleOptions; 
+    }
     get isSelected(): boolean { return this._isSelected; }
     get isVisible(): boolean { return this._baseProps.isVisible; }
     get isDrawing(): boolean { return this._isDrawing; }
@@ -127,7 +131,6 @@ export abstract class ChartDrawingBase implements IChartDrawing {
 
     // set the style options to base properties, this is used when loading from config
     public setBaseStyleOptionsFromConfig() {    
-        this.normalizeStyleOptions(this.styleOptions)
         this.drawingView?.setBaseStyleOptionsFromConfig();
     }
 

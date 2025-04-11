@@ -3,7 +3,6 @@ import { ChartDrawingBase, ChartDrawingBaseProps } from './drawings/chart-drawin
 import { DrawingToolType } from './toolbar/tools/drawing-tools.ts';
 import { RectangleExtendedDrawing } from './drawings/rectangle-extended/rectangle-extended-drawing.ts';
 import { RectangleDrawing } from './drawings/rectangle/rectangle-drawing.ts';
-import { RectangleDrawingToolOptions, normalizeRectangleDrawingToolOptions } from './drawings/rectangle/rectangle-options.ts';
 
 import { DataStorage } from '../data/data.ts';
 import { eventBus } from '../common/common.ts';
@@ -16,9 +15,7 @@ import { LineDrawing } from './drawings/line/line-drawing.ts';
 import { LineHorizontalDrawing } from './drawings/line-horizontal/line-horizontal-drawing.ts';
 import { LineVerticalDrawing } from './drawings/line-vertical/line-vertical-drawing.ts';
 import { LineHorizontalRayDrawing } from './drawings/line-horizontal-ray/line-horizontal-ray-drawing.ts';
-import { LineDrawingToolOptions, normalizeLineDrawingToolOptions } from './drawings/line/line-options.ts';
 import { FibonacciDrawing } from './drawings/fibonacci/fibonacci-drawing.ts';
-import { FibonacciDrawingToolOptions, normalizeFibonacciDrawingToolOptions } from './drawings/fibonacci/fibonacci-options.ts';
 // manage charts
     // when chart is created, register it with ChartManager
     // when chart is destroyed, unregister it from ChartManager
@@ -255,7 +252,7 @@ export class ChartDrawingsManager {
         eventBus.addEventListener(ChartEvents.NewDrawingCompleted, (event: Event) => {
             const customEvent = event as CustomEvent<string>;
             console.log(`Chart Manager: Chart ${customEvent.detail} has finished rendering.`, this._selectedDrawing);
-            if(this._selectedDrawing){  
+            if(this._selectedDrawing){ 
                 const drawings = this._drawings.get(this._selectedDrawing.symbolName) || [];
                 this._drawings.set(this._selectedDrawing.symbolName, [...drawings, this._selectedDrawing]);
                 this.saveDrawings(this._selectedDrawing.symbolName);

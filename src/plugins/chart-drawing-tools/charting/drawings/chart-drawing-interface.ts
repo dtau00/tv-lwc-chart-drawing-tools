@@ -1,4 +1,4 @@
-import { MouseEventParams, Point } from 'lightweight-charts';
+import { MouseEventParams, Point, Time } from 'lightweight-charts';
 
 export interface IChartDrawing {
     //id: string;
@@ -23,7 +23,7 @@ export interface IChartDrawing {
     onMouseMove(event: MouseEventParams): void;
     onHoverWhenSelected(point: Point): void;
     onDrag(param: MouseEventParams, startPoint: Point, endPoint: Point): void;
-    onClick(event: MouseEventParams): void;
+    onClick(point?: Point, time? : Time): void;
     //updatePosition(startPoint: Point, endPoint: Point, side: BoxSide): void;
 
     //updateStyle(style: Partial<DrawingStyle>): void;

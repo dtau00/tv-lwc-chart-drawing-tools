@@ -174,17 +174,17 @@ export abstract class ChartDrawingBase implements IChartDrawing {
 		this.tmpDrawingPoints = [];
 	}
 
-    onClick(param: MouseEventParams) {
-        console.log('onClick', 'chart-drawing-base',param.point);
-		if (this._isDrawing || !param.point || !param.time || !this._series) 
+    onClick(point? : Point, time? : Time) {
+        console.log('onClick', 'chart-drawing-base',point);
+		if (this._isDrawing || !point || !time || !this._series) 
 			return;
 
-		const price = this._series.coordinateToPrice(param.point.y);
+		const price = this._series.coordinateToPrice(point.y);
 
 		// if initial drawing is not completed, add the point
 		if(!this._isCompleted && price !== null){
 			this.addPoint({
-				time: param.time,
+				time: time,
 				price,
 			});
 		}

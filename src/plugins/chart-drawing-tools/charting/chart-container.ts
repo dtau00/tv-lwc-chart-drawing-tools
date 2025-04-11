@@ -129,7 +129,6 @@ export class ChartContainer {
     // makes it cleaner to dispose the listeners
 
     private _initializeListeners() : void{
-        this._chart.subscribeClick(this._onClickChartHandler);
        this._chart.subscribeCrosshairMove(this._onCrosshairMoveChartHandler);
 
         this._chartDivContainer .addEventListener('mousedown', this._onMouseDownChartHandler);
@@ -139,7 +138,6 @@ export class ChartContainer {
    }
 
     private _removeListeners() : void{
-        this._chart.unsubscribeClick(this._onClickChartHandler)
         this._chart.unsubscribeCrosshairMove(this._onCrosshairMoveChartHandler)    
 
         this._chartDivContainer.removeEventListener('mousedown', this._onMouseDownChartHandler);
@@ -154,10 +152,6 @@ export class ChartContainer {
         this._chartManager.selectedDrawing?.onMouseMove(param);
     }
 
-    private _onClickChartHandler = (param: MouseEventParams) : void => {
-       this._chartManager.onChartClick(param, this);
-	}
-
     private _rightClickHandler=(evt: MouseEvent): void => {
         evt.preventDefault()
         this._chartManager.onRightClick(evt, this)
@@ -169,7 +163,7 @@ export class ChartContainer {
     }       
 
     private _onMouseUpChartHandler=(evt: MouseEvent): void => {
-        this._chartManager.onMouseUp(evt);
+        this._chartManager.onMouseUp(evt, this);
     }
 
     private _onWheelChart=(evt: WheelEvent): void => {

@@ -271,37 +271,8 @@ export class ChartDrawingsManager {
 
     // Chart Event Handlers ------------------------------------------------------------
 
-    public onChartClick(param: MouseEventParams, chartContainer: ChartContainer){
-        // Ceating a new drawing
-        this.checkCurrentChartContainer(chartContainer);
-        console.log('onChartClick', chartContainer.chartId);
-
-        if(this.creatingNewDrawingFromToolbar){
-            this._processNewToolbarDrawingOnChartMouseEvent(chartContainer, param)
-        }
-        else if(!this.selectedDrawing || this.selectedDrawing.isCompleted){
-            if(param?.point){
-                let drawingFound :boolean= false;
-                console.log('selectedDrawing', this.selectedDrawing);
-                const drawings = this._drawings.get(chartContainer.symbolName) || [];
-                for(const drawing of drawings){
-                    if(drawing.containsPoint(chartContainer.chart, chartContainer.series, param.point, drawing.drawingPoints)){
-                        console.log('drawing selected', drawing);
-                        this.selectDrawing(drawing);
-                        drawing.select();
-                        drawingFound = true;
-                        //this._updateChartContainerPrimatives(chartContainer.symbolName, [drawing.primative as PluginBase]);
-                        break;
-                    }
-                }
-                if(!drawingFound){
-                    this.unselectDrawing();
-                }
-            }
-        }
-    }
-
     public onMouseDown(evt: MouseEvent, chartContainer: ChartContainer): boolean {
+        console.log('onMouseDown', 'chart-drawings-manager',chartContainer.chartId);
         if(!this._selectedDrawing) // only check if a drawing is selected
             return false;
         
@@ -321,10 +292,43 @@ export class ChartDrawingsManager {
         return true;
     }
 
-    public onMouseUp(evt: MouseEvent): void {
+    public onMouseUp(evt: MouseEvent, chartContainer: ChartContainer): void {
+        console.log('onMouseUp', 'chart-drawings-manager');
         if(this._isMouseDragging){
             this._selectedDrawing?.setTmpToNewDrawingPoints();
             this.saveDrawings(this._selectedDrawing?.symbolName || '');
+        }
+        else{
+            this.checkCurrentChartContainer(chartContainer);
+            console.log('onChartClick', chartContainer.chartId);
+            const point = getChartPointFromMouseEvent(evt, chartContainer.chartDivContainer);
+
+            if(this.creatingNewDrawingFromToolbar){
+                if(point){
+                    const time : Time | null = chartContainer.chart.timeScale().coordinateToTime(point.x)
+                    this._processNewToolbarDrawingOnChartMouseEvent(chartContainer, point ?? undefined, time ?? undefined)
+                }
+            }
+            else if(!this.selectedDrawing || this.selectedDrawing.isCompleted){
+                if(point){
+                    let drawingFound :boolean= false;
+                    console.log('selectedDrawing', this.selectedDrawing);
+                    const drawings = this._drawings.get(chartContainer.symbolName) || [];
+                    for(const drawing of drawings){
+                        if(drawing.containsPoint(chartContainer.chart, chartContainer.series, point, drawing.drawingPoints)){
+                            console.log('drawing selected', drawing);
+                            this.selectDrawing(drawing);
+                            drawing.select();
+                            drawingFound = true;
+                            //this._updateChartContainerPrimatives(chartContainer.symbolName, [drawing.primative as PluginBase]);
+                            break;
+                        }
+                    }
+                    if(!drawingFound){
+                        this.unselectDrawing();
+                    }
+                }
+            }
         }
         this._resetMouseDragControls();
     }
@@ -338,7 +342,7 @@ export class ChartDrawingsManager {
 
         // if newToolbarDrawing is ImmeidatelyStartDrawing type and has not been initiated
         if(this.creatingNewDrawingFromToolbar && this._currentDrawingTool && this._currentDrawingTool.immediatelyStartDrawing && !this._selectedDrawing && this._currentChartContainer){
-            this._processNewToolbarDrawingOnChartMouseEvent(this._currentChartContainer, param)
+            this._processNewToolbarDrawingOnChartMouseEvent(this._currentChartContainer, param.point, param.time)
         }
         else if(this._isMouseDragging && this._mouseDownStartPoint && this._selectedDrawing){
             // move drawing
@@ -351,18 +355,19 @@ export class ChartDrawingsManager {
     }
 
     public onRightClick(evt: MouseEvent, chartContainer: ChartContainer): void {
+        // TODO we'll need to handle this in the future to open context menu when right clicking, instead of deselecting
         console.log('rclick', 'chart-drawing-manager')
+        this.unselectDrawing();
+        this.unselectTool();
+        this._emitCloseToolbarEvent(chartContainer.chartId, true);
+
+        /*
         if(!this._selectedDrawing || !chartContainer.chart || !chartContainer.series){
             this.unselectTool()
             this._emitCloseToolbarEvent(chartContainer.chartId, true);
             return;
         }
 
-
-        this.unselectDrawing();
-        this.unselectTool();
-        this._emitCloseToolbarEvent(chartContainer.chartId, true);
-        /*
         // Deselect if right click is outside of drawing
         const point = getChartPointFromMouseEvent(evt, chartContainer.chartDivContainer);  
         if(point && !containsPoints(chartContainer.chart, chartContainer.series, point, this._selectedDrawing.drawingPoints)){
@@ -370,7 +375,7 @@ export class ChartDrawingsManager {
         }*/
     }
 
-    private _processNewToolbarDrawingOnChartMouseEvent = (chartContainer : ChartContainer, param : MouseEventParams) : void =>{
+    private _processNewToolbarDrawingOnChartMouseEvent = (chartContainer : ChartContainer, point? : Point, time? : Time) : void =>{
         if(!this.selectedDrawing){ // if start of new drawing
             const drawing =this.currentDrawingTool?.getNewDrawingObject(chartContainer.chart, chartContainer.series, chartContainer.symbolName);
             this.selectDrawing(drawing!);
@@ -378,7 +383,7 @@ export class ChartDrawingsManager {
         }
 
         // pass click coordinates to drawing for more processing
-        this.selectedDrawing?.onClick(param); 
+        this.selectedDrawing?.onClick(point, time); 
     }
 
     private _onKeyDown = (evt: KeyboardEvent): void => {

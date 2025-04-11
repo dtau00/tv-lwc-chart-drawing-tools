@@ -4,11 +4,10 @@ import { IChartDrawing } from './chart-drawing-interface';
 import { generateUniqueId } from '../../../../helpers/id-generator';
 import { PluginBase } from '../../../plugin-base';
 import { ensureDefined } from '../../../../helpers/assertions';
-import { eventBus, DrawingPoint, toolKeyName } from '../../common/common';
+import { eventBus, DrawingPoint } from '../../common/common';
 
 import { ChartEvents } from '../../enums/events';
-import { BoxSide, containsPoints, leftRightPoints, topBottomPoints } from '../../common/points';
-import { ConfigStorage } from '../../data/data';
+import { containsPoints, leftRightPoints, topBottomPoints } from '../../common/points';
 import { ViewBase } from './drawing-view-base';
 
  // base properties that are common to all drawings, to make it cleaner to serialize and save/load

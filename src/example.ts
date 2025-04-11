@@ -44,12 +44,13 @@ function generateChart(id: string, symbol: string, secondsPerBar: number, chartC
 	//candlestickSeries.setData(data ? data : generateCandlestickData())
 
 	// add the symbol as a header above the chart
-	const div = document.querySelector<HTMLDivElement>(`#${chartContainerId}`);
+	/*
+	const div = document.querySelector<HTMLDivElement>(`#${toolbarContainerId}`);
 	if (div) {
 		const headerDiv = document.createElement('h1');
 		headerDiv.innerHTML = symbol; // Set the text of the header
 		div.parentNode?.insertBefore(headerDiv, div);
-	}
+	}*/
 
 	// create the plugin
 	return new ChartDrawingToolsPlugin(

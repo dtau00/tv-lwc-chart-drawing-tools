@@ -11,12 +11,11 @@ import { LineHorizontalRay as View } from './line-horizontal-ray-view';
 import { lineDrawingToolDefaultOptions as drawingToolDefaultOptions, LineDrawingToolOptions } from '../line/line-options';
 import { ChartDrawingBase, ChartDrawingBaseProps } from '../chart-drawing-base';
 import { DrawingToolType } from '../../toolbar/tools/drawing-tools';
-import { _isPointNearLine, BoxSide, resizeBoxByHandle } from '../../../common/points';
+import { _isPointNearLine, BoxSide } from '../../../common/points';
 import { DrawingPoint } from '../../../common/common';
 export class LineHorizontalRayDrawing extends ChartDrawingBase{
 	private static readonly TOTAL_DRAWING_POINTS = 2; // Set the drawing points for this type of drawing.  A box will have 2, a line ray will have 1, etc...
 	private _toolType: DrawingToolType; // = DrawingToolType.Rectangle; // set the tool type for the class
-
 
 	constructor(
 		chart: IChartApi,

@@ -11,7 +11,7 @@ import { LineHorizontal as View } from './line-horizontal-view';
 import { lineDrawingToolDefaultOptions as drawingToolDefaultOptions, LineDrawingToolOptions } from '../line/line-options';
 import { ChartDrawingBase, ChartDrawingBaseProps } from '../chart-drawing-base';
 import { DrawingToolType } from '../../toolbar/tools/drawing-tools';
-import { _isPointNearLine, BoxSide } from '../../../common/points';
+import { _isPointNearLine } from '../../../common/points';
 import { DrawingPoint } from '../../../common/common';
 export class LineHorizontalDrawing extends ChartDrawingBase{
 	private static readonly TOTAL_DRAWING_POINTS = 2; // Set the drawing points for this type of drawing.  A box will have 2, a line ray will have 1, etc...

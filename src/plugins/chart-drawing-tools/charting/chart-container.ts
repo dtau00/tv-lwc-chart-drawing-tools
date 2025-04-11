@@ -167,7 +167,7 @@ export class ChartContainer {
     }
 
     private _onWheelChart=(evt: WheelEvent): void => {
-        console.log('onWheelChart', evt);
+        //console.log('onWheelChart', evt);
     }
 }
 

@@ -7,7 +7,7 @@ import { ensureDefined } from '../../../../helpers/assertions';
 import { eventBus, DrawingPoint } from '../../common/common';
 
 import { ChartEvents } from '../../enums/events';
-import { containsPoints, leftRightPoints, topBottomPoints } from '../../common/points';
+import { containsPoints, leftRightPoints, pointToDrawingPoints, topBottomPoints } from '../../common/points';
 import { ViewBase } from './drawing-view-base';
 
  // base properties that are common to all drawings, to make it cleaner to serialize and save/load
@@ -268,6 +268,20 @@ export abstract class ChartDrawingBase implements IChartDrawing {
         //this._points = this._reorderPoints(this._points);
 		this._setNewDrawing();
 	}
+ 
+    // coverts points back to drawing points, updates view, sets tmpDrawingPoints
+    protected finalizeUpdatedPosition(p1 : Point, p2 : Point) : void{
+		// convert back to drawing coordinates
+		const dp1 = pointToDrawingPoints(p1, this._chart!, this._series!)
+		const dp2 = pointToDrawingPoints(p2, this._chart!, this._series!)
+
+		this.view().updatePoints([dp1, dp2]) 
+
+		//  store new points temporarily, we will set this back to the drawingPoints when the update is finished
+		// TODO we wont need this if we save directly from the class, consider adding save directly from the class
+		this.tmpDrawingPoints[0] = dp1
+		this.tmpDrawingPoints[1] = dp2
+    }
 
 	private _setNewDrawing(){
         if (this._points.length >= this._totalDrawingPoints) {

@@ -11,8 +11,7 @@ import { RectangleExtendedView } from './rectangle-extended-view';
 import { rectangleDrawingToolDefaultOptions as drawingToolDefaultOptions } from '../rectangle/rectangle-options';
 import { ChartDrawingBase, ChartDrawingBaseProps } from '../chart-drawing-base';
 import { DrawingToolType } from '../../toolbar/tools/drawing-tools';
-import { BoxSide, getBoxHoverTarget, getCursorForBoxSide, resizeBoxByHandle, updateBoxPosition } from '../../../common/points';
-import { DrawingPoint } from '../../../common/common';
+import { BoxSide, getBoxHoverTarget, getCursorForBoxSide, getUpdateBoxPosition } from '../../../common/points';
 
 export class RectangleExtendedDrawing extends ChartDrawingBase{
 	private static readonly TOTAL_DRAWING_POINTS = 2; // Set the drawing points for this type of drawing.  A box will have 2, a line ray will have 1, etc...
@@ -32,9 +31,9 @@ export class RectangleExtendedDrawing extends ChartDrawingBase{
 			const end = this._chart?.timeScale().getVisibleRange()?.to;
 			if(end){
 				if(p1.time > p2.time)
-					p1.time = end as Time; //(Number(p1.time) * 2) as Time;
+					p1.time = end as Time; 
 				else
-					p2.time = end as Time; //(Number(p2.time) * 2) as Time;
+					p2.time = end as Time; 
 				this.overrideDrawingPoints([p1, p2]);
 			}
 		}
@@ -76,15 +75,10 @@ export class RectangleExtendedDrawing extends ChartDrawingBase{
 		if (!this._chart || this._isDrawing || !this._series || this.drawingPoints.length < 2) 
 			return;
 		
-		let dp1 : DrawingPoint, dp2 : DrawingPoint
-		[dp1, dp2] = updateBoxPosition(startPoint, endPoint, this.drawingPoints[0], this.drawingPoints[1], side, this._chart, this._series, true)
-		
-		this.view().updatePoints([dp1, dp2]) 
-
-		//  store new points temporarily, we will set this back to the drawingPoints when the update is finished
-		// TODO we wont need this if we save directly from the class, consider adding save directly from the class
-		this.tmpDrawingPoints[0] = dp1
-		this.tmpDrawingPoints[1] = dp2
+		let p1: Point, p2 : Point
+		[p1, p2] = getUpdateBoxPosition(startPoint, endPoint, this.drawingPoints[0], this.drawingPoints[1], side, this._chart, this._series, true)
+	
+		this.finalizeUpdatedPosition(p1, p2)
 	}
 	
 }

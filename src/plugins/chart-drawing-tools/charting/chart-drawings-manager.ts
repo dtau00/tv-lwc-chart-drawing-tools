@@ -300,14 +300,16 @@ export class ChartDrawingsManager {
     }
 
     public onMouseUp(evt: MouseEvent, chartContainer: ChartContainer): void {
-        console.log('onMouseUp', 'chart-drawings-manager');
+        console.log('onMouseUp', 'chart-drawings-manager', chartContainer.chartId);
+        if(evt.button === 2)
+            return;
+        
         if(this._isMouseDragging){
             this._selectedDrawing?.setTmpToNewDrawingPoints();
             this.saveDrawings(this._selectedDrawing?.symbolName || '');
         }
         else{
             this.checkCurrentChartContainer(chartContainer);
-            console.log('onChartClick', chartContainer.chartId);
             const point = getChartPointFromMouseEvent(evt, chartContainer.chartDivContainer);
 
             if(this.creatingNewDrawingFromToolbar){

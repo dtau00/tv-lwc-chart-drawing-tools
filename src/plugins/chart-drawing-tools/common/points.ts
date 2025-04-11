@@ -239,7 +239,7 @@ export function  offsetPoints(startPoint : Point, endPoint : Point, point1 : Poi
     return [p1, p2]
 }
 
-export function updateBoxPosition(startPoint: Point, endPoint: Point, drawingPoints1 : DrawingPoint, drawingPoints2 : DrawingPoint, side: BoxSide, chart : IChartApi, series :  ISeriesApi<SeriesType>, extend : boolean) : [DrawingPoint, DrawingPoint]{
+export function getUpdateBoxPosition(startPoint: Point, endPoint: Point, drawingPoints1 : DrawingPoint, drawingPoints2 : DrawingPoint, side: BoxSide, chart : IChartApi, series :  ISeriesApi<SeriesType>, extend : boolean) : [Point, Point]{
   let p1: Point, p2: Point;
 	
   // covert drawing points to points
@@ -261,11 +261,7 @@ export function updateBoxPosition(startPoint: Point, endPoint: Point, drawingPoi
       p1 = { ...p1, x: endCoordinate! };  
   }
 
-  // convert back to drawing coordinates
-  const dp1 = pointToDrawingPoints(p1, chart, series)
-  const dp2 = pointToDrawingPoints(p2, chart, series)
-
-  return [dp1, dp2]
+  return [p1, p2]
 }
 
 export function resizeBoxByHandle(

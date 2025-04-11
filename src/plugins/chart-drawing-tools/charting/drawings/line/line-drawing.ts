@@ -11,7 +11,7 @@ import { Line as View } from './line-view';
 import { lineDrawingToolDefaultOptions as drawingToolDefaultOptions, LineDrawingToolOptions } from './line-options';
 import { ChartDrawingBase, ChartDrawingBaseProps } from '../chart-drawing-base';
 import { DrawingToolType } from '../../toolbar/tools/drawing-tools';
-import { _isPointNearLine, getClosestHandleOnLine, LineHandle, resizeLineByHandle } from '../../../common/points';
+import { _isPointNearLine, convertAndNormalizeDrawingPointsToPoint, getClosestHandleOnLine, LineHandle, offsetPoints, resizeLineByHandle } from '../../../common/points';
 import { DrawingPoint } from '../../../common/common';
 export class LineDrawing extends ChartDrawingBase{
 	private static readonly TOTAL_DRAWING_POINTS = 2; // Set the drawing points for this type of drawing.  A box will have 2, a line ray will have 1, etc...
@@ -75,63 +75,23 @@ export class LineDrawing extends ChartDrawingBase{
 		if (!this._chart || this._isDrawing || !this._series || this.drawingPoints.length < 2) 
 			return;
 
-		// Note we can't directly update the drawingPoints or the time value will be off , so always have to calculate from the initial points
-		let xOffset = endPoint.x - startPoint.x;
-		let yOffset = endPoint.y - startPoint.y;
+		let p1 :Point, p2 : Point
+		[p1, p2] = convertAndNormalizeDrawingPointsToPoint( this.drawingPoints[0], this.drawingPoints[1], this._chart, this._series)
 
-		// So we dont want to update the drawingPoints until the update is finished, we will use tmpDrawingPoints to store the new points
-		const drawingPoint1 = this.drawingPoints[0];
-		const drawingPoint2 = this.drawingPoints[1];
-
-
-		let pricePoint1 = this._series.priceToCoordinate(drawingPoint1.price);
-		let pricePoint2 = this._series.priceToCoordinate(drawingPoint2.price);
-		let timePoint1 = this._chart.timeScale().timeToCoordinate(drawingPoint1.time) 
-		let timePoint2 = this._chart.timeScale().timeToCoordinate(drawingPoint2.time)
-
-		let p1 = {x: timePoint1, y: pricePoint1};
-		let p2 = {x: timePoint2, y: pricePoint2};
-
-		if(p1.x !== null && p2.x !== null && p1.y !== null && p2.y !== null){
-
-			// assume timepoint1 is always the start of the box
-			if(p1.x > p2.x){
-				const tmp = p1;
-				p1 = p2;
-				p2 = tmp;
-			}
-
-			// adjust coordinates based on the side
-			if(side === 'middle'){
-				if(p1.x !== null && p2.x !== null && p1.y !== null && p2.y !== null){
-					p1.x = (p1.x + xOffset) as Coordinate;
-					p2.x = (p2.x + xOffset) as Coordinate;
-					p1.y = (p1.y + yOffset) as Coordinate;
-					p2.y = (p2.y + yOffset) as Coordinate;
-				}
-			}
-			else if(p1.x !== null && p2.x !== null && p1.y !== null && p2.y !== null){
-				const point1 = {x: p1.x, y: p1.y};		
-				const point2 = {x: p2.x, y: p2.y};
-				const newPoints = resizeLineByHandle(point1, point2, side, endPoint);
-				p1 = newPoints[0];
-				p2 = newPoints[1];
-			}
-
-            // convert back to drawing coordinates
-            if(p1.x !== null && p2.x !== null && p1.y !== null && p2.y !== null){
-                const newDrawingPoint1 = {time: this._chart.timeScale().coordinateToTime(p1.x)!, price: this._series.coordinateToPrice(p1.y)!};
-                const newDrawingPoint2 = {time: this._chart.timeScale().coordinateToTime(p2.x)!, price: this._series.coordinateToPrice(p2.y)!};
-
-                // update the drawing
-                this.view().updatePoints([newDrawingPoint1, newDrawingPoint2]) 
-
-                //  store new points temporarily, we will set this back to the drawingPoints when the update is finished
-                // TODO we wont need this if we save directly from the class, consider adding save directly from the class
-                this.tmpDrawingPoints[0] = newDrawingPoint1
-                this.tmpDrawingPoints[1] =newDrawingPoint2
-            }
+		// adjust coordinates based on the side
+		if(side === 'middle'){
+			[p1, p2] =offsetPoints(startPoint, endPoint, p1, p2)
 		}
+		else{
+			[p1, p2] = resizeLineByHandle(
+				{ x: p1.x, y: p1.y },
+				{ x: p2.x, y: p2.y },
+				side,
+				endPoint
+			);
+		}
+
+		this.finalizeUpdatedPosition(p1, p2)
 	}
 }
 

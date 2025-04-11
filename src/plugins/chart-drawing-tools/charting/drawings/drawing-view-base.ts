@@ -72,7 +72,8 @@ export class ViewBase extends PluginBase {
             return overrides[colorPropertyName] || defaultOptions[colorPropertyName];
         }
     
-        public transformRgbaOptions(styleOptions: {}): any {
+        /*
+        public transformRgbaOptions_(styleOptions: {}): any {
             let  overrides = this.getOverrideOptions(this._toolType, styleOptions);
     
             // TODO fill this out with more rgba color properties
@@ -80,6 +81,32 @@ export class ViewBase extends PluginBase {
             overrides.fillColor = this.getRgbaOverrideColorFromOptions(this._toolType, 'fillColor', 'fillColorOpacity', this._defaultStyleOptions, overrides);
             overrides.lineColor = this.getRgbaOverrideColorFromOptions(this._toolType, 'lineColor', 'lineColorOpacity', this._defaultStyleOptions, overrides);
             overrides.color = this.getRgbaOverrideColorFromOptions(this._toolType, 'color', 'colorOpacity', this._defaultStyleOptions, overrides);
+            overrides = removeUndefinedKeys(overrides);
+            return overrides;
+        }*/
+
+        public transformRgbaOptions(styleOptions: {}): any {
+            let overrides = this.getOverrideOptions(this._toolType, styleOptions);
+        
+            // Automatically update all rgba-style fields based on associated opacity keys
+            for (const key of Object.keys(overrides)) {
+                if (
+                    typeof overrides[key] === 'string' &&
+                    overrides[key].startsWith('rgba') &&
+                    !key.includes('Opacity')
+                ) {
+                    // Build the expected opacity key name
+                    const opacityKey = `${key}Opacity`;
+                    overrides[key] = this.getRgbaOverrideColorFromOptions(
+                        this._toolType,
+                        key,
+                        opacityKey,
+                        this._defaultStyleOptions,
+                        overrides
+                    );
+                }
+            }
+        
             overrides = removeUndefinedKeys(overrides);
             return overrides;
         }

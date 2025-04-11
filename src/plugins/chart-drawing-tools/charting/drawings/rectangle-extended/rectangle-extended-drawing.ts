@@ -8,7 +8,7 @@ import {
 	Time,
 } from 'lightweight-charts';
 import { RectangleExtendedView } from './rectangle-extended-view';
-import { rectangleExtendedDrawingToolDefaultOptions as drawingToolDefaultOptions } from './rectangle-extended-options';
+import { rectangleDrawingToolDefaultOptions as drawingToolDefaultOptions } from '../rectangle/rectangle-options';
 import { ChartDrawingBase, ChartDrawingBaseProps } from '../chart-drawing-base';
 import { DrawingToolType } from '../../toolbar/tools/drawing-tools';
 import { BoxSide, getBoxHoverTarget, getCursorForBoxSide, resizeBoxByHandle } from '../../../common/points';

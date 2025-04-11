@@ -9,7 +9,7 @@ import {
 } from 'lightweight-charts';
 
 import { LineVertical as View } from './line-vertical-view';
-import { lineVerticalDrawingToolDefaultOptions as drawingToolDefaultOptions, LineVerticalDrawingToolOptions } from './line-vertical-options';
+import { lineDrawingToolDefaultOptions as drawingToolDefaultOptions, LineDrawingToolOptions } from '../line/line-options';
 import { ChartDrawingBase, ChartDrawingBaseProps } from '../chart-drawing-base';
 import { DrawingToolType } from '../../toolbar/tools/drawing-tools';
 import { _isPointNearLine, BoxSide, resizeBoxByHandle } from '../../../common/points';
@@ -48,7 +48,7 @@ export class LineVerticalDrawing extends ChartDrawingBase{
 	}
 
     containsPoint(chart: IChartApi, series: ISeriesApi<SeriesType>, point: Point, points: DrawingPoint[]): boolean {
-        const options = this.drawingView?._options as LineVerticalDrawingToolOptions;  
+        const options = this.drawingView?._options as LineDrawingToolOptions;  
         const offset = (options?.lineWidth || 1) + 3;
 		return _isPointNearLine(chart, series, point, points, offset);
 	}

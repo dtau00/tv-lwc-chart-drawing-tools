@@ -29,3 +29,34 @@ export const lineDrawingToolDefaultOptions: LineDrawingToolOptions = {
 		return date.toLocaleDateString();
 	},
 };
+
+export function normalizeLineDrawingToolOptions(
+	raw: Partial<Record<keyof LineDrawingToolOptions, any>>
+): LineDrawingToolOptions {
+	return {
+		lineColor: typeof raw.lineColor === 'string' ? raw.lineColor : lineDrawingToolDefaultOptions.lineColor,
+		lineColorOpacity: Number(raw.lineColorOpacity ?? lineDrawingToolDefaultOptions.lineColorOpacity),
+		lineWidth: Number(raw.lineWidth ?? lineDrawingToolDefaultOptions.lineWidth),
+		labelColor: typeof raw.labelColor === 'string' ? raw.labelColor : lineDrawingToolDefaultOptions.labelColor,
+		labelTextColor:
+			typeof raw.labelTextColor === 'string' ? raw.labelTextColor : lineDrawingToolDefaultOptions.labelTextColor,
+		showLabels:
+			typeof raw.showLabels === 'boolean'
+				? raw.showLabels
+				: raw.showLabels === 'true'
+				? true
+				: raw.showLabels === 'false'
+				? false
+				: lineDrawingToolDefaultOptions.showLabels,
+
+		priceLabelFormatter:
+			typeof raw.priceLabelFormatter === 'function'
+				? raw.priceLabelFormatter
+				: lineDrawingToolDefaultOptions.priceLabelFormatter,
+
+		timeLabelFormatter:
+			typeof raw.timeLabelFormatter === 'function'
+				? raw.timeLabelFormatter
+				: lineDrawingToolDefaultOptions.timeLabelFormatter,
+	};
+}

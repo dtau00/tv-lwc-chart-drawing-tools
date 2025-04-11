@@ -8,7 +8,7 @@ import {
 } from 'lightweight-charts';
 
 import { LineHorizontalRay as View } from './line-horizontal-ray-view';
-import { lineHorizontalRayDrawingToolDefaultOptions as drawingToolDefaultOptions, LineHorizontalRayDrawingToolOptions } from './line-horizontal-ray-options';
+import { lineDrawingToolDefaultOptions as drawingToolDefaultOptions, LineDrawingToolOptions } from '../line/line-options';
 import { ChartDrawingBase, ChartDrawingBaseProps } from '../chart-drawing-base';
 import { DrawingToolType } from '../../toolbar/tools/drawing-tools';
 import { _isPointNearLine, BoxSide, resizeBoxByHandle } from '../../../common/points';
@@ -60,7 +60,7 @@ export class LineHorizontalRayDrawing extends ChartDrawingBase{
 	}
 
     containsPoint(chart: IChartApi, series: ISeriesApi<SeriesType>, point: Point, points: DrawingPoint[]): boolean {
-        const options = this.drawingView?._options as LineHorizontalRayDrawingToolOptions;  
+        const options = this.drawingView?._options as LineDrawingToolOptions;  
         const offset = (options?.lineWidth || 1) + 3;
 		return _isPointNearLine(chart, series, point, points, offset);
 	}

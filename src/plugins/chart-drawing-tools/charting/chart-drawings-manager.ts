@@ -3,6 +3,8 @@ import { ChartDrawingBase, ChartDrawingBaseProps } from './drawings/chart-drawin
 import { DrawingToolType } from './toolbar/tools/drawing-tools.ts';
 import { RectangleExtendedDrawing } from './drawings/rectangle-extended/rectangle-extended-drawing.ts';
 import { RectangleDrawing } from './drawings/rectangle/rectangle-drawing.ts';
+import { RectangleDrawingToolOptions, normalizeRectangleDrawingToolOptions } from './drawings/rectangle/rectangle-options.ts';
+
 import { DataStorage } from '../data/data.ts';
 import { eventBus } from '../common/common.ts';
 import { ChartContainer } from './chart-container.ts';
@@ -14,6 +16,8 @@ import { LineDrawing } from './drawings/line/line-drawing.ts';
 import { LineHorizontalDrawing } from './drawings/line-horizontal/line-horizontal-drawing.ts';
 import { LineVerticalDrawing } from './drawings/line-vertical/line-vertical-drawing.ts';
 import { LineHorizontalRayDrawing } from './drawings/line-horizontal-ray/line-horizontal-ray-drawing.ts';
+import { LineDrawingToolOptions, normalizeLineDrawingToolOptions } from './drawings/line/line-options.ts';
+
 // manage charts
     // when chart is created, register it with ChartManager
     // when chart is destroyed, unregister it from ChartManager
@@ -119,6 +123,7 @@ export class ChartDrawingsManager {
                 if(item.symbolName === symbolName){
                     // TODO use tool to create object from a factoryMap
                     if(item.type === DrawingToolType.Rectangle){
+                        item.styleOptions =  normalizeRectangleDrawingToolOptions(item.styleOptions as RectangleDrawingToolOptions)
                         const drawing = new RectangleDrawing(chartContainer.chart, chartContainer.series, symbolName, item);
                         this._drawings.get(symbolName)?.push(drawing);
                         chartContainer.addDrawingPrimative(drawing.drawingView as PluginBase);
@@ -129,21 +134,25 @@ export class ChartDrawingsManager {
                         chartContainer.addDrawingPrimative(drawing.drawingView as PluginBase);
                     }
                     else if(item.type === DrawingToolType.Line){
+                        item.styleOptions =  normalizeLineDrawingToolOptions(item.styleOptions as LineDrawingToolOptions)
                         const drawing = new LineDrawing(chartContainer.chart, chartContainer.series, symbolName, item);
                         this._drawings.get(symbolName)?.push(drawing);
                         chartContainer.addDrawingPrimative(drawing.drawingView as PluginBase);
                     }
                     else if(item.type === DrawingToolType.HorizontalLine){
+                        item.styleOptions =  normalizeLineDrawingToolOptions(item.styleOptions as LineDrawingToolOptions)
                         const drawing = new LineHorizontalDrawing(chartContainer.chart, chartContainer.series, symbolName, item);
                         this._drawings.get(symbolName)?.push(drawing);
                         chartContainer.addDrawingPrimative(drawing.drawingView as PluginBase);
                     }
                     else if(item.type === DrawingToolType.VerticalLine){
+                        item.styleOptions =  normalizeLineDrawingToolOptions(item.styleOptions as LineDrawingToolOptions)
                         const drawing = new LineVerticalDrawing(chartContainer.chart, chartContainer.series, symbolName, item);
                         this._drawings.get(symbolName)?.push(drawing);
                         chartContainer.addDrawingPrimative(drawing.drawingView as PluginBase);
                     }
                     else if(item.type === DrawingToolType.HorizontalLineRay){
+                        item.styleOptions =  normalizeLineDrawingToolOptions(item.styleOptions as LineDrawingToolOptions)
                         const drawing = new LineHorizontalRayDrawing(chartContainer.chart, chartContainer.series, symbolName, item);
                         this._drawings.get(symbolName)?.push(drawing);
                         chartContainer.addDrawingPrimative(drawing.drawingView as PluginBase);

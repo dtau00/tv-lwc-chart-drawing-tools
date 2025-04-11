@@ -27,3 +27,44 @@ export const rectangleDrawingToolDefaultOptions: RectangleDrawingToolOptions = {
 		return date.toLocaleDateString();
 	},
 };
+
+export function normalizeRectangleDrawingToolOptions(
+	raw: Partial<Record<keyof RectangleDrawingToolOptions, any>>
+): RectangleDrawingToolOptions {
+	return {
+		fillColor: typeof raw.fillColor === 'string'
+			? raw.fillColor
+			: rectangleDrawingToolDefaultOptions.fillColor,
+
+		fillColorOpacity: Number(
+			raw.fillColorOpacity ?? rectangleDrawingToolDefaultOptions.fillColorOpacity
+		),
+
+		labelColor: typeof raw.labelColor === 'string'
+			? raw.labelColor
+			: rectangleDrawingToolDefaultOptions.labelColor,
+
+		labelTextColor: typeof raw.labelTextColor === 'string'
+			? raw.labelTextColor
+			: rectangleDrawingToolDefaultOptions.labelTextColor,
+
+		showLabels:
+			typeof raw.showLabels === 'boolean'
+				? raw.showLabels
+				: raw.showLabels === 'true'
+				? true
+				: raw.showLabels === 'false'
+				? false
+				: rectangleDrawingToolDefaultOptions.showLabels,
+
+		priceLabelFormatter:
+			typeof raw.priceLabelFormatter === 'function'
+				? raw.priceLabelFormatter
+				: rectangleDrawingToolDefaultOptions.priceLabelFormatter,
+
+		timeLabelFormatter:
+			typeof raw.timeLabelFormatter === 'function'
+				? raw.timeLabelFormatter
+				: rectangleDrawingToolDefaultOptions.timeLabelFormatter,
+	};
+}

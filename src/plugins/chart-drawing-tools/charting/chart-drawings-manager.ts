@@ -43,6 +43,15 @@ export class ChartDrawingsManager {
     private _mousePosition: Point | null = null;
     private _isMouseDragging: boolean = false;
     private _mouseHoldTimer: NodeJS.Timeout | null = null;
+    private _drawingFactoryMap: Partial<Record<DrawingToolType, (chart: IChartApi, series: ISeriesApi<SeriesType>, symbolName: string, item: ChartDrawingBaseProps) => ChartDrawingBase>> = {
+        [DrawingToolType.Rectangle]: (chart, series, symbolName, item) => new RectangleDrawing(chart, series, symbolName, item),
+        [DrawingToolType.RectangleExtended]: (chart, series, symbolName, item) => new RectangleExtendedDrawing(chart, series, symbolName, item),
+        [DrawingToolType.Line]: (chart, series, symbolName, item) => new LineDrawing(chart, series, symbolName, item),
+        [DrawingToolType.HorizontalLine]: (chart, series, symbolName, item) => new LineHorizontalDrawing(chart, series, symbolName, item),
+        [DrawingToolType.VerticalLine]: (chart, series, symbolName, item) => new LineVerticalDrawing(chart, series, symbolName, item),
+        [DrawingToolType.HorizontalLineRay]: (chart, series, symbolName, item) => new LineHorizontalRayDrawing(chart, series, symbolName, item),
+        [DrawingToolType.Fibonacci]: (chart, series, symbolName, item) => new FibonacciDrawing(chart, series, symbolName, item),
+    };
 
     private constructor() {
         this._charts = new Map();
@@ -113,66 +122,32 @@ export class ChartDrawingsManager {
 
     private _loadDrawings(chartContainer: ChartContainer): void {
         const symbolName = chartContainer.symbolName;
-        if(!this._drawings.has(symbolName)){
+    
+        if (!this._drawings.has(symbolName)) {
             this._drawings.set(symbolName, []);
             const data = DataStorage.loadData<ChartDrawingBaseProps[]>(`${symbolName}-drawings`, []);
             console.log("loading drawings for ", symbolName);
-            for(const item of data){
-                if(item.symbolName === symbolName){
-                    // TODO use tool to create object from a factoryMap
-                    if(item.type === DrawingToolType.Rectangle){
-                        //item.styleOptions =  normalizeRectangleDrawingToolOptions(item.styleOptions)
-                        const drawing = new RectangleDrawing(chartContainer.chart, chartContainer.series, symbolName, item);
+    
+            for (const item of data) {
+                if (item.symbolName === symbolName) {
+                    const factory = this._drawingFactoryMap[item.type];
+                    if (factory) {
+                        const drawing = factory(chartContainer.chart, chartContainer.series, symbolName, item);
                         this._drawings.get(symbolName)?.push(drawing);
                         chartContainer.addDrawingPrimative(drawing.drawingView as PluginBase);
-                    }
-                    else if(item.type === DrawingToolType.RectangleExtended){
-                        //item.styleOptions =  normalizeRectangleDrawingToolOptions(item.styleOptions)
-                        const drawing = new RectangleExtendedDrawing(chartContainer.chart, chartContainer.series, symbolName, item);
-                        this._drawings.get(symbolName)?.push(drawing);
-                        chartContainer.addDrawingPrimative(drawing.drawingView as PluginBase);
-                    }
-                    else if(item.type === DrawingToolType.Line){
-                       // item.styleOptions =  normalizeLineDrawingToolOptions(item.styleOptions)
-                        const drawing = new LineDrawing(chartContainer.chart, chartContainer.series, symbolName, item);
-                        this._drawings.get(symbolName)?.push(drawing);
-                        chartContainer.addDrawingPrimative(drawing.drawingView as PluginBase);
-                    }
-                    else if(item.type === DrawingToolType.HorizontalLine){
-                        //item.styleOptions =  normalizeLineDrawingToolOptions(item.styleOptions)
-                        const drawing = new LineHorizontalDrawing(chartContainer.chart, chartContainer.series, symbolName, item);
-                        this._drawings.get(symbolName)?.push(drawing);
-                        chartContainer.addDrawingPrimative(drawing.drawingView as PluginBase);
-                    }
-                    else if(item.type === DrawingToolType.VerticalLine){
-                       // item.styleOptions =  normalizeLineDrawingToolOptions(item.styleOptions)
-                        const drawing = new LineVerticalDrawing(chartContainer.chart, chartContainer.series, symbolName, item);
-                        this._drawings.get(symbolName)?.push(drawing);
-                        chartContainer.addDrawingPrimative(drawing.drawingView as PluginBase);
-                    }
-                    else if(item.type === DrawingToolType.HorizontalLineRay){
-                      //  item.styleOptions =  normalizeLineDrawingToolOptions(item.styleOptions)
-                        const drawing = new LineHorizontalRayDrawing(chartContainer.chart, chartContainer.series, symbolName, item);
-                        this._drawings.get(symbolName)?.push(drawing);
-                        chartContainer.addDrawingPrimative(drawing.drawingView as PluginBase);
-                    }
-                    else if(item.type === DrawingToolType.Fibonacci){
-                     //   item.styleOptions =  normalizeFibonacciDrawingToolOptions(item.styleOptions)
-                        const drawing = new FibonacciDrawing(chartContainer.chart, chartContainer.series, symbolName, item);
-                        this._drawings.get(symbolName)?.push(drawing);
-                        chartContainer.addDrawingPrimative(drawing.drawingView as PluginBase);
+                    } else {
+                        console.warn(`No factory found for drawing type: ${item.type}`);
                     }
                 }
             }
-        }
-        else{
+        } else {
             console.log("drawings already loaded for chart, just adding primatives ", symbolName);
             const drawings = this._drawings.get(symbolName) || [];
-            for(const drawing of drawings){
+            for (const drawing of drawings) {
                 chartContainer.addDrawingPrimative(drawing.drawingView as PluginBase);
             }
         }
-
+    
         console.log("all loaded drawings ", this._drawings);
     }
 

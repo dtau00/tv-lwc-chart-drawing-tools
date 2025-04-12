@@ -30,8 +30,9 @@ export class RectangleExtendedView extends ViewBase {
 
 	// override the base class method to extend the rectangle to the end of the chart
 	updateInitialPoint(p: DrawingPoint, param: MouseEventParams) {
-		if(!this.points[0])
+		if(!this.points[0] || !this.points[1]){
 			return
+		}
 
 		this.points[0] = p;
 		let p2 = this.points[1];	
@@ -41,6 +42,7 @@ export class RectangleExtendedView extends ViewBase {
 		}
 
 		this._paneViews[0].update();
+		
 		super.requestUpdate();
 	}
 }

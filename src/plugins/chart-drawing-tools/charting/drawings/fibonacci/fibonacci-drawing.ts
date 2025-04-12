@@ -60,5 +60,4 @@ export class FibonacciDrawing extends ChartDrawingBase{
 	
 		this.finalizeUpdatedPosition(p1, p2)
 	}
-
 }

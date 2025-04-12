@@ -38,7 +38,7 @@ export abstract class ChartDrawingBase implements IChartDrawing {
     //protected toolType : DrawingToolType;
     //protected _baseDrawing: PluginBase | undefined;
     //protected _previewDrawing: PluginBase | undefined;
-    protected _points: DrawingPoint[] = []; // points as the drawing is being created
+    protected _previewPoints: DrawingPoint[] = []; // points as the drawing is being created
     protected _totalDrawingPoints: number; // setting this allows for some default handling of drawing points for 1 and 2, most common cases
     
     public tmpDrawingPoints: DrawingPoint[] = [];
@@ -101,40 +101,31 @@ export abstract class ChartDrawingBase implements IChartDrawing {
 
     get isDrawing(): boolean { return this._isDrawing; }
     get isCompleted(): boolean { return this._isCompleted; }
-    //get primative(): PluginBase | undefined{ return this._baseDrawing; }
-   // get preview(): PluginBase | undefined{ return this._previewDrawing; }
     get drawingPoints(): DrawingPoint[] { return this._baseProps.drawingPoints; }
     set drawingPoints(points: DrawingPoint[]) { this._baseProps.drawingPoints = points; }
 
     get text(): string { return this._baseProps.text; }
     get secondsPerBar(): number { return this._baseProps.secondsPerBar; }
-
+    get isSelected(): boolean { return this._isSelected; }
+    set isSelected(selected : boolean){ this._isSelected = selected; }
+    get isVisible(): boolean { return this._baseProps.isVisible; }
+    set isVisible(visible:boolean) { this._baseProps.isVisible = visible; }
+    
     get styleOptions(): {} { 
-        // TODO kind of heavy to do this every time
-        this.normalizeStyleOptions(this._baseProps.styleOptions)
         return this._baseProps.styleOptions; 
     }
     set styleOptions(style: {}) { 
-        this.normalizeStyleOptions(this.styleOptions)
+        this.normalizeStyleOptions(this.styleOptions) // normalize the parameter types
         this._baseProps.styleOptions = style 
     }
 
-    get isSelected(): boolean { return this._isSelected; }
-    set isSelected(selected : boolean){ this._isSelected = selected; }
-
-    get isVisible(): boolean { return this._baseProps.isVisible; }
-    set isVisible(visible:boolean) { this._baseProps.isVisible = visible; }
-    // Abstract methods that must be implemented by derived classes
-    //abstract draw(chart: IChartApi, series: ISeriesApi<SeriesType>): void;
-    //abstract getBounds(): { top: number; bottom: number; left: number; right: number };
-    //abstract updatePosition(startPoint: Point, endPoint: Point, side: BoxSide): void;
     abstract select(): void;
     abstract onDrag(param: MouseEventParams, startPoint: Point, endPoint: Point): void;
     abstract onHoverWhenSelected(point: Point): void;   
     abstract normalizeStyleOptions(options: {}): void;  
 
     // set the style options to base properties, this is used when loading from config
-    public setBaseStyleOptionsFromConfig() {    
+    setBaseStyleOptionsFromConfig() {    
         this.styleOptions = this.drawingView?.setBaseStyleOptionsFromConfig()!;
     }
 
@@ -142,13 +133,6 @@ export abstract class ChartDrawingBase implements IChartDrawing {
 		return containsPoints(chart, series, point, points);
 	}
     
-    // Common methods with default implementations
-    protected selected(): void {
-        this._isSelected = true;
-        eventBus.dispatchEvent(new CustomEvent(ChartEvents.CompletedDrawingSelected, { detail: this.id }));
-        //this.draw(this._chart!, this._series!);
-    }
-
     getBasePropsForLoading(){
         return this._baseProps
     }
@@ -164,12 +148,12 @@ export abstract class ChartDrawingBase implements IChartDrawing {
 
     startDrawing(): void {
         this._isDrawing = true;
-        this._points = [];
+        this._previewPoints = [];
     }
 
     stopDrawing(): void {
         this._isDrawing = false;
-		this._points = [];
+		this._previewPoints = [];
     }
 
     remove() {
@@ -222,6 +206,14 @@ export abstract class ChartDrawingBase implements IChartDrawing {
 		}
 	}
 
+    // Common methods with default implementations
+    protected selected(): void {
+        this._isSelected = true;
+        eventBus.dispatchEvent(new CustomEvent(ChartEvents.CompletedDrawingSelected, { detail: this.id }));
+        //this.draw(this._chart!, this._series!);
+    }
+
+        
     protected initialize(baseProps?: ChartDrawingBaseProps){
         if(baseProps)
             this.normalizeStyleOptions(this.styleOptions);
@@ -234,7 +226,7 @@ export abstract class ChartDrawingBase implements IChartDrawing {
 
     protected completeDrawing(): void {
         this._isCompleted = true;
-        this._baseProps.drawingPoints = this._points; // save confirmed points
+        this._baseProps.drawingPoints = this._previewPoints; // save confirmed points
         this.stopDrawing();
         this.removePreviewDrawing(true); // remove the preview, it will be readded by the manager to all charts
         if(this._drawingFinishedCallback){
@@ -284,8 +276,7 @@ export abstract class ChartDrawingBase implements IChartDrawing {
 	}
 
     protected addPoint(p: DrawingPoint) {
-		this._points.push(p);
-        //this._points = this._reorderPoints(this._points);
+		this._previewPoints.push(p);
 		this._setNewDrawing();
 	}
  
@@ -304,33 +295,15 @@ export abstract class ChartDrawingBase implements IChartDrawing {
     }
 
 	private _setNewDrawing(){
-        if (this._points.length >= this._totalDrawingPoints) {
+        if (this._previewPoints.length >= this._totalDrawingPoints) {
 			this.completeDrawing();
 		}
-		else if(this._points.length === 1){
-			this.view().initializeDrawingViews([this._points[0], this._points[0]]);
+		else if(this._previewPoints.length === 1){
+			this.view().initializeDrawingViews([this._previewPoints[0], this._previewPoints[0]]);
 			this.setStyleOptions();
 
 			// we are only drawing this for the preview
 			ensureDefined(this._series).attachPrimitive(this.drawingView as PluginBase);
 		}
 	}
-
-    /*
-    // reorder 2 points from bottom left to top right
-    private _reorderPoints(points: DrawingPoint[]): DrawingPoint[] {
-        if(points.length !== 2)
-            return points;
-
-        const lowPrice = Math.min(...points.map(p => p.price));
-        const highPrice = Math.max(...points.map(p => p.price));
-
-        const lowTime = Math.min(...points.map(p => Number(p.time)));
-        const highTime = Math.max(...points.map(p => Number(p.time)));
-
-        const p1 : DrawingPoint = {time: lowTime as Time, price: lowPrice};
-        const p2 : DrawingPoint = {time: highTime, price: highPrice};
-
-        return [p1, p2];
-    }*/
 } 

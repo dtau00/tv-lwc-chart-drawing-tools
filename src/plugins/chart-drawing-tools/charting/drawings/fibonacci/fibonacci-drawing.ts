@@ -25,7 +25,7 @@ export class FibonacciDrawing extends ChartDrawingBase{
 	}
 
 	normalizeStyleOptions(options : any){
-		this.baseProps.styleOptions = normalizeFibonacciDrawingToolOptions(options)
+		this.basePropsStyleOptions = normalizeFibonacciDrawingToolOptions(options)
 	}
 	
 	// TODO dont make this hard coded

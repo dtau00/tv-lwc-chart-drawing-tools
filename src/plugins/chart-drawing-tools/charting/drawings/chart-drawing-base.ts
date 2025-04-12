@@ -87,7 +87,7 @@ export abstract class ChartDrawingBase implements IChartDrawing {
     }
 
     // IChartDrawing implementation
-    get baseProps(): ChartDrawingBaseProps { return this._baseProps; }
+    set basePropsStyleOptions(options : {}) { this._baseProps.styleOptions = options; }
     get startDate(): Time { return  leftRightPoints(this._baseProps.drawingPoints)?.left || ''; }
     get endDate(): Time { return leftRightPoints(this._baseProps.drawingPoints)?.right || ''; } 
     get startPrice(): number { return topBottomPoints(this._baseProps.drawingPoints)?.bottom || 0; }
@@ -147,6 +147,10 @@ export abstract class ChartDrawingBase implements IChartDrawing {
         this._isSelected = true;
         eventBus.dispatchEvent(new CustomEvent(ChartEvents.CompletedDrawingSelected, { detail: this.id }));
         //this.draw(this._chart!, this._series!);
+    }
+
+    getBasePropsForLoading(){
+        return this._baseProps
     }
 
     deselect(): void {

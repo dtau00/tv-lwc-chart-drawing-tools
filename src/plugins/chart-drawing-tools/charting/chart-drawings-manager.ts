@@ -115,7 +115,7 @@ export class ChartDrawingsManager {
     public saveDrawings(symbolName: string): void {
         // create base data to be serialized
         const symbolDrawings = this._drawings.get(symbolName) || []; // get all drawings for symbol
-        let data = symbolDrawings.map(drawing => drawing.baseProps); // get map data
+        let data = symbolDrawings.map(drawing => drawing.getBasePropsForLoading()); // get map data
         console.log("save drawings for ", symbolName, data);
         DataStorage.saveData<ChartDrawingBaseProps[]>(`${symbolName}-drawings`, data); // save drawings for symbol
     }

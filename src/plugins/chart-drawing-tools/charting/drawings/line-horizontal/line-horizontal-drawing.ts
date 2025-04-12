@@ -34,7 +34,7 @@ export class LineHorizontalDrawing extends ChartDrawingBase{
 	}
 
 	normalizeStyleOptions(options : any){
-		this.baseProps.styleOptions = normalizeLineDrawingToolOptions(options)
+		this.basePropsStyleOptions = normalizeLineDrawingToolOptions(options)
 	}
 	// TODO dont make this hard coded
 	// set the style when drawing is selected

@@ -27,7 +27,7 @@ export class RectangleDrawing extends ChartDrawingBase{
 	}
 	
 	normalizeStyleOptions(options : any){
-		this.baseProps.styleOptions =normalizeRectangleDrawingToolOptions(options)
+		this.basePropsStyleOptions =normalizeRectangleDrawingToolOptions(options)
 	}
 
 	// TODO dont make this hard coded

@@ -283,8 +283,13 @@ export abstract class ChartDrawingBase implements IChartDrawing {
     // coverts points back to drawing points, updates view, sets tmpDrawingPoints
     protected finalizeUpdatedPosition(p1 : Point, p2 : Point) : void{
 		// convert back to drawing coordinates
-		const dp1 = pointToDrawingPoints(p1, this._chart!, this._series!)
-		const dp2 = pointToDrawingPoints(p2, this._chart!, this._series!)
+		let dp1 = pointToDrawingPoints(p1, this._chart!, this._series!)
+		let dp2 = pointToDrawingPoints(p2, this._chart!, this._series!)
+
+        // nomralize, so leftest point is first
+        if (dp1.time > dp2.time) {
+            [dp1, dp2] = [dp2, dp1]; // Swap if dp1 is later than dp2
+        }
 
 		this.view().updatePoints([dp1, dp2]) 
 

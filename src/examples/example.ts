@@ -9,15 +9,15 @@ const dataStream : CandlestickData[] = JSON.parse(dataSampleStream) //hard coded
 
 const secondsPerBar : number = 86400
 const plugin1 = generateChart('chartId1', 'AAPL', secondsPerBar, 'chart1', 'toolbar1', 'subtoolbar1', data);
-const plugin2 = generateChart('chartId2', 'AAPL', secondsPerBar, 'chart2', 'toolbar2', 'subtoolbar2', data);
+//const plugin2 = generateChart('chartId2', 'AAPL', secondsPerBar, 'chart2', 'toolbar2', 'subtoolbar2', data);
 
 //const plugin3 = generateChart('chartId3', 'BTC', 5, 'chart3', 'toolbar3', 'subtoolbar3', data);
 
 // test, adding new bars to chart
 setInterval(()=>{
 	const nextBar = dataStream.shift()
-	if(nextBar)
-		plugin2.updateData(nextBar)
+	//if(nextBar)
+	//	plugin2.updateData(nextBar)
 },1000)
 
 

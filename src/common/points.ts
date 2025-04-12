@@ -1,4 +1,5 @@
 import { Coordinate, IChartApi, ISeriesApi, Point, SeriesType, Time } from "lightweight-charts";
+import { coordinateToTimeMax, timeToCoordinateMax } from "./utils/time";
 
 export interface DrawingPoint {
 	time: Time;
@@ -164,8 +165,10 @@ export function getBoxHoverTarget(
   const priceScale = series;
 
   // Convert logical points to pixel coordinates
-  const x1 = timeScale.timeToCoordinate(p1.time);
-  const x2 = timeScale.timeToCoordinate(p2.time);
+  //const x1 = timeScale.timeToCoordinate(p1.time);
+  //const x2 = timeScale.timeToCoordinate(p2.time);
+  const x1 = timeToCoordinateMax(p1.time, chart);
+  const x2 = timeToCoordinateMax(p2.time, chart);
   const y1 = priceScale.priceToCoordinate(p1.price);
   const y2 = priceScale.priceToCoordinate(p2.price);
 
@@ -208,14 +211,16 @@ export function getBoxHoverTarget(
 
 export function pointToDrawingPoints(p : Point, chart: IChartApi, series: ISeriesApi<SeriesType>) : DrawingPoint{
   return {
-    time: chart.timeScale().coordinateToTime(p.x)!, 
+    //time: chart.timeScale().coordinateToTime(p.x)!, 
+    time: coordinateToTimeMax(p.x, chart),
     price: series.coordinateToPrice(p.y)!
   } as DrawingPoint
 }
 
 export function drawingPointToPoint(drawingPoint : DrawingPoint, chart: IChartApi, series: ISeriesApi<SeriesType>) : Point{
   return { 
-    x : chart.timeScale().timeToCoordinate(drawingPoint.time),
+    //x : chart.timeScale().timeToCoordinate(drawingPoint.time),
+    x : timeToCoordinateMax(drawingPoint.time, chart),
     y  : series.priceToCoordinate(drawingPoint.price)
   } as Point
 }
@@ -262,14 +267,15 @@ export function getUpdateBoxPosition(startPoint: Point, endPoint: Point, drawing
     [p1,p2] = resizeBoxByHandle(p1, p2, side, endPoint);
 
   // extend coordinates to the end of the chart
+  /*
   if(extend){
     const end : Time= chart.timeScale().getVisibleRange()?.to as Time
-    const endCoordinate = chart.timeScale().timeToCoordinate(end)
+    const endCoordinate = timeToCoordinateMax(end, chart)//chart.timeScale().timeToCoordinate(end)
     if (p2.x > p1.x) 
       p2 = { ...p2, x: endCoordinate! };  
     else 
       p1 = { ...p1, x: endCoordinate! };  
-  }
+  }*/
 
   return [p1, p2]
 }

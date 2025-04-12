@@ -2,7 +2,7 @@ import { RectangleDrawingToolOptions  as DrawingOptions} from '../rectangle/rect
 import { RectanglePaneView as PaneView} from '../rectangle/rectangle-view-pane';
 
 import { DrawingPoint } from '../../../common/points';
-import { IChartApi, ISeriesApi, MouseEventParams, SeriesType } from 'lightweight-charts';
+import { IChartApi, ISeriesApi, MouseEventParams, SeriesType, Time } from 'lightweight-charts';
 import { ViewBase } from '../../../chart/drawings/drawing-view-base';
 import { DrawingToolType } from '../../toolbar/tools/drawing-tools';
 
@@ -36,11 +36,14 @@ export class RectangleExtendedView extends ViewBase {
 
 		this.points[0] = p;
 		let p2 = this.points[1];	
+		const end = 2067483647 as Time // this is just a really large date
+		this.points[1] = {time: end, price: p2.price};
+		/*
 		const end = this.chart.timeScale().getVisibleRange()?.to
 		if(end){
 			this.points[1] = {time: end, price: p2.price};
 		}
-
+		*/
 		this._paneViews[0].update();
 		
 		super.requestUpdate();

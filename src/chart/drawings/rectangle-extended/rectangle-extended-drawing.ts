@@ -4,7 +4,7 @@ import { rectangleDrawingToolDefaultOptions as drawingToolDefaultOptions, normal
 import { IChartApi, ISeriesApi, MouseEventParams, Point, SeriesType, Time} from 'lightweight-charts';
 import { ChartDrawingBase, ChartDrawingBaseProps } from '../../../chart/drawings/chart-drawing-base';
 import { DrawingToolType } from '../../toolbar/tools/drawing-tools';
-import { BoxSide, getBoxHoverTarget, getCursorForBoxSide, getUpdateBoxPosition } from '../../../common/points';
+import { BoxSide, DrawingPoint, getBoxHoverTarget, getCursorForBoxSide, getUpdateBoxPosition, pointToDrawingPoints } from '../../../common/points';
 
 export class RectangleExtendedDrawing extends ChartDrawingBase{
 	private static readonly TOTAL_DRAWING_POINTS = 2; // Set the drawing points for this type of drawing.  A box will have 2, a line ray will have 1, etc...
@@ -20,7 +20,8 @@ export class RectangleExtendedDrawing extends ChartDrawingBase{
 		const _finalizeDrawingPoints =()=>{
 			let p1 = this.drawingPoints[0];
 			let p2 = this.drawingPoints[1];
-			const end = this._chart?.timeScale().getVisibleRange()?.to;
+			//const end = this._chart?.timeScale().getVisibleRange()?.to;
+			const end = 2067483647 as Time // this is just a really large date
 			if(end){
 				if(p1.time > p2.time)
 					p1.time = end as Time; 
@@ -72,6 +73,31 @@ export class RectangleExtendedDrawing extends ChartDrawingBase{
 		let p1: Point, p2 : Point
 		[p1, p2] = getUpdateBoxPosition(startPoint, endPoint, this.drawingPoints[0], this.drawingPoints[1], side, this._chart, this._series, true)
 	
-		this.finalizeUpdatedPosition(p1, p2)
+		let dp1 : DrawingPoint, dp2 : DrawingPoint
+
+		if(Number(this.drawingPoints[0].time) > Number(this.drawingPoints[1].time)){
+			dp1 = {
+				time: this.drawingPoints[0].time,
+				price: this._series.coordinateToPrice(p1.y)!
+			}
+			dp2 = pointToDrawingPoints(p2, this._chart!, this._series!)
+		}
+		else{
+			dp2 = {
+				time: this.drawingPoints[1].time,
+				price: this._series.coordinateToPrice(p2.y)!
+			}
+			dp1 = pointToDrawingPoints(p1, this._chart!, this._series!)
+		}
+
+
+		this.view().updatePoints([dp1, dp2]) 
+
+		//  store new points temporarily, we will set this back to the drawingPoints when the update is finished
+		// TODO we wont need this if we save directly from the class, consider adding save directly from the class
+		this.tmpDrawingPoints[0] = dp1
+		this.tmpDrawingPoints[1] = dp2
+
+		//this.finalizeUpdatedPosition(p1, p2)
 	}	
 }

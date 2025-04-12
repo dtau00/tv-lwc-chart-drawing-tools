@@ -1,5 +1,7 @@
-import { IPrimitivePaneView } from 'lightweight-charts';
 import { Fibonacci } from './fibonacci-view';
+import { FibonacciDrawingToolOptions } from './fibonacci-options';
+
+import { IPrimitivePaneView } from 'lightweight-charts';
 import { PaneViewBase } from '../drawing-pane-view-base';
 import { CanvasRenderingTarget2D } from 'fancy-canvas';
 import { IPrimitivePaneRenderer } from 'lightweight-charts';
@@ -89,11 +91,11 @@ export class FibonacciPaneView extends PaneViewBase implements IPrimitivePaneVie
         };
     }
     
-
 	renderer() {
+		const options = this._source._options as FibonacciDrawingToolOptions
 		return new FibonacciPaneRenderer(
             this._p1, 
             this._p2, 
-            this._source._options.color);
+            options.color);
 	}
 }

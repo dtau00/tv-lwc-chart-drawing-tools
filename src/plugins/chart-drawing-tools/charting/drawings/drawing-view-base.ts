@@ -5,14 +5,14 @@ import { PluginBase } from '../../../plugin-base';
 import { DrawingToolType } from '../toolbar/tools/drawing-tools';
 import { ConfigStorage } from '../../data/data';
 import { removeUndefinedKeys } from '../../common/helper';
-import { ChartDrawingBaseProps } from './chart-drawing-base';
 import { PaneViewBase } from './drawing-pane-view-base';
+
 // Base class for all drawing views, handles the style options and updates
 export class ViewBase extends PluginBase {
     private _baseStyleOptions: {}; // base style, the one that's saved
     private _defaultStyleOptions: {}; // default style
     private _toolType: DrawingToolType;
-    private _baseProps: ChartDrawingBaseProps;
+
     protected _paneViews: PaneViewBase[] = [];
 
     public points: DrawingPoint[] = [];
@@ -26,7 +26,6 @@ export class ViewBase extends PluginBase {
         toolType: DrawingToolType,
 		defaultOptions: {},
 		options: {},
-        baseProps: ChartDrawingBaseProps,
 	) {
 		super();
         this._chart = chart,
@@ -35,7 +34,7 @@ export class ViewBase extends PluginBase {
         this._defaultStyleOptions = defaultOptions;
         this._options = this.isEmpty(options) ? {...defaultOptions, ...this.getStyleOptions()} : {...defaultOptions, ...options};
         this._baseStyleOptions = this._options;
-        this._baseProps = baseProps;
+        //this._baseProps = baseProps;
 	}
         public getOverrideOptions(toolType: DrawingToolType, styleOptions: {}): any {
             const keyName = toolKeyName(toolType);
@@ -49,15 +48,15 @@ export class ViewBase extends PluginBase {
             this.requestUpdate();
         }
 
-        public setBaseStyleOptions(options?: {}) {
+        public setBaseStyleOptions(baseStyleOptions : {}, options?: {}, ) {
             this._baseStyleOptions = { ...this._baseStyleOptions, ...options };
-            this._baseProps.styleOptions = this._baseStyleOptions;
+            baseStyleOptions = this._baseStyleOptions
             this.applyOptions(this._baseStyleOptions);
         }
 
-        public setBaseStyleOptionsFromConfig() {
+        public setBaseStyleOptionsFromConfig( baseStyleOptions : {}) {
             const options = this.transformRgbaOptions({});
-            this.setBaseStyleOptions(options);
+            this.setBaseStyleOptions(baseStyleOptions, options);
         }
 
         // internal system often uses rgba to apply opacity, rather than the opacity property, so heres
@@ -142,48 +141,4 @@ export class ViewBase extends PluginBase {
         public initializeDrawingViews(points: DrawingPoint[]): void{
             throw new Error("Method not implemented.  Overrite this methods in your class.");
         }
-
-/*
-        const onVisibleLogicalRangeChanged = (newVisibleLogicalRange: LogicalRange | null) => {
-            if (!chartBarSeriesRef.current) return;
-            
-            const barsInfo = chartBarSeriesRef.current.barsInLogicalRange(newVisibleLogicalRange as Range);
-            if (!barsInfo) return;
-            
-            // Calculate timeInterval to sum and calculate correct dates
-            const timeInterval = convertIntervalToSeconds(interval);
-            const { barsAfter, to } = barsInfo; // Current chart visibility
-            
-            if (barsAfter < 0) {
-            const newMaxTime = (to as number) + Math.round(-1 * barsAfter) * timeInterval;
-            if (newMaxTime > maxVisibleRange) {
-            // Load more white space bars
-            setMaxVisibleRange(newMaxTime);
-            }
-            }
-            };
-            
-            ...
-            
-            useEffect(() => {
-            const timeInterval = convertIntervalToSeconds(interval);
-            const currenData: BarData[] = JSON.parse(JSON.stringify(candles));
-            if (!currenData.length) return;
-            
-            const newData = [];
-            const lastCandleTime = currenData[currenData.length - 1].time as number;
-            // Add whitespace bars after the current data
-            for (let t = lastCandleTime + timeInterval; t <= maxVisibleRange; t += timeInterval) {
-            const whitespaceBar = { time: t as Time };
-            newData.push(whitespaceBar);
-            }
-            
-            // We just want to fit content on the 1st time candles are loaded
-            // newData should only be filled after onVisibleLogicalRangeChanged
-            if (!newData.length) {
-            chartInstanceRef.current?.timeScale().fitContent();
-            }
-            
-            chartBarSeriesRef.current?.setData([...currenData, ...newData]);
-            }, [maxVisibleRange, interval, candles]);`*/
     }

@@ -1,17 +1,9 @@
-import {
-	Coordinate,
-	IChartApi,
-	ISeriesApi,
-    MouseEventParams,
-    Point,
-    SeriesType
-} from 'lightweight-charts';
-
+import { IChartApi, ISeriesApi, MouseEventParams, Point, SeriesType,Coordinate} from 'lightweight-charts';
 import { LineVertical as View } from './line-vertical-view';
 import { lineDrawingToolDefaultOptions as drawingToolDefaultOptions, LineDrawingToolOptions, normalizeLineDrawingToolOptions } from '../line/line-options';
 import { ChartDrawingBase, ChartDrawingBaseProps } from '../chart-drawing-base';
 import { DrawingToolType } from '../../toolbar/tools/drawing-tools';
-import { _isPointNearLine, convertAndNormalizeDrawingPointsToPoint } from '../../../common/points';
+import { isPointNearLine, convertAndNormalizeDrawingPointsToPoint } from '../../../common/points';
 import { DrawingPoint } from '../../../common/common';
 export class LineVerticalDrawing extends ChartDrawingBase{
 	private static readonly TOTAL_DRAWING_POINTS = 2; // Set the drawing points for this type of drawing.  A box will have 2, a line ray will have 1, etc...
@@ -29,7 +21,10 @@ export class LineVerticalDrawing extends ChartDrawingBase{
 		super( DrawingToolType.VerticalLine, chart, series, symbolName, LineVerticalDrawing.TOTAL_DRAWING_POINTS, drawingToolDefaultOptions, baseProps, _finalizeDrawingPoints);
 		
 		this.initialize(baseProps);
-		this.drawingView = new View(chart, series, this.toolType, drawingToolDefaultOptions,  baseProps?.styleOptions, baseProps || this.baseProps, this.initializeFromStorage); 
+		if(baseProps)
+			this.drawingView = new View(chart, series, this.toolType, drawingToolDefaultOptions, this.styleOptions, this.drawingPoints); 
+		else
+			this.drawingView = new View(chart, series, this.toolType, drawingToolDefaultOptions); 
 	}
 
 	normalizeStyleOptions(options : any){
@@ -46,7 +41,7 @@ export class LineVerticalDrawing extends ChartDrawingBase{
     containsPoint(chart: IChartApi, series: ISeriesApi<SeriesType>, point: Point, points: DrawingPoint[]): boolean {
         const options = this.styleOptions as LineDrawingToolOptions
         const offset = (options?.lineWidth || 1) + 3;
-		return _isPointNearLine(chart, series, point, points, offset);
+		return isPointNearLine(chart, series, point, points, offset);
 	}
 
 	onHoverWhenSelected(point: Point) : void {
@@ -54,22 +49,16 @@ export class LineVerticalDrawing extends ChartDrawingBase{
 	}
 
 	onDrag(param: MouseEventParams, startPoint: Point, endPoint: Point): void {
-		if(!param.point)
-			return;
-
-		this._updatePosition(startPoint, endPoint);
+		if(param.point){
+			this._updatePosition(startPoint, endPoint);
+		}
 	}
 
 	private _setCursor(point: Point): void{
-		if(this.containsPoint(this._chart!, this._series!, point, this.drawingPoints)){
-			document.body.style.cursor = 'ew-resize';
-		}
-		else{
-			document.body.style.cursor = 'default';
-		}
+		const isOverDrawing = this.containsPoint(this._chart!, this._series!, point, this.drawingPoints)
+		document.body.style.cursor = isOverDrawing ? 'ew-resize' : 'default';
 	}
 
-	
 	// update the position of the drawing, based on how its being resized
 	private _updatePosition(startPoint: Point, endPoint: Point): void {
 		if (!this._chart || this._isDrawing || !this._series || this.drawingPoints.length < 2) 

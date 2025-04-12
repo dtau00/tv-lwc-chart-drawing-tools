@@ -1,14 +1,7 @@
-import {
-	Coordinate,
-	IChartApi,
-	ISeriesApi,
-    MouseEventParams,
-    Point,
-    SeriesType,
-	Time,
-} from 'lightweight-charts';
-import { RectangleExtendedView } from './rectangle-extended-view';
+import { RectangleExtendedView as View} from './rectangle-extended-view';
 import { rectangleDrawingToolDefaultOptions as drawingToolDefaultOptions, normalizeRectangleDrawingToolOptions } from '../rectangle/rectangle-options';
+
+import { IChartApi, ISeriesApi, MouseEventParams, Point, SeriesType, Time} from 'lightweight-charts';
 import { ChartDrawingBase, ChartDrawingBaseProps } from '../chart-drawing-base';
 import { DrawingToolType } from '../../toolbar/tools/drawing-tools';
 import { BoxSide, getBoxHoverTarget, getCursorForBoxSide, getUpdateBoxPosition } from '../../../common/points';
@@ -39,7 +32,10 @@ export class RectangleExtendedDrawing extends ChartDrawingBase{
 		super( DrawingToolType.RectangleExtended, chart, series, symbolName, RectangleExtendedDrawing.TOTAL_DRAWING_POINTS, drawingToolDefaultOptions, baseProps, _finalizeDrawingPoints);
 		
 		this.initialize(baseProps);
-		this.drawingView = new RectangleExtendedView(chart, series, this.toolType, drawingToolDefaultOptions,  baseProps?.styleOptions, baseProps || this.baseProps, this.initializeFromStorage); 
+		if(baseProps)
+			this.drawingView = new View(chart, series, this.toolType, drawingToolDefaultOptions, this.styleOptions, this.drawingPoints); 
+		else
+			this.drawingView = new View(chart, series, this.toolType, drawingToolDefaultOptions); 
 	}
 
 	normalizeStyleOptions(options : any){
@@ -58,9 +54,9 @@ export class RectangleExtendedDrawing extends ChartDrawingBase{
 	}
 
 	onDrag(param: MouseEventParams, startPoint: Point, endPoint: Point): void {
-		if(!param.point)
-			return;
-		this._updatePosition(startPoint, endPoint, this._side);
+		if(param.point){
+			this._updatePosition(startPoint, endPoint, this._side);
+		}
 	}
 
 	private _setCursor(point: Point): void {
@@ -77,6 +73,5 @@ export class RectangleExtendedDrawing extends ChartDrawingBase{
 		[p1, p2] = getUpdateBoxPosition(startPoint, endPoint, this.drawingPoints[0], this.drawingPoints[1], side, this._chart, this._series, true)
 	
 		this.finalizeUpdatedPosition(p1, p2)
-	}
-	
+	}	
 }

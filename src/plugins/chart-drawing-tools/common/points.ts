@@ -26,7 +26,7 @@ export function containsPoints(chart: IChartApi, series: ISeriesApi<SeriesType>,
     return false;
 }
 
-export function _isPointNearLine(
+export function isPointNearLine(
 	chart: IChartApi,
 	series: ISeriesApi<SeriesType>,
 	point: Point,

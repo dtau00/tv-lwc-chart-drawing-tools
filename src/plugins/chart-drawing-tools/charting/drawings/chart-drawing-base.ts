@@ -26,6 +26,7 @@ export interface ChartDrawingBaseProps{
 
 export abstract class ChartDrawingBase implements IChartDrawing {
     private _drawingFinishedCallback: () => void | undefined;
+    
     protected _baseProps: ChartDrawingBaseProps;
     protected _chart: IChartApi | undefined;
     protected _series: ISeriesApi<SeriesType> | undefined;
@@ -35,7 +36,6 @@ export abstract class ChartDrawingBase implements IChartDrawing {
     protected _isCompleted: boolean;
     protected _isSelected: boolean;
     //protected toolType : DrawingToolType;
-    protected initializeFromStorage : boolean;
     //protected _baseDrawing: PluginBase | undefined;
     //protected _previewDrawing: PluginBase | undefined;
     protected _points: DrawingPoint[] = []; // points as the drawing is being created
@@ -65,8 +65,8 @@ export abstract class ChartDrawingBase implements IChartDrawing {
         if(baseProps){
             this._baseProps = baseProps;
             this._isCompleted = true;
-            this._points  = baseProps.drawingPoints;
-            this.drawingPoints = this._points;
+            //this._points  = baseProps.drawingPoints;
+            this.drawingPoints = baseProps.drawingPoints;
         }
         else{
             this._baseProps = {
@@ -99,13 +99,7 @@ export abstract class ChartDrawingBase implements IChartDrawing {
     get symbolName(): string { return this._baseProps.symbolName; }
     get userId(): string { return this._baseProps.userId; }
     get tags(): string[] { return this._baseProps.tags; }
-    get styleOptions(): {} { 
-        // TODO kind of heavy to do this every time
-        this.normalizeStyleOptions(this._baseProps.styleOptions)
-        return this._baseProps.styleOptions; 
-    }
-    get isSelected(): boolean { return this._isSelected; }
-    get isVisible(): boolean { return this._baseProps.isVisible; }
+
     get isDrawing(): boolean { return this._isDrawing; }
     get isCompleted(): boolean { return this._isCompleted; }
     //get primative(): PluginBase | undefined{ return this._baseDrawing; }
@@ -116,8 +110,20 @@ export abstract class ChartDrawingBase implements IChartDrawing {
     get text(): string { return this._baseProps.text; }
     get secondsPerBar(): number { return this._baseProps.secondsPerBar; }
 
-    set styleOptions(style: {}) { this._baseProps.styleOptions = style }
+    get styleOptions(): {} { 
+        // TODO kind of heavy to do this every time
+        this.normalizeStyleOptions(this._baseProps.styleOptions)
+        return this._baseProps.styleOptions; 
+    }
+    set styleOptions(style: {}) { 
+        //this.normalizeStyleOptions(this.styleOptions)
+        this._baseProps.styleOptions = style 
+    }
+
+    get isSelected(): boolean { return this._isSelected; }
     set isSelected(selected : boolean){ this._isSelected = selected; }
+
+    get isVisible(): boolean { return this._baseProps.isVisible; }
     set isVisible(visible:boolean) { this._baseProps.isVisible = visible; }
     // Abstract methods that must be implemented by derived classes
     //abstract draw(chart: IChartApi, series: ISeriesApi<SeriesType>): void;
@@ -130,7 +136,7 @@ export abstract class ChartDrawingBase implements IChartDrawing {
 
     // set the style options to base properties, this is used when loading from config
     public setBaseStyleOptionsFromConfig() {    
-        this.drawingView?.setBaseStyleOptionsFromConfig();
+        this.drawingView?.setBaseStyleOptionsFromConfig(this.styleOptions);
     }
 
     containsPoint(chart: IChartApi, series: ISeriesApi<SeriesType>, point: Point, points: DrawingPoint[]): boolean {
@@ -145,7 +151,7 @@ export abstract class ChartDrawingBase implements IChartDrawing {
     }
 
     deselect(): void {
-        this.drawingView?.setBaseStyleOptions()
+        this.drawingView?.setBaseStyleOptions(this.styleOptions)
 		this.removePreviewDrawing();
         this.stopDrawing();
         this._isSelected = false;
@@ -214,10 +220,8 @@ export abstract class ChartDrawingBase implements IChartDrawing {
 	}
 
     protected initialize(baseProps?: ChartDrawingBaseProps){
-        if(baseProps){
-            this.initializeFromStorage = true
+        if(baseProps)
             this.normalizeStyleOptions(this.styleOptions);
-        }
     }
 
     protected overrideDrawingPoints(points: DrawingPoint[]): void {
@@ -269,7 +273,7 @@ export abstract class ChartDrawingBase implements IChartDrawing {
     // set the style options to base properties, this is used when loading from config
     protected setStyleOptions() {
 		const styleOptions = this.drawingView?.getStyleOptions();
-		this.baseProps.styleOptions = styleOptions;
+		this._baseProps.styleOptions = styleOptions;
     }
 
     protected view(): ViewBase {

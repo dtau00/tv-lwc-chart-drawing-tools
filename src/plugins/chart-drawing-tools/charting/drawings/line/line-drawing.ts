@@ -1,18 +1,12 @@
-import {
-	Coordinate,
-	IChartApi,
-	ISeriesApi,
-    MouseEventParams,
-    Point,
-    SeriesType,
-} from 'lightweight-charts';
-
 import { Line as View } from './line-view';
 import { lineDrawingToolDefaultOptions as drawingToolDefaultOptions, LineDrawingToolOptions, normalizeLineDrawingToolOptions } from './line-options';
+
+import { IChartApi, ISeriesApi, MouseEventParams, Point, SeriesType,} from 'lightweight-charts';
 import { ChartDrawingBase, ChartDrawingBaseProps } from '../chart-drawing-base';
 import { DrawingToolType } from '../../toolbar/tools/drawing-tools';
-import { _isPointNearLine, convertAndNormalizeDrawingPointsToPoint, getClosestHandleOnLine, LineHandle, offsetPoints, resizeLineByHandle } from '../../../common/points';
+import { isPointNearLine, convertAndNormalizeDrawingPointsToPoint, getClosestHandleOnLine, LineHandle, offsetPoints, resizeLineByHandle } from '../../../common/points';
 import { DrawingPoint } from '../../../common/common';
+
 export class LineDrawing extends ChartDrawingBase{
 	private static readonly TOTAL_DRAWING_POINTS = 2; // Set the drawing points for this type of drawing.  A box will have 2, a line ray will have 1, etc...
 	private _side : LineHandle;
@@ -26,7 +20,10 @@ export class LineDrawing extends ChartDrawingBase{
 		super( DrawingToolType.Line, chart, series, symbolName, LineDrawing.TOTAL_DRAWING_POINTS, drawingToolDefaultOptions, baseProps);
 		
 		this.initialize(baseProps);
-		this.drawingView = new View(chart, series, this.toolType, drawingToolDefaultOptions,  baseProps?.styleOptions, baseProps || this.baseProps, baseProps ? true : false ); 
+		if(baseProps)
+			this.drawingView = new View(chart, series, this.toolType, drawingToolDefaultOptions, this.styleOptions, this.drawingPoints); 
+		else
+			this.drawingView = new View(chart, series, this.toolType, drawingToolDefaultOptions); 
 	}
 
 	normalizeStyleOptions(options : any){
@@ -42,7 +39,7 @@ export class LineDrawing extends ChartDrawingBase{
     containsPoint(chart: IChartApi, series: ISeriesApi<SeriesType>, point: Point, points: DrawingPoint[]): boolean {
         const options = this.styleOptions as LineDrawingToolOptions
        	const offset = (options?.lineWidth || 1) + 3;
-		return _isPointNearLine(chart, series, point, points, offset);
+		return isPointNearLine(chart, series, point, points, offset);
 	}
 
 	onHoverWhenSelected(point: Point) : void {
@@ -50,24 +47,20 @@ export class LineDrawing extends ChartDrawingBase{
 	}
 
 	onDrag(param: MouseEventParams, startPoint: Point, endPoint: Point): void {
-		if(!param.point)
-			return;
-
-		this._updatePosition(startPoint, endPoint, this._side);
+		if(param.point){
+			this._updatePosition(startPoint, endPoint, this._side);
+		}
 	}
 
 	private _setCursor(point: Point): void {
 		// todo offset to handle thickness
 		this._side = getClosestHandleOnLine(this._chart!, this._series!, this.drawingPoints[0], this.drawingPoints[1], point);
-		if(this._side === null){
+		if(this._side === null)
 			document.body.style.cursor = 'default';
-		}
-		else if(this._side === 'middle'){
+		else if(this._side === 'middle')
 			document.body.style.cursor = 'move';
-		}
-		else{	
+		else
 			document.body.style.cursor = 'col-resize';
-		}
 	}
 
 	// update the position of the drawing, based on how its being resized

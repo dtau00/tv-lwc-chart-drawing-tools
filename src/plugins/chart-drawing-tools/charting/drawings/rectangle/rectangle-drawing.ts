@@ -1,12 +1,7 @@
-import {
-	IChartApi,
-	ISeriesApi,
-    MouseEventParams,
-    Point,
-    SeriesType,
-} from 'lightweight-charts';
-import { Rectangle } from './rectangle-view';
+import { Rectangle as View } from './rectangle-view';
 import { rectangleDrawingToolDefaultOptions as drawingToolDefaultOptions, normalizeRectangleDrawingToolOptions } from './rectangle-options';
+
+import { IChartApi, ISeriesApi, MouseEventParams, Point, SeriesType,} from 'lightweight-charts';
 import { ChartDrawingBase, ChartDrawingBaseProps } from '../chart-drawing-base';
 import { DrawingToolType } from '../../toolbar/tools/drawing-tools';
 import { BoxSide, getBoxHoverTarget, getCursorForBoxSide, getUpdateBoxPosition  } from '../../../common/points';
@@ -22,10 +17,13 @@ export class RectangleDrawing extends ChartDrawingBase{
 	) {
 		// MAKE SURE TO UPDATE THIS WHEN CREATING NEW DRAWING TOOLS
 
-		super( DrawingToolType.Rectangle, chart, series, symbolName, RectangleDrawing.TOTAL_DRAWING_POINTS, drawingToolDefaultOptions, baseProps);
+		super(DrawingToolType.Rectangle, chart, series, symbolName, RectangleDrawing.TOTAL_DRAWING_POINTS, drawingToolDefaultOptions, baseProps);
 
 		this.initialize(baseProps)
-		this.drawingView = new Rectangle(chart, series, this.toolType, drawingToolDefaultOptions,  baseProps?.styleOptions, baseProps || this.baseProps, this.initializeFromStorage); 
+		if(baseProps)
+			this.drawingView = new View(chart, series, this.toolType, drawingToolDefaultOptions, this.styleOptions, this.drawingPoints); 
+		else
+			this.drawingView = new View(chart, series, this.toolType, drawingToolDefaultOptions); 
 	}
 	
 	normalizeStyleOptions(options : any){
@@ -44,10 +42,9 @@ export class RectangleDrawing extends ChartDrawingBase{
 	}
 
 	onDrag(param: MouseEventParams, startPoint: Point, endPoint: Point): void {
-		if(!param.point)
-			return;
-
-		this._updatePosition(startPoint, endPoint, this._side);
+		if(param.point){
+			this._updatePosition(startPoint, endPoint, this._side);
+		}
 	}
 
 	private _setCursor(point: Point): void {

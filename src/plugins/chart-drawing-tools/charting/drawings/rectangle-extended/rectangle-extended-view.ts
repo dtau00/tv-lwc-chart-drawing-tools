@@ -1,7 +1,7 @@
+import { RectangleDrawingToolOptions  as DrawingOptions} from '../rectangle/rectangle-options';
+import { RectanglePaneView as PaneView} from '../rectangle/rectangle-view-pane';
+
 import { DrawingPoint } from '../../../common/common';
-import { RectangleDrawingToolOptions } from '../rectangle/rectangle-options';
-import { RectanglePaneView, } from '../rectangle/panes/rectangle-pane-view';
-import {  ChartDrawingBaseProps } from '../chart-drawing-base';
 import { IChartApi, ISeriesApi, MouseEventParams, SeriesType } from 'lightweight-charts';
 import { ViewBase } from '../drawing-view-base';
 import { DrawingToolType } from '../../toolbar/tools/drawing-tools';
@@ -12,23 +12,20 @@ export class RectangleExtendedView extends ViewBase {
 		series: ISeriesApi<SeriesType>,
 		toolType: DrawingToolType,
 		defaultOptions: {},
-		options: Partial<RectangleDrawingToolOptions> = {},
-		baseProps: ChartDrawingBaseProps,
-		initializedFromStorage: boolean,
+		options: Partial<DrawingOptions> = {},
+		drawingPoints?: DrawingPoint[]
 	) {
-		super(chart, series, toolType, defaultOptions, options, baseProps);
 
-		if(initializedFromStorage){ // we are loading from storage
-			this.initializeDrawingViews([baseProps.drawingPoints[0], baseProps.drawingPoints[1]]);
-		}
+		super(chart, series, toolType, defaultOptions, options);
+
+		this.initializeDrawingViews(drawingPoints);
 	}
 
-	initializeDrawingViews(points: DrawingPoint[]) {
-		if(this._paneViews.length > 0)
-			return;
-
-		this.points = points;
-		this._paneViews = [new RectanglePaneView(this)];
+	initializeDrawingViews(points?: DrawingPoint[]) {
+		if(points?.length && this.paneViews.length === 0){
+			this.points = points;
+			this._paneViews = [new PaneView(this)];
+		}
 	}
 
 	// override the base class method to extend the rectangle to the end of the chart

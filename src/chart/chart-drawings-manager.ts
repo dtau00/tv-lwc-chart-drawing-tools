@@ -37,6 +37,7 @@ export class ChartDrawingsManager {
     private _charts: Map<string, IChartApi> = new Map();
     private _currentChartContainer: ChartContainer | null; // current chart mouse is hovering over
     private _creatingNewDrawingFromToolbar: boolean = false;
+    private _initalized: boolean = false
 
     private _mouseDownStartPoint: Point | null = null;
     private _mousePosition: Point | null = null;
@@ -72,15 +73,20 @@ export class ChartDrawingsManager {
         return ChartDrawingsManager.instance;
     }
 
-    public registerChart(chartDivContainer: HTMLDivElement, chart: IChartApi, series: ISeriesApi<SeriesType>, id: string, symbolName: string, secondsPerBar: number, tags: string[]): void {
-        if (!chartDivContainer || !chart  || !series || !id || !symbolName || !secondsPerBar || !tags) return;
+    public registerChart(chartDivContainer: HTMLDivElement, chart: IChartApi, series: ISeriesApi<SeriesType>, id: string, symbolName: string, secondsPerBar: number, tags: string[]): ChartContainer | null {
+        if (!chartDivContainer || !chart  || !series || !id || !symbolName || !secondsPerBar || !tags) 
+            return null;
+
+        if(!this._initalized){ // only initialize once. We cant do this in getInstance because its static
+            document .addEventListener('keydown', this._onKeyDown);
+            this._initalized = true
+        }
 
         const chartContainer = new ChartContainer(this, chartDivContainer, chart, series, id, symbolName, secondsPerBar, tags);
         this._chartContainers.set(id, chartContainer);
         
-        document .addEventListener('keydown', this._onKeyDown);
-        //this.loadDrawings(chart, series, symbolName)
         this._loadDrawings(chartContainer);
+        return chartContainer
     }
 
     public disposeChart(chartContainer: ChartContainer): void {

@@ -1,10 +1,15 @@
-import { ISeriesApi, MouseEventParams, SeriesType } from "lightweight-charts";
+import { CandlestickData, ISeriesApi, LineSeries, MouseEventParams, SeriesType, Time } from "lightweight-charts";
 
 import { IChartApi } from "lightweight-charts";
 import { PluginBase } from "../plugins/plugin-base.ts";
 import { ensureDefined } from "../common/utils/assertions.ts";
 import { ChartDrawingsManager } from "./chart-drawings-manager.ts";
 import { ChartDrawingBase } from "./drawings/chart-drawing-base.ts";
+
+type DummyBar = {
+    time : Time,
+    value : number
+}
 
 // container of IChartApi and ISeriesApi, extends to include some additional properties
 // The main purpose of this is to track the drawing primatives on a chart, 
@@ -20,6 +25,13 @@ export class ChartContainer {
     private _chart: IChartApi;
     private _series: ISeriesApi<SeriesType>;
     private _primatives : PluginBase[] = [];  // TODO; we dont need this, its tracked within the drawingView
+
+    private _whiteSpaceTotal: number = 100;
+    private _whiteSpaceSeries: ISeriesApi<SeriesType>;
+    private _lastSeriesDate : Time;
+    private _lastWhiteSpaceSeriesDate : Time;
+    private _dataInitialized = false;
+    private _autoScrollBars : number = 5; // todo make this configurable
 
     constructor(
         chartManager: ChartDrawingsManager,
@@ -56,6 +68,40 @@ export class ChartContainer {
         this._removeListeners();
         this._chart.remove();
     }
+
+    	// needs to be set on init, or here
+	setData(data: CandlestickData[]) : boolean{
+		if(!data.length) 
+			return false
+
+		this._dataInitialized = true
+		this._lastSeriesDate = data[data.length - 1].time;
+		this._whiteSpaceSeries = this._initWhitespaceSeries(data)
+		this._series.setData(data)
+
+		// scroll to position
+		this._autoScrollToPosition(true)
+
+        return true;
+	}
+
+	// this must be called when new data is added
+	public updateData(bar : CandlestickData){
+		if(!this._dataInitialized)
+			throw new Error('Cant updateData before initializing base data')
+
+		// update series with new data.  track number of new bars
+		this._series.update(bar)
+
+		// if we have new bars, generate same amount of dummy bars to keep the whitespacing
+		if(bar.time > this._lastSeriesDate){
+			this._lastSeriesDate = bar.time
+			const dummyBars = this._generateDummyBars(this._lastWhiteSpaceSeriesDate, this._secondsPerBar, 1)
+			this._whiteSpaceSeries.update(dummyBars[0])
+			this._lastWhiteSpaceSeriesDate = dummyBars[dummyBars.length - 1].time
+			this._autoScrollToPosition(false)
+		}
+	}
 
     isValid(symbolName: string, secondsPerBar: number, tags: string[]) : boolean{
         if(this._symbolName !== symbolName ||
@@ -111,22 +157,61 @@ export class ChartContainer {
             this.addDrawingPrimative(primative);
     }
 
-    // preview primative -------------------------------------------------------------
-    // primatives are currnently managed by the Drawing itself, since it can only apply to one chart at a time
-    /*
-    createPreviewDrawingPrimative<T>(drawing: PluginBase){
-        this._previewPrimative = drawing;
-        ensureDefined(this._series).attachPrimitive(drawing);
+    private _initWhitespaceSeries(data : CandlestickData[]): ISeriesApi<SeriesType>{
+        const whitespaceSeries = this._chart.addSeries(LineSeries);
+    
+        // apply initial bar data to whitespace series
+        const whiteSpaceData = data.map(candle => ({
+            time: candle.time,
+            value: 0,
+        } as DummyBar));
+    
+        // generate data padding to whitespace series,
+        const dummyBars = this._generateDummyBars(data[data.length - 1].time, this._secondsPerBar, this._whiteSpaceTotal)
+        whiteSpaceData.push(...dummyBars);
+    
+        // apply  whitespace data to series
+        whitespaceSeries.setData(whiteSpaceData) 
+        this._lastWhiteSpaceSeriesDate = whiteSpaceData[whiteSpaceData.length - 1].time
+        
+        return whitespaceSeries
+    }
+    
+    private _generateDummyBars(startTime: Time, secondsPerBar: number, totalToGenerate: number): DummyBar[] {
+        const newTimes: DummyBar[] = [];
+        let timeNum = Number(startTime); 
+    
+        for (let i = 0; i < totalToGenerate; i++) {
+            timeNum += secondsPerBar;
+            newTimes.push({
+                time: timeNum as Time,
+                value: 0,
+            } as DummyBar);
+        }
+    
+        return newTimes;
     }
 
-    removePreviewDrawingPrimative(drawing: PluginBase){
-        this._previewPrimative = null;
-        ensureDefined(this._series).detachPrimitive(drawing);
-    }*/
+    private _autoScrollToPosition(forceToPosition : boolean){
+        const barsToEndOfChart : number = this._barsFromLastBarToEnd(this._chart, this._series)
+        const withinRange = barsToEndOfChart <= this._autoScrollBars && barsToEndOfChart > 0
 
-    // event handlers coordinated by the ChartDrawingsManager-----------------------------------------------
-    // we will initialize the listeners here, but the chart manager will control it for the most part
-    // makes it cleaner to dispose the listeners
+        if(forceToPosition || withinRange)
+            this._chart.timeScale().scrollToPosition(-(this._whiteSpaceTotal - this._autoScrollBars), false);
+	}
+
+    private _barsFromLastBarToEnd(chart: IChartApi, series: ISeriesApi<any>): number {
+        const logicalRange = chart.timeScale().getVisibleLogicalRange();
+        if (!logicalRange) return 0;
+    
+        const data = series.data();
+        if (!data || data.length === 0) return 0;
+
+        const lastDataIndex = data.length - 1; 
+
+        const visibleTo = Math.floor(logicalRange.to);
+        return Math.max(0, visibleTo - lastDataIndex);
+    }
 
     private _initializeListeners() : void{
        this._chart.subscribeCrosshairMove(this._onCrosshairMoveChartHandler);

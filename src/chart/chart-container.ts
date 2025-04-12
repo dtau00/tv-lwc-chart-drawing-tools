@@ -134,7 +134,7 @@ export class ChartContainer {
         this._chartDivContainer .addEventListener('mousedown', this._onMouseDownChartHandler);
         this._chartDivContainer .addEventListener('mouseup', this._onMouseUpChartHandler);
         this._chartDivContainer .addEventListener('contextmenu', this._rightClickHandler);
-       this._chartDivContainer .addEventListener('wheel', this._onWheelChart);
+       //this._chartDivContainer .addEventListener('wheel', this._onWheelChart);
    }
 
     private _removeListeners() : void{
@@ -143,7 +143,7 @@ export class ChartContainer {
         this._chartDivContainer.removeEventListener('mousedown', this._onMouseDownChartHandler);
         this._chartDivContainer.removeEventListener('mouseup', this._onMouseUpChartHandler);
         this._chartDivContainer.removeEventListener('contextmenu', this._rightClickHandler);
-        this._chartDivContainer.removeEventListener('wheel', this._onWheelChart);
+        //this._chartDivContainer.removeEventListener('wheel', this._onWheelChart);
     }
     
     private _onCrosshairMoveChartHandler = (param: MouseEventParams) : void => {
@@ -154,7 +154,7 @@ export class ChartContainer {
 
     private _rightClickHandler=(evt: MouseEvent): void => {
         evt.preventDefault()
-        this._chartManager.onRightClick(evt, this)
+        //this._chartManager.onRightClick(evt, this)
     }
 
     // mouse down, we want to detect if its dragging

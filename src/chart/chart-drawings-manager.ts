@@ -250,17 +250,22 @@ export class ChartDrawingsManager {
 
     // Chart Event Handlers ------------------------------------------------------------
 
-    public onMouseDown(evt: MouseEvent, chartContainer: ChartContainer): boolean {
+    public onMouseDown(evt: MouseEvent, chartContainer: ChartContainer): void {
+        if(evt.button === 2)
+            return this.onRightClick(evt, chartContainer)
+        else if(evt.button !== 0)
+            return
+
         console.log('onMouseDown', 'chart-drawings-manager',chartContainer.chartId);
         if(!this._selectedDrawing) // only check if a drawing is selected
-            return false;
+            return
         
         const p1 = this._selectedDrawing.drawingPoints[0];
         const p2 = this._selectedDrawing.drawingPoints[1];
 
         this._mouseDownStartPoint = getChartPointFromMouseEvent(evt, chartContainer.chartDivContainer); // set original mouse down position
         if(!this._mouseDownStartPoint || !p1 || !p2)
-            return false;
+            return
 
         if(this._selectedDrawing.containsPoint(chartContainer.chart, chartContainer.series, this._mouseDownStartPoint, this._selectedDrawing.drawingPoints)){
             this._isMouseDragging = true;
@@ -268,11 +273,10 @@ export class ChartDrawingsManager {
             this._setChartDragging(chartContainer.chart, false);
         }
 
-        return true;
+        return
     }
 
     public onMouseUp(evt: MouseEvent, chartContainer: ChartContainer): void {
-        console.log('onMouseUp', 'chart-drawings-manager', chartContainer.chartId);
         if(evt.button === 2)
             return;
 

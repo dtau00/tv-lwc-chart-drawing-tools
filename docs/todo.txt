@@ -1,5 +1,6 @@
 v1
 --
+if you rclick to unselect, you sometimes have to doubleclick
 dont allow access to baseprops, use getters and setters
 
 don't autoscroll if user is dragging

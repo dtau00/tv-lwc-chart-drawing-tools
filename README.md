@@ -39,7 +39,7 @@ This is a very early preview build; the architecture and structure is still bein
     npm run dev
     ```
 
-5. Open your browser and visit: `http://localhost:5173/src/`
+5. Open your browser and visit: `http://localhost:5173/`
 
 
 ## Features

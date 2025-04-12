@@ -42,7 +42,7 @@ export class LineHorizontalRayDrawing extends ChartDrawingBase{
 	}
 
 	normalizeStyleOptions(options : any){
-		this.styleOptions = normalizeLineDrawingToolOptions(options)
+		this.baseProps.styleOptions = normalizeLineDrawingToolOptions(options)
 	}
 	
 	// TODO dont make this hard coded
@@ -54,8 +54,7 @@ export class LineHorizontalRayDrawing extends ChartDrawingBase{
 
     containsPoint(chart: IChartApi, series: ISeriesApi<SeriesType>, point: Point, points: DrawingPoint[]): boolean {
         const options = this.styleOptions as LineDrawingToolOptions
-        const offset = (options?.lineWidth || 1) + 3;
-		console.log('offset', offset)
+        const offset = Math.ceil((options?.lineWidth || 1) / 2) + 3;
 		return isPointNearLine(chart, series, point, points, offset);
 	}
 

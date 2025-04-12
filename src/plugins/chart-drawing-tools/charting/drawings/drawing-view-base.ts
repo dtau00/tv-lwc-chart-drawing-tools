@@ -28,13 +28,13 @@ export class ViewBase extends PluginBase {
 		options: {},
 	) {
 		super();
+
         this._chart = chart,
         this._series = series,
         this._toolType = toolType;
         this._defaultStyleOptions = defaultOptions;
         this._options = this.isEmpty(options) ? {...defaultOptions, ...this.getStyleOptions()} : {...defaultOptions, ...options};
         this._baseStyleOptions = this._options;
-        //this._baseProps = baseProps;
 	}
         public getOverrideOptions(toolType: DrawingToolType, styleOptions: {}): any {
             const keyName = toolKeyName(toolType);
@@ -48,15 +48,15 @@ export class ViewBase extends PluginBase {
             this.requestUpdate();
         }
 
-        public setBaseStyleOptions(baseStyleOptions : {}, options?: {}, ) {
+        public setBaseStyleOptions(options?: {}) : {} {
             this._baseStyleOptions = { ...this._baseStyleOptions, ...options };
-            baseStyleOptions = this._baseStyleOptions
             this.applyOptions(this._baseStyleOptions);
+            return  this._baseStyleOptions
         }
 
-        public setBaseStyleOptionsFromConfig( baseStyleOptions : {}) {
+        public setBaseStyleOptionsFromConfig() : {} {
             const options = this.transformRgbaOptions({});
-            this.setBaseStyleOptions(baseStyleOptions, options);
+            return this.setBaseStyleOptions(options);
         }
 
         // internal system often uses rgba to apply opacity, rather than the opacity property, so heres
@@ -69,19 +69,6 @@ export class ViewBase extends PluginBase {
             }
             return overrides[colorPropertyName] || defaultOptions[colorPropertyName];
         }
-    
-        /*
-        public transformRgbaOptions_(styleOptions: {}): any {
-            let  overrides = this.getOverrideOptions(this._toolType, styleOptions);
-    
-            // TODO fill this out with more rgba color properties
-            // TODO just look for the setting, and see if there's an xxxOpacity setting with it
-            overrides.fillColor = this.getRgbaOverrideColorFromOptions(this._toolType, 'fillColor', 'fillColorOpacity', this._defaultStyleOptions, overrides);
-            overrides.lineColor = this.getRgbaOverrideColorFromOptions(this._toolType, 'lineColor', 'lineColorOpacity', this._defaultStyleOptions, overrides);
-            overrides.color = this.getRgbaOverrideColorFromOptions(this._toolType, 'color', 'colorOpacity', this._defaultStyleOptions, overrides);
-            overrides = removeUndefinedKeys(overrides);
-            return overrides;
-        }*/
 
         public transformRgbaOptions(styleOptions: {}): any {
             let overrides = this.getOverrideOptions(this._toolType, styleOptions);
@@ -110,12 +97,11 @@ export class ViewBase extends PluginBase {
         }
 
         updateInitialPoint(p: DrawingPoint, param: MouseEventParams) {
-            if(!this.points[0])
-                return
-    
-            this.points[0] = p;
-            this._paneViews[0].update();
-            super.requestUpdate();
+            if(this.points[0]){
+                this.points[0] = p;
+                this._paneViews[0].update();
+                super.requestUpdate();
+            }
         }
     
         // update the points for the drawing, make sure you pass in the correct number of points

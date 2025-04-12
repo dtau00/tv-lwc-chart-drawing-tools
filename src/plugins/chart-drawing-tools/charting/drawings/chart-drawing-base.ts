@@ -65,7 +65,6 @@ export abstract class ChartDrawingBase implements IChartDrawing {
         if(baseProps){
             this._baseProps = baseProps;
             this._isCompleted = true;
-            //this._points  = baseProps.drawingPoints;
             this.drawingPoints = baseProps.drawingPoints;
         }
         else{
@@ -116,7 +115,7 @@ export abstract class ChartDrawingBase implements IChartDrawing {
         return this._baseProps.styleOptions; 
     }
     set styleOptions(style: {}) { 
-        //this.normalizeStyleOptions(this.styleOptions)
+        this.normalizeStyleOptions(this.styleOptions)
         this._baseProps.styleOptions = style 
     }
 
@@ -136,7 +135,7 @@ export abstract class ChartDrawingBase implements IChartDrawing {
 
     // set the style options to base properties, this is used when loading from config
     public setBaseStyleOptionsFromConfig() {    
-        this.drawingView?.setBaseStyleOptionsFromConfig(this.styleOptions);
+        this.styleOptions = this.drawingView?.setBaseStyleOptionsFromConfig()!;
     }
 
     containsPoint(chart: IChartApi, series: ISeriesApi<SeriesType>, point: Point, points: DrawingPoint[]): boolean {

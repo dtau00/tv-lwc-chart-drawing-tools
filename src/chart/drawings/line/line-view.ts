@@ -1,7 +1,7 @@
 import { LinePaneView as PaneView} from './line-view-pane';
 import { LineDrawingToolOptions  as DrawingOptions} from './line-options';
 
-import { DrawingPoint } from '../../../common/common';
+import { DrawingPoint } from '../../../common/points';
 import { IChartApi, ISeriesApi, SeriesType } from 'lightweight-charts';
 import { ViewBase } from '../../../chart/drawings/drawing-view-base';
 import { DrawingToolType } from '../../toolbar/tools/drawing-tools';

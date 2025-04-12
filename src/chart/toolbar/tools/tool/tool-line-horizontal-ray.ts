@@ -6,7 +6,7 @@ import { SubToolThickness } from "../../sub-tools/sub-tool/sub-tool-thickness";
 import { DrawingSubToolType, DrawingSubTools } from "../../sub-tools/drawing-sub-tools";
 import { DrawingToolType } from "../drawing-tools";
 import { setSubToolbarButton } from "../../common";
-import { createSpacer } from "../../../../common/html";
+import { createSpacer } from "../../../../common/utils/html";
 import { LineHorizontalRayDrawing } from "../../../drawings/line-horizontal-ray/line-horizontal-ray-drawing";
 
 export class ToolLineHorizontalRay extends Tool {

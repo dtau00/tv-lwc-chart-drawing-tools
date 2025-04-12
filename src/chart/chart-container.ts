@@ -2,7 +2,7 @@ import { ISeriesApi, MouseEventParams, SeriesType } from "lightweight-charts";
 
 import { IChartApi } from "lightweight-charts";
 import { PluginBase } from "../plugins/plugin-base.ts";
-import { ensureDefined } from "../helpers/assertions.ts";
+import { ensureDefined } from "../common/utils/assertions.ts";
 import { ChartDrawingsManager } from "./chart-drawings-manager.ts";
 import { ChartDrawingBase } from "./drawings/chart-drawing-base.ts";
 

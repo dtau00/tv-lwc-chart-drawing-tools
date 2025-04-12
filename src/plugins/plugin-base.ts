@@ -7,8 +7,8 @@ import {
 	SeriesOptionsMap,
 	Time,
 } from 'lightweight-charts';
-import { ensureDefined } from '../helpers/assertions';
-import { generateUniqueId } from '../helpers/id-generator';
+import { ensureDefined } from '../common/utils/assertions';
+import { generateUniqueId } from '../common/utils/id-generator';
 
 export abstract class PluginBase implements ISeriesPrimitive<Time> {
 	private _baseId: string = generateUniqueId('plugin-base-');

@@ -6,7 +6,7 @@ import { SubToolOpacity } from "../../sub-tools/sub-tool/sub-tool-opacity"
 import { DrawingSubToolType, DrawingSubTools } from "../../sub-tools/drawing-sub-tools";
 import { DrawingToolType } from "../drawing-tools";
 import { setSubToolbarButton } from "../../common";
-import { createSpacer } from "../../../../common/html";
+import { createSpacer } from "../../../../common/utils/html";
 
 export class ToolRectangleExtended extends Tool {
     private readonly  _totalColors: number = 3

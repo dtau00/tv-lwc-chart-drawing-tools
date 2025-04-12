@@ -4,7 +4,7 @@ import ITool from "./tool-interface";
 import { createToolbarButton } from "../../../chart/toolbar/common";
 import SubTool from "../sub-tools/sub-tool-base";
 import { ConfigStorage } from "../../../common/storage";
-import { toolKeyName } from "../../../common/common";
+import { toolKeyName } from "../../../common/tool-key";
 import { DrawingToolType } from "./drawing-tools";
 
 abstract class Tool implements ITool {

@@ -1,10 +1,10 @@
 import { ConfigStorage } from "../../../common/storage.ts";
 import { DrawingSubTools, DrawingSubToolType } from "./drawing-sub-tools";
-import { unselectAllDivsForGroup } from "../../../common/html.ts";
+import { unselectAllDivsForGroup } from "../../../common/utils/html.ts";
 import { createSubToolbarButton, createToolbarButton, ToolbarButton } from "../../../chart/toolbar/common.ts";
 import ISubTool from "./sub-tool-interface";
-import { eventBus } from "../../../common/common.ts";
-import { ChartEvents } from "../../../common/events.ts";
+import { ChartEvents, eventBus } from '../../../common/event-bus';
+import { subToolKeyName, subToolValueKeyName } from "../../../common/tool-key.ts";
 
 abstract class SubTool implements ISubTool {
     private _div: HTMLDivElement | HTMLInputElement;
@@ -108,11 +108,11 @@ abstract class SubTool implements ISubTool {
     }
 
     private _keyName(): string {
-        return `subtool-val-${this._parentTool}-${this._propertyName}-${this._index}`;
+        return subToolValueKeyName(this._parentTool,this._propertyName,this._index)
     }
 
     private _subToolKeyName(): string {
-        return `selected-subtool-${this._parentTool}-${this._propertyName}`;
+        return subToolKeyName(this._parentTool,this._propertyName)
     }
 
     private _loadValue(): void {

@@ -1,12 +1,12 @@
 import { IChartApi, ISeriesApi, SeriesType, MouseEventParams, Point, Time, Coordinate } from 'lightweight-charts';
 import { DrawingToolType } from '../toolbar/tools/drawing-tools';
 import { IChartDrawing } from './chart-drawing-interface';
-import { generateUniqueId } from '../../helpers/id-generator';
+import { generateUniqueId } from '../../common/utils/id-generator';
 import { PluginBase } from '../../plugins/plugin-base';
-import { ensureDefined } from '../../helpers/assertions';
-import { eventBus, DrawingPoint } from '../../common/common';
+import { ensureDefined } from '../../common/utils/assertions';
+import { DrawingPoint } from '../../common/points';
 
-import { ChartEvents } from '../../common/events';
+import { ChartEvents, eventBus } from '../../common/event-bus';
 import { containsPoints, leftRightPoints, pointToDrawingPoints, topBottomPoints } from '../../common/points';
 import { ViewBase } from '../drawings/drawing-view-base';
 

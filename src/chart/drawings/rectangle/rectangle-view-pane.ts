@@ -4,8 +4,8 @@ import { RectangleDrawingToolOptions } from './rectangle-options';
 
 import { CanvasRenderingTarget2D } from 'fancy-canvas';
 import { IPrimitivePaneRenderer, IPrimitivePaneView } from 'lightweight-charts';
-import { positionsBox } from '../../../helpers/dimensions/positions';
-import { ViewPoint } from '../../../common/common';
+import { positionsBox } from '../../../common/utils/dimensions/positions';
+import { ViewPoint } from '../../../common/points';
 import { PaneViewBase } from '../../../chart/drawings/drawing-pane-view-base';
 
 class RectanglePaneRenderer implements IPrimitivePaneRenderer {

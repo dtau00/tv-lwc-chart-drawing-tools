@@ -6,9 +6,9 @@ import {
 	SeriesType,
 	Time,
 } from 'lightweight-charts';
-import { generateUniqueId } from '../../helpers/id-generator.ts';
+import { generateUniqueId } from '../../common/utils/id-generator.ts';
 import { ChartDrawingsManager } from '../../chart/chart-drawings-manager.ts';
-import { eventBus } from '../../common/common.ts';
+import { eventBus } from '../../common/event-bus';
 import { ChartDrawingsToolbar } from '../../chart/toolbar/chart-drawing-toolbar.ts';
 // This class is the main class for the chart drawing tools.
 

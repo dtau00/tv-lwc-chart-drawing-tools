@@ -1,5 +1,15 @@
 import { Coordinate, IChartApi, ISeriesApi, Point, SeriesType, Time } from "lightweight-charts";
-import { DrawingPoint } from "./common";
+
+export interface DrawingPoint {
+	time: Time;
+	price: number;
+}
+
+export interface ViewPoint {
+	x: Coordinate | null;
+	y: Coordinate | null;
+}
+
 
 export function getPointFromMouseEvent(evt: MouseEvent): Point | null{
     return  { x: evt.clientX as Coordinate, y: evt.clientY as Coordinate};

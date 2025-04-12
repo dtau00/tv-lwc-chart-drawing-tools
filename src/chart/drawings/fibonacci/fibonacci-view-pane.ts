@@ -5,7 +5,7 @@ import { IPrimitivePaneView } from 'lightweight-charts';
 import { PaneViewBase } from '../../../chart/drawings/drawing-pane-view-base';
 import { CanvasRenderingTarget2D } from 'fancy-canvas';
 import { IPrimitivePaneRenderer } from 'lightweight-charts';
-import { ViewPoint } from '../../../common/common';
+import { ViewPoint } from '../../../common/points';
 
 const FIB_LEVELS = [0, 0.236, 0.382, 0.5, 0.618, 0.786, 1];
 

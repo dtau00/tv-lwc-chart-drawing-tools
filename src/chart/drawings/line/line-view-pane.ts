@@ -2,7 +2,7 @@ import { Line } from './line-view';
 import { LineDrawingToolOptions } from './line-options';
 
 import { Coordinate, IPrimitivePaneView, IPrimitivePaneRenderer } from 'lightweight-charts';
-import { ViewPoint } from '../../../common/common';
+import { ViewPoint } from '../../../common/points';
 import { PaneViewBase } from '../../../chart/drawings/drawing-pane-view-base';
 import { CanvasRenderingTarget2D } from 'fancy-canvas';
 

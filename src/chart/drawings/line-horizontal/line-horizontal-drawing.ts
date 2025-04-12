@@ -5,7 +5,7 @@ import { IChartApi, ISeriesApi, MouseEventParams, Point, SeriesType,Coordinate} 
 import { ChartDrawingBase, ChartDrawingBaseProps } from '../../../chart/drawings/chart-drawing-base';
 import { DrawingToolType } from '../../toolbar/tools/drawing-tools';
 import { isPointNearLine, convertAndNormalizeDrawingPointsToPoint } from '../../../common/points';
-import { DrawingPoint } from '../../../common/common';
+import { DrawingPoint } from '../../../common/points';
 
 export class LineHorizontalDrawing extends ChartDrawingBase{
 	private static readonly TOTAL_DRAWING_POINTS = 2; // Set the drawing points for this type of drawing.  A box will have 2, a line ray will have 1, etc...

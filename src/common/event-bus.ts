@@ -1,3 +1,5 @@
+export const eventBus = new EventTarget();
+
 export enum ChartEvents {
     NewDrawingCompleted = 'newDrawingCompleted',
     UnsetToolbar = 'unsetToolbar',

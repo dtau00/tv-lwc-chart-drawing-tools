@@ -1,7 +1,7 @@
 import { RectangleDrawingToolOptions  as DrawingOptions} from '../rectangle/rectangle-options';
 import { RectanglePaneView as PaneView} from '../rectangle/rectangle-view-pane';
 
-import { DrawingPoint } from '../../../common/common';
+import { DrawingPoint } from '../../../common/points';
 import { IChartApi, ISeriesApi, MouseEventParams, SeriesType } from 'lightweight-charts';
 import { ViewBase } from '../../../chart/drawings/drawing-view-base';
 import { DrawingToolType } from '../../toolbar/tools/drawing-tools';

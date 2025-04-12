@@ -6,7 +6,7 @@ import { SubToolThickness } from "../../sub-tools/sub-tool/sub-tool-thickness";
 import { DrawingSubToolType, DrawingSubTools } from "../../sub-tools/drawing-sub-tools";
 import { DrawingToolType } from "../drawing-tools";
 import { setSubToolbarButton } from "../../common";
-import { createSpacer } from "../../../../common/html";
+import { createSpacer } from "../../../../common/utils/html";
 import { LineVerticalDrawing } from "../../../drawings/line-vertical/line-vertical-drawing";
 
 export class ToolLineVertical extends Tool {

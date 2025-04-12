@@ -1,12 +1,11 @@
 import { ChartDrawingsManager } from '../chart-drawings-manager.ts';
 import { DrawingToolType, AVAILABLE_TOOLS, DrawingToolInfo } from '../toolbar/tools/drawing-tools.ts';
-import { clearDiv, selectDivForGroup, unselectAllDivsForGroup } from '../../common/html.ts';
+import { clearDiv, selectDivForGroup, unselectAllDivsForGroup } from '../../common/utils/html.ts';
 import { ToolLine } from '../../chart/toolbar/tools/tool/tool-line.ts';
 import { ToolRectangle } from '../../chart/toolbar/tools/tool/tool-rectangle.ts';
 import { ToolRemove } from '../../chart/toolbar/tools/tool/tool-remove.ts';
 import Tool from '../toolbar/tools/tool-base.ts';
-import { eventBus } from '../../common/common.ts';
-import { ChartEvents } from '../../common/events.ts';
+import { ChartEvents, eventBus } from '../../common/event-bus';
 import { ToolRectangleExtended } from '../../chart/toolbar/tools/tool/tool-rectangle-extended.ts';
 import { ChartDrawingBase } from '../drawings/chart-drawing-base.ts';
 import { ToolLineHorizontalRay } from '../../chart/toolbar/tools/tool/tool-line-horizontal-ray.ts';

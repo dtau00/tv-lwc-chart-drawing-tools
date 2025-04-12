@@ -2,10 +2,9 @@ import { IChartApi, ISeriesApi, MouseEventParams, Point, SeriesType, Time } from
 import { ChartDrawingBase, ChartDrawingBaseProps } from './drawings/chart-drawing-base.ts';
 import { DrawingToolType } from './toolbar/tools/drawing-tools.ts';
 import { DataStorage } from '../common/storage.ts';
-import { eventBus } from '../common/common.ts';
 import { ChartContainer } from './chart-container.ts';
 import Tool from './toolbar/tools/tool-base.ts';
-import { ChartEvents } from '../common/events.ts';
+import { ChartEvents, eventBus } from '../common/event-bus';
 import { PluginBase } from '../plugins/plugin-base.ts';
 import { getChartPointFromMouseEvent } from '../common/points.ts';
 

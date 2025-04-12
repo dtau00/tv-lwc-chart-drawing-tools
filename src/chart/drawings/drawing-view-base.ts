@@ -1,10 +1,11 @@
-import { mergeOpacityIntoRgba } from '../../common/helper';
-import { DrawingPoint, toolKeyName } from '../../common/common';
+import { mergeOpacityIntoRgba } from '../../common/utils/rgba-string';
+import { DrawingPoint } from '../../common/points';
+import {  removeUndefinedKeys } from '../../common/utils/objects'
+import { toolKeyName } from '../../common/tool-key'
 import { IChartApi, ISeriesApi, MouseEventParams, SeriesType } from 'lightweight-charts';
 import { PluginBase } from '../../plugins/plugin-base';
 import { DrawingToolType } from '../toolbar/tools/drawing-tools';
 import { ConfigStorage } from '../../common/storage';
-import { removeUndefinedKeys } from '../../common/helper';
 import { PaneViewBase } from './drawing-pane-view-base';
 
 // Base class for all drawing views, handles the style options and updates

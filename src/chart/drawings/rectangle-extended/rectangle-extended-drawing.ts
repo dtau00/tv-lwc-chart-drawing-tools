@@ -1,5 +1,5 @@
 import { RectangleExtendedView as View} from './rectangle-extended-view';
-import { rectangleDrawingToolDefaultOptions as drawingToolDefaultOptions, normalizeRectangleDrawingToolOptions } from '../rectangle/rectangle-options';
+import { rectangleDrawingToolDefaultOptions as drawingToolDefaultOptions, normalizeRectangleDrawingToolOptions } from '../common/options/rectangle-options';
 
 import { IChartApi, ISeriesApi, MouseEventParams, Point, SeriesType, Time} from 'lightweight-charts';
 import { ChartDrawingBase, ChartDrawingBaseProps } from '../../../chart/drawings/chart-drawing-base';

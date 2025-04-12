@@ -1,5 +1,5 @@
-import { RectangleDrawingToolOptions  as DrawingOptions} from './rectangle-options';
-import { RectanglePaneView as PaneView} from './rectangle-view-pane';
+import { RectangleDrawingToolOptions  as DrawingOptions} from '../common/options/rectangle-options';
+import { RectanglePaneView as PaneView} from '../common/view-panes/rectangle-view-pane';
 
 import { DrawingPoint } from '../../../common/points';
 import { IChartApi, ISeriesApi, SeriesType } from 'lightweight-charts';

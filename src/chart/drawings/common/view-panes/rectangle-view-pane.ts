@@ -1,13 +1,13 @@
 
-import { Rectangle } from './rectangle-view';
-import { RectangleDrawingToolOptions } from './rectangle-options';
+import { Rectangle } from '../../rectangle/rectangle-view';
+import { RectangleDrawingToolOptions } from '../options/rectangle-options';
 
 import { CanvasRenderingTarget2D } from 'fancy-canvas';
 import { Coordinate, IPrimitivePaneRenderer, IPrimitivePaneView } from 'lightweight-charts';
-import { positionsBox } from '../../../common/utils/dimensions/positions';
-import { ViewPoint } from '../../../common/points';
-import { PaneViewBase } from '../../../chart/drawings/drawing-pane-view-base';
-import { timeToCoordinateMax } from '../../../common/utils/time';
+import { positionsBox } from '../../../../common/utils/dimensions/positions';
+import { ViewPoint } from '../../../../common/points';
+import { PaneViewBase } from '../../drawing-pane-view-base';
+import { timeToCoordinateMax } from '../../../../common/utils/time';
 
 class RectanglePaneRenderer implements IPrimitivePaneRenderer {
 	private _p1: ViewPoint;

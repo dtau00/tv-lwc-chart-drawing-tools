@@ -1,9 +1,9 @@
-import { Line } from './line-view';
-import { LineDrawingToolOptions } from './line-options';
+import { Line } from '../../line/line-view';
+import { LineDrawingToolOptions } from '../options/line-options';
 
 import { Coordinate, IPrimitivePaneView, IPrimitivePaneRenderer } from 'lightweight-charts';
-import { ViewPoint } from '../../../common/points';
-import { PaneViewBase } from '../../../chart/drawings/drawing-pane-view-base';
+import { ViewPoint } from '../../../../common/points';
+import { PaneViewBase } from '../../drawing-pane-view-base';
 import { CanvasRenderingTarget2D } from 'fancy-canvas';
 
 class LinePaneRenderer implements IPrimitivePaneRenderer {

@@ -1,5 +1,5 @@
-import { LinePaneView as PaneView} from '../line/line-view-pane';
-import { LineDrawingToolOptions  as DrawingOptions} from '../line/line-options';
+import { LinePaneView as PaneView} from '../common/view-panes/line-view-pane';
+import { LineDrawingToolOptions  as DrawingOptions} from '../common/options/line-options';
 
 import { DrawingPoint } from '../../../common/points';
 import { IChartApi, ISeriesApi, SeriesType } from 'lightweight-charts';

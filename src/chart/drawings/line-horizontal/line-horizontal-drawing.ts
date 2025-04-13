@@ -20,11 +20,9 @@ export class LineHorizontalDrawing extends ChartDrawingBase{
 
 		const _finalizeDrawingPoints =()=>{
 			const price =  this.drawingPoints[1].price
-			const end = MAX_TIME//this._chart?.timeScale().getVisibleRange()?.to;
-			const start = 0//this._chart?.timeScale().getVisibleRange()?.from;
-			if(end && start){
-				this.overrideDrawingPoints([{time: start, price}, {time: end, price}]);
-			}
+			const dp1 = {time : 1, price} as DrawingPoint
+			const dp2 = {time : MAX_TIME, price} as DrawingPoint
+			this.overrideDrawingPoints([dp1, dp2]);
 		}
 		super( DrawingToolType.HorizontalLine, chart, series, symbolName, LineHorizontalDrawing.TOTAL_DRAWING_POINTS, drawingToolDefaultOptions, baseProps, _finalizeDrawingPoints);
 		

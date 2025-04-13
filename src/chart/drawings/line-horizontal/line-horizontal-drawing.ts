@@ -76,9 +76,6 @@ export class LineHorizontalDrawing extends ChartDrawingBase{
 
 		this.view().updatePoints([dp1, dp2]) 
 
-		//  store new points temporarily, we will set this back to the drawingPoints when the update is finished
-		// TODO we wont need this if we save directly from the class, consider adding save directly from the class
-		this.tmpDrawingPoints[0] = dp1
-		this.tmpDrawingPoints[1] = dp2
+		this.setTmpDrawingPoints(dp1, dp2)
 	}
 }

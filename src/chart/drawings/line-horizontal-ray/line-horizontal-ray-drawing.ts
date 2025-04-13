@@ -4,7 +4,7 @@ import { lineDrawingToolDefaultOptions as drawingToolDefaultOptions, LineDrawing
 import { IChartApi, ISeriesApi, MouseEventParams, Point, SeriesType,Coordinate} from 'lightweight-charts';
 import { ChartDrawingBase, ChartDrawingBaseProps } from '../../../chart/drawings/chart-drawing-base';
 import { DrawingToolType } from '../../toolbar/tools/drawing-tools';
-import { isPointNearLine, convertAndNormalizeDrawingPointsToPoint, isPointOverStraightLineDrawing } from '../../../common/points';
+import { isPointNearLine, convertAndNormalizeDrawingPointsToPoint, isPointOverStraightLineDrawing, pointToDrawingPoints } from '../../../common/points';
 import { DrawingPoint } from '../../../common/points';
 import { MAX_TIME } from '../../../common/utils/time';
 
@@ -89,6 +89,8 @@ export class LineHorizontalRayDrawing extends ChartDrawingBase{
 		let xOffset = endPoint.x - startPoint.x;
 		let yOffset = endPoint.y - startPoint.y;
 
+		// TODO Clean this up
+
 		// adjust coordinates based on the side
 		if(p1.x < p2.x)
 			p1 = { x: p1.x + xOffset as Coordinate, y: p1.y };
@@ -98,7 +100,22 @@ export class LineHorizontalRayDrawing extends ChartDrawingBase{
 		p1 = { x: p1.x, y: p1.y + yOffset as Coordinate };		
 		p2 = { x: p2.x, y: p2.y + yOffset as Coordinate };	
 
-		this.finalizeUpdatedPosition(p1, p2)
+		// convert back to drawing coordinates
+		let dp1 = pointToDrawingPoints(p1, this._chart!, this._series!)
+		let dp2 = pointToDrawingPoints(p2, this._chart!, this._series!)
+
+		// nomralize, so leftest point is first
+		if (dp1.time > dp2.time) {
+			[dp1, dp2] = [dp2, dp1]; // Swap if dp1 is later than dp2
+		}
+
+		// extend the line
+		dp2.time = MAX_TIME
+
+		this.view().updatePoints([dp1, dp2]) 
+
+		this.setTmpDrawingPoints(dp1, dp2)
+		//this.finalizeUpdatedPosition(p1, p2)
 	}
 
 }

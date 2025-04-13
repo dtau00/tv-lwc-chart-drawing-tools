@@ -5,6 +5,7 @@ export interface LineDrawingToolOptions {
 	lineColor: string;
 	lineColorOpacity: number;
 	lineWidth: number;
+	lineDash: string,
 	labelColor: string;
 	labelTextColor: string;
 	showLabels: boolean;
@@ -17,6 +18,7 @@ export const lineDrawingToolDefaultOptions: LineDrawingToolOptions = {
 	lineColor: 'rgba(200, 50, 100, 0.25)',
 	lineColorOpacity: 0.75,
 	lineWidth: 2,
+	lineDash: '',
 	labelColor: 'rgb(50, 147, 200)',
 	labelTextColor: 'white',
 	showLabels: false,
@@ -38,6 +40,7 @@ export function normalizeLineDrawingToolOptions(
 		lineColorOpacity: Number(raw.lineColorOpacity ?? lineDrawingToolDefaultOptions.lineColorOpacity),
 		lineWidth: Number(raw.lineWidth ?? lineDrawingToolDefaultOptions.lineWidth),
 		labelColor: typeof raw.labelColor === 'string' ? raw.labelColor : lineDrawingToolDefaultOptions.labelColor,
+		lineDash: typeof raw.lineDash === 'string' ? raw.lineDash : lineDrawingToolDefaultOptions.lineDash,
 		labelTextColor:
 			typeof raw.labelTextColor === 'string' ? raw.labelTextColor : lineDrawingToolDefaultOptions.labelTextColor,
 		showLabels:

@@ -8,7 +8,7 @@ interface ISubTool {
     
     init(): void;
     dispose(): void;
-    updateDiv: () => void;
+    setButtonStyling: () => void;
     addToolButtonToContainer: (container: HTMLDivElement) => void;
 
 }

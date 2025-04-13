@@ -1,7 +1,7 @@
 import { ConfigStorage } from "../../../common/storage.ts";
 import { DrawingSubTools, DrawingSubToolType } from "./drawing-sub-tools";
 import { unselectAllDivsForGroup } from "../../../common/utils/html.ts";
-import { createSubToolbarButton, createToolbarButton, ToolbarButton } from "../../../chart/toolbar/common.ts";
+import { createSubToolbarButton, ToolbarButton } from "../../../chart/toolbar/common.ts";
 import ISubTool from "./sub-tool-interface";
 import { ButtonEvents, ChartEvents, createSubToolButtonEventDetails, eventBus } from '../../../common/event-bus';
 import { subToolKeyName, subToolValueKeyName } from "../../../common/tool-key.ts";
@@ -48,12 +48,12 @@ abstract class SubTool implements ISubTool {
 
     abstract init(): void;
     abstract dispose(): void
-    abstract updateDiv(): void;;
+    abstract setButtonStyling(): void;;
     
     addToolButtonToContainer(container: HTMLDivElement): void {
         this._container = container;
-        this._div = createSubToolbarButton(this._name, this._description, this._icon, this._buttonType, container!);
-        this.updateDiv()
+        this._div = createSubToolbarButton(this._name, this._description, this._icon, this._propertyName, this._buttonType, container!);
+        this.setButtonStyling()
     }
 
     setValue(value?: any, initiateCallback: boolean = true): void {
@@ -65,7 +65,11 @@ abstract class SubTool implements ISubTool {
         else
             this._saveValue(val);
         
-        this.updateDiv();
+        this.setButtonStyling();
+    }
+
+    getValue(){
+        return ConfigStorage.loadConfig(this._keyName(), this._value);
     }
 
     public setSelectedStyling(): void {
@@ -86,7 +90,7 @@ abstract class SubTool implements ISubTool {
 
     // TODO its a bit wierd to do this here
     private _setSelectedSubToolStylingForTool(){
-        unselectAllDivsForGroup(this._container!, [this.type]);
+        unselectAllDivsForGroup(this._container!, [this._propertyName]);
         this.div.classList.add('selected');
     }
 
@@ -111,7 +115,8 @@ abstract class SubTool implements ISubTool {
     }
 
     private _loadValue(): void {
-        this._value = ConfigStorage.loadConfig(this._keyName(), this._value);
+       // this._value = ConfigStorage.loadConfig(this._keyName(), this._value);
+       this._value = this.getValue()
     }
 
     private _getDefaultValue(): any {

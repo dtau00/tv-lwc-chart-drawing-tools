@@ -30,7 +30,7 @@ export class SubToolColor extends SubTool {
         }
     }
     
-    updateDiv(): void {
+    setButtonStyling(): void {
         if (this.div && this.div instanceof HTMLInputElement) {
             //this.div.style.borderRadius = '50%';
             this.div.style.width = '22px';
@@ -46,7 +46,7 @@ export class SubToolColor extends SubTool {
            console.log('rgba',colorValue, rgba)
             this.setValue(rgba);
             this.setSelectedTool(this._lastSelectedIndex);
-            this.updateDiv();
+            this.setButtonStyling();
         }
     }
 

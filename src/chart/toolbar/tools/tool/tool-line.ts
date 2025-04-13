@@ -8,6 +8,9 @@ import { DrawingToolType } from "../drawing-tools";
 import { setSubToolbarButton } from "../../common";
 import { createSpacer } from "../../../../common/utils/html";
 import { LineDrawing } from "../../../drawings/line/line-drawing";
+import { SubToolSolid } from "../../sub-tools/sub-tool/sub-tool-solid";
+import { SubToolDotted } from "../../sub-tools/sub-tool/sub-tool-dotted";
+import { SubToolDashed } from "../../sub-tools/sub-tool/sub-tool-dashed";
 
 export class ToolLine extends Tool {
     private readonly  _totalColors: number = 3
@@ -48,6 +51,26 @@ export class ToolLine extends Tool {
             setSubToolbarButton(subTool, this.subTools, container);
         }
        
+        container.appendChild(createSpacer());
+
+        type = DrawingSubTools.get(DrawingSubToolType.Solid);
+        if(type){
+            const subTool = new SubToolSolid("lineDash", this.name, type.name, type.description, type.icon, 0, this.valueUpdatedCallback);
+            setSubToolbarButton(subTool, this.subTools, container);
+        }
+
+        type = DrawingSubTools.get(DrawingSubToolType.Dotted);
+        if(type){
+            const subTool = new SubToolDotted("lineDash", this.name, type.name, type.description, type.icon, 1, this.valueUpdatedCallback);
+            setSubToolbarButton(subTool, this.subTools, container);
+        }
+
+        type = DrawingSubTools.get(DrawingSubToolType.Dashed);
+        if(type){
+            const subTool = new SubToolDashed("lineDash", this.name, type.name, type.description, type.icon, 2, this.valueUpdatedCallback);
+            setSubToolbarButton(subTool, this.subTools, container);
+        }
+        
         return buttons; 
     }
 }

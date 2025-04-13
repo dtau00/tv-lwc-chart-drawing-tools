@@ -8,6 +8,9 @@ import { DrawingToolType } from "../drawing-tools";
 import { setSubToolbarButton } from "../../common";
 import { createSpacer } from "../../../../common/utils/html";
 import { LineHorizontalDrawing } from "../../../drawings/line-horizontal/line-horizontal-drawing";
+import { SubToolSolid } from "../../sub-tools/sub-tool/sub-tool-solid";
+import { SubToolDotted } from "../../sub-tools/sub-tool/sub-tool-dotted";
+import { SubToolDashed } from "../../sub-tools/sub-tool/sub-tool-dashed";
 
 export class ToolLineHorizontal extends Tool {
     private readonly  _totalColors: number = 3
@@ -27,27 +30,53 @@ export class ToolLineHorizontal extends Tool {
 
         // TODO clean this up
         let type = DrawingSubTools.get(DrawingSubToolType.Color);
-        for(let i = 0; i < this._totalColors; i++){
-            const subTool = new SubToolColor("lineColor", this.name, type?.name || '', type?.description || '', type?.icon || '', i, this.valueUpdatedCallback);
-            setSubToolbarButton(subTool, this.subTools, container);
+        if(type){
+            for(let i = 0; i < this._totalColors; i++){
+                const subTool = new SubToolColor("lineColor", this.name, type.name, type.description, type.icon, i, this.valueUpdatedCallback);
+                setSubToolbarButton(subTool, this.subTools, container);
+            }
         }
         
         container.appendChild(createSpacer());
 
         type = DrawingSubTools.get(DrawingSubToolType.Opacity);
-        for(let i = 0; i < this._totalOpacities; i++){
-            const subTool = new SubToolOpacity("lineColorOpacity", this.name, type?.name || '', type?.description || '', type?.icon || '', i, this.valueUpdatedCallback);
-            setSubToolbarButton(subTool, this.subTools, container);
+        if(type){
+            for(let i = 0; i < this._totalOpacities; i++){
+                const subTool = new SubToolOpacity("lineColorOpacity", this.name, type?.name, type?.description, type?.icon, i, this.valueUpdatedCallback);
+                setSubToolbarButton(subTool, this.subTools, container);
+            }
         }
 
         container.appendChild(createSpacer());
         
         type = DrawingSubTools.get(DrawingSubToolType.Thickness);
-        for(let i = 0; i < this._totalThicknesses; i++){
-            const subTool = new SubToolThickness("lineWidth", this.name, type?.name || '', type?.description || '', type?.icon || '', i, this.valueUpdatedCallback);
+        if(type){
+            for(let i = 0; i < this._totalThicknesses; i++){
+                const subTool = new SubToolThickness("lineWidth", this.name, type.name, type.description, type.icon, i, this.valueUpdatedCallback);
+                setSubToolbarButton(subTool, this.subTools, container);
+            }
+        }
+
+        container.appendChild(createSpacer());
+
+        type = DrawingSubTools.get(DrawingSubToolType.Solid);
+        if(type){
+            const subTool = new SubToolSolid("lineDash", this.name, type.name, type.description, type.icon, 0, this.valueUpdatedCallback);
             setSubToolbarButton(subTool, this.subTools, container);
         }
-       
+
+        type = DrawingSubTools.get(DrawingSubToolType.Dotted);
+        if(type){
+            const subTool = new SubToolDotted("lineDash", this.name, type.name, type.description, type.icon, 1, this.valueUpdatedCallback);
+            setSubToolbarButton(subTool, this.subTools, container);
+        }
+
+        type = DrawingSubTools.get(DrawingSubToolType.Dashed);
+        if(type){
+            const subTool = new SubToolDashed("lineDash", this.name, type.name, type.description, type.icon, 2, this.valueUpdatedCallback);
+            setSubToolbarButton(subTool, this.subTools, container);
+        }
+
         return buttons; 
     }
 }

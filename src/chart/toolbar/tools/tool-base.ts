@@ -42,7 +42,7 @@ abstract class Tool implements ITool {
     }
 
     addToolButtonToContainer(container: HTMLDivElement): HTMLDivElement {
-        this.button = createToolbarButton(this.name, this.description, this.icon, 'div', container!);
+        this.button = createToolbarButton(this.name, this.description, this.icon, this.name, 'div', container!);
         this.button.addEventListener('click', this.onClick)
         return this.button;
     }

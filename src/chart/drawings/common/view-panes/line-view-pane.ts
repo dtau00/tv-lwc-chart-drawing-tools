@@ -6,18 +6,21 @@ import { ViewPoint } from '../../../../common/points';
 import { PaneViewBase } from '../../drawing-pane-view-base';
 import { CanvasRenderingTarget2D } from 'fancy-canvas';
 import { timeToCoordinateMax } from '../../../../common/utils/time';
+import { isValidDashFormat } from '../../../../common/utils/dash-format-string';
 
 class LinePaneRenderer implements IPrimitivePaneRenderer {
 	private _p1: ViewPoint;
 	private _p2: ViewPoint;
 	private _lineColor: string;
 	private _lineWidth: number;
+	private _lineDash: string;
 
-	constructor(p1: ViewPoint, p2: ViewPoint, lineColor: string, lineWidth: number) {
+	constructor(p1: ViewPoint, p2: ViewPoint, lineColor: string, lineWidth: number, lineDash: string) {
 		this._p1 = p1;
 		this._p2 = p2;
 		this._lineColor = lineColor;
 		this._lineWidth = lineWidth;
+		this._lineDash = lineDash;
 	}
 
 	draw(target: CanvasRenderingTarget2D) {
@@ -31,11 +34,18 @@ class LinePaneRenderer implements IPrimitivePaneRenderer {
 
 			const ctx = scope.context;
 			ctx.save();
+
 			const xRatio = scope.horizontalPixelRatio;
 			const yRatio = scope.verticalPixelRatio;
 			ctx.strokeStyle = this._lineColor;
 			ctx.lineWidth = this._lineWidth;
+
+			// draw ctx
 			ctx.beginPath();
+			if(isValidDashFormat(this._lineDash)){				
+				const dash: [number, number] = JSON.parse(this._lineDash);
+				ctx.setLineDash(dash);
+			}
 			ctx.moveTo(this._p1.x * xRatio, this._p1.y * yRatio);
 			ctx.lineTo(this._p2.x * xRatio, this._p2.y * yRatio);
 			ctx.stroke();
@@ -89,7 +99,8 @@ export class LinePaneView extends PaneViewBase implements IPrimitivePaneView {
 			this._p1,
 			this._p2,       
 			options.lineColor,
-			options.lineWidth
+			options.lineWidth,
+			options.lineDash
 		);
 	}
 }

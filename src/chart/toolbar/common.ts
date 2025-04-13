@@ -6,9 +6,9 @@ export type ToolbarButton = 'div' | 'color'
 const toolButtonWidth = '15px';
 const toolButtonHeight = '20px;'
 
-export function createSubToolbarButton(name: string, description: string, icon: string, type: ToolbarButton, container?: HTMLDivElement): HTMLDivElement | HTMLInputElement {
+export function createSubToolbarButton(name: string, description: string, icon: string, className: string, type: ToolbarButton, container?: HTMLDivElement): HTMLDivElement | HTMLInputElement {
   //return createToolbarButton(name, description, icon, type, () => void 0, '', container);
-    return createToolbarButton(name, description, icon, type, container!);
+    return createToolbarButton(name, description, icon, className, type, container!);
 }
 /*
 export function createToolbarButton_(name: string, description: string, icon: string, type: ToolbarButton, listener: (evt: MouseEvent) => void, eventType: 'click' | 'mousedown' | 'mouseup' | '' = '', container?: HTMLDivElement): HTMLDivElement | HTMLInputElement {
@@ -47,7 +47,7 @@ export function createToolbarButton_(name: string, description: string, icon: st
   return div
 }*/
 
-export function createToolbarButton(name: string, description: string, icon: string, type: ToolbarButton, container: HTMLDivElement): HTMLDivElement | HTMLInputElement {
+export function createToolbarButton(name: string, description: string, icon: string, className: string, type: ToolbarButton, container: HTMLDivElement): HTMLDivElement | HTMLInputElement {
   let div : HTMLInputElement | HTMLDivElement
 
   switch (type) {
@@ -67,7 +67,7 @@ export function createToolbarButton(name: string, description: string, icon: str
   }
 
   // set base properties
-  div.className = `toolbar-item ${name}`;
+  div.className = `toolbar-item ${className}`;
   div.title = description;
   div.style.width = toolButtonWidth;
   div.style.height = toolButtonHeight;

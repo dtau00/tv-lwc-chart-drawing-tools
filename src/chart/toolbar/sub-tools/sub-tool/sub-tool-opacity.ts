@@ -20,7 +20,7 @@ export class SubToolOpacity extends SubTool {
         }
     }
 
-    updateDiv(): void {
+    setButtonStyling(): void {
         if (!this.div) return
         this.div.style.borderRadius = '50%';
         this.div.style.width = '20px';

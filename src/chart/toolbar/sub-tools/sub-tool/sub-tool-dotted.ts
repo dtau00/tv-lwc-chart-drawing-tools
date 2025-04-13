@@ -1,7 +1,11 @@
-import SubTool from "../../../toolbar/sub-tools/sub-tool-base";
-import { DrawingSubToolType } from "../../../toolbar/sub-tools/drawing-sub-tools";
+import { isValidDashFormat } from "../../../../common/utils/dash-format-string";
+import { DrawingSubToolType } from "../drawing-sub-tools";
+import SubTool from "../sub-tool-base";
 
-export class SubToolThickness extends SubTool {
+const values = ['[1,1]','[1,2]','[1,3]','[1,4]','[1,5]',
+                         '[2,2]','[2,3]','[2,4]','[2,5]']
+
+export class SubToolDotted extends SubTool {
     constructor(propertyName: string, parentTool: string, name: string, description: string, icon: string, index: number, valueUpdatedCallback?: (value: any) => void) {
         super(propertyName, parentTool, 'div', name, description, icon, index, DrawingSubToolType.Thickness, valueUpdatedCallback);
 
@@ -23,27 +27,25 @@ export class SubToolThickness extends SubTool {
     setButtonStyling(): void {
         if (!this.div) return
         this.div.style.width = '20px';
-        this.div.style.height = '9px';
-        this.div.style.maxHeight = '20px';
-        this.div.style.borderTop = `${this.value}px solid #000`;
+        this.div.style.height = '20px';
     }
 
     private _onMouseDown(evt: MouseEvent): void {
         const index = this.index;
         if (evt.button === 2) { // rclick, TODO open slider
-            const thickness = this._getNextThickness();
-            console.log('thickness', thickness);
-            this.setValue(this._getNextThickness());
+            this.setValue(this._getNextValue());
             this.setSelectedTool(index);
         }
         if (evt.button === 0) {
+            if(!isValidDashFormat( this.getValue()))
+                this.setValue(this._getNextValue())
             this.setSelectedTool(index);
         }
     }
 
-    private _getNextThickness(): string {
-        let val = Number(this.value) + 1
-        if (val > 10) val = 1
-        return val.toString()
+    private _getNextValue(){
+        let index = values.indexOf(this.getValue())
+        index = (index < 0 || index >= values.length - 1) ? 0 : index + 1
+        return values[index]
     }
 }

@@ -4,8 +4,9 @@ import { lineDrawingToolDefaultOptions as drawingToolDefaultOptions, LineDrawing
 import { IChartApi, ISeriesApi, MouseEventParams, Point, SeriesType,Coordinate} from 'lightweight-charts';
 import { ChartDrawingBase, ChartDrawingBaseProps } from '../../../chart/drawings/chart-drawing-base';
 import { DrawingToolType } from '../../toolbar/tools/drawing-tools';
-import { isPointNearLine, convertAndNormalizeDrawingPointsToPoint } from '../../../common/points';
+import { isPointNearLine, convertAndNormalizeDrawingPointsToPoint, isPointOverStraightLineDrawing } from '../../../common/points';
 import { DrawingPoint } from '../../../common/points';
+import { MAX_TIME } from '../../../common/utils/time';
 
 export class LineHorizontalRayDrawing extends ChartDrawingBase{
 	private static readonly TOTAL_DRAWING_POINTS = 2; // Set the drawing points for this type of drawing.  A box will have 2, a line ray will have 1, etc...
@@ -18,7 +19,7 @@ export class LineHorizontalRayDrawing extends ChartDrawingBase{
 	) {
 		const _finalizeDrawingPoints =()=>{
 			let points = this.drawingPoints;
-			const end = this._chart?.timeScale().getVisibleRange()?.to;
+			const end = MAX_TIME//this._chart?.timeScale().getVisibleRange()?.to;
 			if(end){
 				const time = points[1].time
 				const price = points[1].price;
@@ -56,7 +57,9 @@ export class LineHorizontalRayDrawing extends ChartDrawingBase{
     containsPoint(chart: IChartApi, series: ISeriesApi<SeriesType>, point: Point, points: DrawingPoint[]): boolean {
         const options = this.styleOptions as LineDrawingToolOptions
         const offset = Math.ceil((options?.lineWidth || 1) / 2) + 3;
+
 		return isPointNearLine(chart, series, point, points, offset);
+		//return isPointOverStraightLineDrawing(point, points, chart, series, offset);
 	}
 
 	onHoverWhenSelected(point: Point) : void {

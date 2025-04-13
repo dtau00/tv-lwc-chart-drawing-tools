@@ -5,6 +5,7 @@ import { IChartApi, ISeriesApi, MouseEventParams, Point, SeriesType, Time} from 
 import { ChartDrawingBase, ChartDrawingBaseProps } from '../../../chart/drawings/chart-drawing-base';
 import { DrawingToolType } from '../../toolbar/tools/drawing-tools';
 import { BoxSide, DrawingPoint, getBoxHoverTarget, getCursorForBoxSide, getUpdateBoxPosition, pointToDrawingPoints } from '../../../common/points';
+import { MAX_TIME } from '../../../common/utils/time';
 
 export class RectangleExtendedDrawing extends ChartDrawingBase{
 	private static readonly TOTAL_DRAWING_POINTS = 2; // Set the drawing points for this type of drawing.  A box will have 2, a line ray will have 1, etc...
@@ -21,7 +22,7 @@ export class RectangleExtendedDrawing extends ChartDrawingBase{
 			let p1 = this.drawingPoints[0];
 			let p2 = this.drawingPoints[1];
 			//const end = this._chart?.timeScale().getVisibleRange()?.to;
-			const end = 2067483647 as Time // this is just a really large date
+			const end = MAX_TIME
 			if(end){
 				if(p1.time > p2.time)
 					p1.time = end as Time; 
@@ -76,20 +77,19 @@ export class RectangleExtendedDrawing extends ChartDrawingBase{
 		let dp1 : DrawingPoint, dp2 : DrawingPoint
 
 		if(Number(this.drawingPoints[0].time) > Number(this.drawingPoints[1].time)){
-			dp1 = {
+			dp1 = pointToDrawingPoints(p2, this._chart!, this._series!)
+			dp2 = {
 				time: this.drawingPoints[0].time,
 				price: this._series.coordinateToPrice(p1.y)!
 			}
-			dp2 = pointToDrawingPoints(p2, this._chart!, this._series!)
 		}
 		else{
+			dp1 = pointToDrawingPoints(p1, this._chart!, this._series!)
 			dp2 = {
 				time: this.drawingPoints[1].time,
 				price: this._series.coordinateToPrice(p2.y)!
 			}
-			dp1 = pointToDrawingPoints(p1, this._chart!, this._series!)
 		}
-
 
 		this.view().updatePoints([dp1, dp2]) 
 

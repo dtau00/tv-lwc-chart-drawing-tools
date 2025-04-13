@@ -50,8 +50,8 @@ export function isPointNearLine(
 	const price1 = series.priceToCoordinate(p1.price);
 	const price2 = series.priceToCoordinate(p2.price);
 	const timeScale = chart.timeScale();
-	const x1 = timeScale.timeToCoordinate(p1.time);
-	const x2 = timeScale.timeToCoordinate(p2.time);
+	const x1 = timeToCoordinateMax(p1.time, chart);
+	const x2 = timeToCoordinateMax(p2.time, chart);
 
 	if (x1 === null || x2 === null || price1 === null || price2 === null) return false;
 
@@ -78,6 +78,35 @@ export function isPointNearLine(
 	const distSq = (point.x - closestX) ** 2 + (point.y - closestY) ** 2;
 
 	return distSq <= offset * offset;
+}
+
+export function isPointOverStraightLineDrawing(
+	p: Point,
+	drawingPoints: DrawingPoint[],
+	chart: IChartApi,
+	series: ISeriesApi<SeriesType>,
+	offset: number = 4
+): boolean {
+  const x = p.x
+  const y = p.y
+  const dp1 = drawingPoints[0]
+  const dp2 = drawingPoints[1]
+
+	const x1 = timeToCoordinateMax(dp1.time, chart);
+	const x2 = timeToCoordinateMax(dp2.time, chart);
+	const y1 = series.priceToCoordinate(dp1.price);
+	const y2 = series.priceToCoordinate(dp2.price);
+
+	if (x1 == null || x2 == null || y1 == null || y2 == null) return false;
+
+  const leftX = (x1 < x2 ? x1 : x2) - offset
+  const rightX = (x1 > x2 ? x1 : x2) + offset
+  const bottomY = (y1 > y2 ? y1 : y2) + offset
+  const topY = (y1 < y2 ? y1 : y2) - offset
+
+  console.log(x, y, leftX, rightX, topY, bottomY)
+
+  return (x >= leftX && x <= rightX && y <= topY && y <= bottomY)
 }
 
 function _isWithin2Points(chart: IChartApi, series: ISeriesApi<SeriesType>, point: Point, points: DrawingPoint[], offset: number = 0){
@@ -389,9 +418,11 @@ export function getClosestHandleOnLine(
   const timeScale = chart.timeScale();
   const priceScale = series;
 
-  const x1 = timeScale.timeToCoordinate(p1.time);
+  const x1 = timeToCoordinateMax(p1.time, chart)
+  const x2 = timeToCoordinateMax(p2.time, chart)
+  //const x1 = timeScale.timeToCoordinate(p1.time);
   const y1 = priceScale.priceToCoordinate(p1.price);
-  const x2 = timeScale.timeToCoordinate(p2.time);
+ // const x2 = timeScale.timeToCoordinate(p2.time);
   const y2 = priceScale.priceToCoordinate(p2.price);
 
   if (x1 === null || y1 === null || x2 === null || y2 === null) return null;

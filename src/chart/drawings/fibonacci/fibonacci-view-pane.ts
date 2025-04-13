@@ -6,6 +6,7 @@ import { PaneViewBase } from '../../../chart/drawings/drawing-pane-view-base';
 import { CanvasRenderingTarget2D } from 'fancy-canvas';
 import { IPrimitivePaneRenderer } from 'lightweight-charts';
 import { ViewPoint } from '../../../common/points';
+import { timeToCoordinateMax } from '../../../common/utils/time';
 
 const FIB_LEVELS = [0, 0.236, 0.382, 0.5, 0.618, 0.786, 1];
 
@@ -81,12 +82,14 @@ export class FibonacciPaneView extends PaneViewBase implements IPrimitivePaneVie
         const p2 = isReverseChronological ? rawPoint2 : rawPoint1;
     
         this._p1 = {
-            x: timeScale.timeToCoordinate(p1.time),
+            //x: timeScale.timeToCoordinate(p1.time),
+			x: timeToCoordinateMax(p1.time, chart),
             y: series.priceToCoordinate(p1.price),
         };
     
         this._p2 = {
-            x: timeScale.timeToCoordinate(p2.time),
+            //x: timeScale.timeToCoordinate(p2.time),
+			x: timeToCoordinateMax(p2.time, chart),
             y: series.priceToCoordinate(p2.price),
         };
     }

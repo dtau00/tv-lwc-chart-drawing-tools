@@ -5,6 +5,7 @@ import { Coordinate, IPrimitivePaneView, IPrimitivePaneRenderer } from 'lightwei
 import { ViewPoint } from '../../../../common/points';
 import { PaneViewBase } from '../../drawing-pane-view-base';
 import { CanvasRenderingTarget2D } from 'fancy-canvas';
+import { timeToCoordinateMax } from '../../../../common/utils/time';
 
 class LinePaneRenderer implements IPrimitivePaneRenderer {
 	private _p1: ViewPoint;
@@ -53,13 +54,29 @@ export class LinePaneView extends PaneViewBase implements IPrimitivePaneView {
 		this._source = source;
 	}
 
+	/*
 	update() {
+		const chart = this._source.chart;
 		const series = this._source.series;
 		const y1 = series.priceToCoordinate(this._source.points[0].price);
 		const y2 = series.priceToCoordinate(this._source.points[1].price);
 		const timeScale = this._source.chart.timeScale();
 		const x1 = timeScale.timeToCoordinate(this._source.points[0].time);
 		const x2 = timeScale.timeToCoordinate(this._source.points[1].time);
+        if(x1 !== null && y1 !== null && x2 !== null && y2 !== null){
+            this._p1 = { x: Math.round(x1) as Coordinate, y: Math.round(y1) as Coordinate };
+            this._p2 = { x: Math.round(x2) as Coordinate, y: Math.round(y2) as Coordinate };
+        }
+	}
+	*/
+
+	update() {
+		const chart = this._source.chart;
+		const series = this._source.series;
+		const y1 = series.priceToCoordinate(this._source.points[0].price);
+		const y2 = series.priceToCoordinate(this._source.points[1].price);
+		const x1 = timeToCoordinateMax(this._source.points[0].time, chart);
+		const x2 = timeToCoordinateMax(this._source.points[1].time, chart);
         if(x1 !== null && y1 !== null && x2 !== null && y2 !== null){
             this._p1 = { x: Math.round(x1) as Coordinate, y: Math.round(y1) as Coordinate };
             this._p2 = { x: Math.round(x2) as Coordinate, y: Math.round(y2) as Coordinate };

@@ -6,6 +6,7 @@ import { ChartDrawingBase, ChartDrawingBaseProps } from '../../../chart/drawings
 import { DrawingToolType } from '../../toolbar/tools/drawing-tools';
 import { isPointNearLine, convertAndNormalizeDrawingPointsToPoint } from '../../../common/points';
 import { DrawingPoint } from '../../../common/points';
+import { MAX_TIME } from '../../../common/utils/time';
 
 export class LineHorizontalDrawing extends ChartDrawingBase{
 	private static readonly TOTAL_DRAWING_POINTS = 2; // Set the drawing points for this type of drawing.  A box will have 2, a line ray will have 1, etc...
@@ -19,8 +20,8 @@ export class LineHorizontalDrawing extends ChartDrawingBase{
 
 		const _finalizeDrawingPoints =()=>{
 			const price =  this.drawingPoints[1].price
-			const end = this._chart?.timeScale().getVisibleRange()?.to;
-			const start = this._chart?.timeScale().getVisibleRange()?.from;
+			const end = MAX_TIME//this._chart?.timeScale().getVisibleRange()?.to;
+			const start = 0//this._chart?.timeScale().getVisibleRange()?.from;
 			if(end && start){
 				this.overrideDrawingPoints([{time: start, price}, {time: end, price}]);
 			}

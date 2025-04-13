@@ -6,6 +6,7 @@ import { IChartApi, ISeriesApi, SeriesType } from 'lightweight-charts';
 import { ViewBase } from '../../../chart/drawings/drawing-view-base';
 import { DrawingToolType } from '../../toolbar/tools/drawing-tools';
 import { MouseEventParams } from 'lightweight-charts';
+import { MAX_TIME } from '../../../common/utils/time';
 
 export class LineHorizontalRay extends ViewBase {
 	constructor(
@@ -34,7 +35,7 @@ export class LineHorizontalRay extends ViewBase {
 		if(!this.points[0])
 			return
 		
-		const end = this._chart?.timeScale().getVisibleRange()?.to;
+		const end = MAX_TIME//this._chart?.timeScale().getVisibleRange()?.to;
 		if(end){
 			if(this.points[0].time > this.points[1].time){
 				this.points[0] = {time: end, price: p.price};

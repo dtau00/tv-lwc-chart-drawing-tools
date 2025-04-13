@@ -2,9 +2,10 @@ import { LinePaneView as PaneView} from '../common/view-panes/line-view-pane';
 import { LineDrawingToolOptions as DrawingOptions } from '../common/options/line-options';
 
 import { DrawingPoint } from '../../../common/points';
-import { IChartApi, ISeriesApi, MouseEventParams, SeriesType } from 'lightweight-charts';
+import { IChartApi, ISeriesApi, MouseEventParams, SeriesType, Time } from 'lightweight-charts';
 import { ViewBase } from '../../../chart/drawings/drawing-view-base';
 import { DrawingToolType } from '../../toolbar/tools/drawing-tools';
+import { MAX_TIME } from '../../../common/utils/time';
 
 export class LineHorizontal extends ViewBase {
 	constructor(
@@ -33,8 +34,8 @@ export class LineHorizontal extends ViewBase {
 		if(!this.points[0])
 			return
 		
-		const end = this._chart?.timeScale().getVisibleRange()?.to;
-		const start = this._chart?.timeScale().getVisibleRange()?.from;
+		const end = MAX_TIME //this._chart?.timeScale().getVisibleRange()?.to;
+		const start = 1 as Time //this._chart?.timeScale().getVisibleRange()?.from;
 		if(end && start){
 			this.points[0] = {time: start, price: p.price};
 			this.points[1] = {time: end, price: p.price};

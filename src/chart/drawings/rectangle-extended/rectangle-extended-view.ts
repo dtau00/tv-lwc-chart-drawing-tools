@@ -5,6 +5,7 @@ import { DrawingPoint } from '../../../common/points';
 import { IChartApi, ISeriesApi, MouseEventParams, SeriesType, Time } from 'lightweight-charts';
 import { ViewBase } from '../../../chart/drawings/drawing-view-base';
 import { DrawingToolType } from '../../toolbar/tools/drawing-tools';
+import { MAX_TIME } from '../../../common/utils/time';
 
 export class RectangleExtendedView extends ViewBase {
 	constructor(
@@ -36,7 +37,7 @@ export class RectangleExtendedView extends ViewBase {
 
 		this.points[0] = p;
 		let p2 = this.points[1];	
-		const end = 2067483647 as Time // this is just a really large date
+		const end =  MAX_TIME
 		this.points[1] = {time: end, price: p2.price};
 		/*
 		const end = this.chart.timeScale().getVisibleRange()?.to

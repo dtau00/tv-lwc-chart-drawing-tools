@@ -1,5 +1,7 @@
 import { Time, isUTCTimestamp, isBusinessDay, Coordinate, IChartApi, Logical } from 'lightweight-charts';
 
+export const MAX_TIME = 2167483647 as Time // its not actually max, just very large
+
 export function convertTime(t: Time): number {
 	if (isUTCTimestamp(t)) return t * 1000;
 	if (isBusinessDay(t)) return new Date(t.year, t.month, t.day).valueOf();
@@ -75,3 +77,4 @@ export function coordinateToTimeMax(coord: Coordinate, chart: IChartApi): Time |
 
 	return time
 }
+

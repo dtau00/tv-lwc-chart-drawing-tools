@@ -156,6 +156,15 @@ export class ChartDrawingsManager {
         console.log("all loaded drawings ", this._drawings);
     }
 
+    public setTextForSelectedDrawing(){
+        if(this._selectedDrawing){
+            const res = prompt('enter text for selected drawing',this._selectedDrawing.text)
+            if(res !== null && res !== undefined){
+                this._selectedDrawing.text = res
+            }
+        }
+    }
+
     // TODO this is messy, can be cleaned up
     public removeDrawingsForCurrentChartSymbol(){
         if(this._currentChartContainer){

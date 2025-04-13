@@ -105,6 +105,19 @@ export abstract class ChartDrawingBase implements IChartDrawing {
     set drawingPoints(points: DrawingPoint[]) { this._baseProps.drawingPoints = points; }
 
     get text(): string { return this._baseProps.text; }
+    set text(text: string) { 
+        // TODo SUUUPER hacky fix this
+        interface MyObjectWithText {
+            text: string;
+            // add other fields if needed
+        }
+
+        this._baseProps.text = text; 
+        let o = this._baseProps.styleOptions as MyObjectWithText
+        o.text = text
+        //this._baseProps.styleOptions.text = text
+        this.drawingView?.setBaseStyleOptions({text})
+    }
     get secondsPerBar(): number { return this._baseProps.secondsPerBar; }
     get isSelected(): boolean { return this._isSelected; }
     set isSelected(selected : boolean){ this._isSelected = selected; }

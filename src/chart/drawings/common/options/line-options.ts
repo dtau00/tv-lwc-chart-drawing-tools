@@ -9,6 +9,7 @@ export interface LineDrawingToolOptions {
 	labelColor: string;
 	labelTextColor: string;
 	showLabels: boolean;
+	text: string;
 	priceLabelFormatter: (price: number) => string;
 	timeLabelFormatter: (time: Time) => string;
 }
@@ -22,6 +23,7 @@ export const lineDrawingToolDefaultOptions: LineDrawingToolOptions = {
 	labelColor: 'rgb(50, 147, 200)',
 	labelTextColor: 'white',
 	showLabels: false,
+	text: '',
 	priceLabelFormatter: (price: number) => price.toFixed(2),
 	timeLabelFormatter: (time: Time) => {
 		if (typeof time == 'string') return time;
@@ -41,6 +43,7 @@ export function normalizeLineDrawingToolOptions(
 		lineWidth: Number(raw.lineWidth ?? lineDrawingToolDefaultOptions.lineWidth),
 		labelColor: typeof raw.labelColor === 'string' ? raw.labelColor : lineDrawingToolDefaultOptions.labelColor,
 		lineDash: typeof raw.lineDash === 'string' ? raw.lineDash : lineDrawingToolDefaultOptions.lineDash,
+		text: typeof raw.text === 'string' ? raw.text : lineDrawingToolDefaultOptions.text,
 		labelTextColor:
 			typeof raw.labelTextColor === 'string' ? raw.labelTextColor : lineDrawingToolDefaultOptions.labelTextColor,
 		showLabels:

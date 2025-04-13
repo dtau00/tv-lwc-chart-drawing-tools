@@ -15,6 +15,7 @@ export enum DrawingToolType {
     //Text = 'text',
     //Circle = 'circle',
     Fibonacci = 'fibonacci',
+    Text = 'text',
     Remove = 'remove',
     RemoveAll = 'remove-all',
     None = 'none'  // For when no tool is selected
@@ -80,6 +81,12 @@ export const AVAILABLE_TOOLS: DrawingToolInfo[] = [
         name: 'fibonacci',
         icon: '୭',
         description: 'Draw Fibonacci retracement levels'
+    },
+    {
+        type: DrawingToolType.Text,
+        name: 'text',
+        icon: 'T',
+        description: 'Set text for drawing'
     },
     {
         type: DrawingToolType.Remove,

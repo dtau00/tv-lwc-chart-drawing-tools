@@ -50,7 +50,7 @@ export class LineHorizontalRayDrawing extends ChartDrawingBase{
 	// TODO dont make this hard coded
 	// set the style when drawing is selected
 	select(): void {
-		this.view().applyOptions({ lineColor: 'rgba(100, 100, 100, 0.5)', })
+		this.view().applyOptions({ lineColor: 'rgba(100, 100, 100, 0.5)' })
 		super.selected();
 	}
 

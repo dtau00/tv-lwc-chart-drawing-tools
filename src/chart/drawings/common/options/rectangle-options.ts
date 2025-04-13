@@ -7,6 +7,7 @@ export interface RectangleDrawingToolOptions {
 	labelColor: string;
 	labelTextColor: string;
 	showLabels: boolean;
+	text: string;
 	priceLabelFormatter: (price: number) => string;
 	timeLabelFormatter: (time: Time) => string;
 }
@@ -18,6 +19,7 @@ export const rectangleDrawingToolDefaultOptions: RectangleDrawingToolOptions = {
 	labelColor: 'rgb(50, 147, 200)',
 	labelTextColor: 'white',
 	showLabels: false,
+	text: '',
 	priceLabelFormatter: (price: number) => price.toFixed(2),
 	timeLabelFormatter: (time: Time) => {
 		if (typeof time == 'string') return time;
@@ -47,7 +49,7 @@ export function normalizeRectangleDrawingToolOptions(
 		labelTextColor: typeof raw.labelTextColor === 'string'
 			? raw.labelTextColor
 			: rectangleDrawingToolDefaultOptions.labelTextColor,
-
+		text: typeof raw.text === 'string' ? raw.text : rectangleDrawingToolDefaultOptions.text,
 		showLabels:
 			typeof raw.showLabels === 'boolean'
 				? raw.showLabels

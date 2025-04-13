@@ -13,6 +13,7 @@ import { ToolLineHorizontal } from '../../chart/toolbar/tools/tool/tool-line-hor
 import { ToolLineVertical } from '../../chart/toolbar/tools/tool/tool-line-vertical.ts';
 import { ToolFibonacci } from '../../chart/toolbar/tools/tool/tool-fibonacci.ts';
 import { ToolRemoveAll } from './tools/tool/tool-remove-all.ts';
+import { ToolText } from './tools/tool/tool-text.ts';
 // This class is the main class for the chart drawing tools.
 
 export class ChartDrawingsToolbar {
@@ -62,6 +63,7 @@ export class ChartDrawingsToolbar {
 		this._toolClickMap = {
 			[DrawingToolType.Remove]: () => this._onClickRemoveDrawingTool(),
 			[DrawingToolType.RemoveAll]: () => this._onClickRemoveAllDrawingTool(),
+			[DrawingToolType.Text]: () => this._onClickTextDrawingTool(),
 		};
 	}
 
@@ -97,6 +99,7 @@ export class ChartDrawingsToolbar {
 		this._toolFactory.set(DrawingToolType.HorizontalLineRay, ToolLineHorizontalRay);
 		this._toolFactory.set(DrawingToolType.HorizontalLine, ToolLineHorizontal);
 		this._toolFactory.set(DrawingToolType.VerticalLine, ToolLineVertical);
+		this._toolFactory.set(DrawingToolType.Text, ToolText);
 		this._toolFactory.set(DrawingToolType.Remove, ToolRemove);
 		this._toolFactory.set(DrawingToolType.RemoveAll, ToolRemoveAll);
 	}
@@ -132,6 +135,11 @@ export class ChartDrawingsToolbar {
 			}
 			else if(tool.type === DrawingToolType.RemoveAll){
 				const t = new ToolRemoveAll(tool.name, tool.description, tool.icon, tool.type);
+				const button = t.addToolButtonToContainer(this._drawingsToolbarContainer!);
+				this._tools.set(tool.type, t);
+			}
+			else if(tool.type === DrawingToolType.Text){
+				const t = new ToolText(tool.name, tool.description, tool.icon, tool.type);
 				const button = t.addToolButtonToContainer(this._drawingsToolbarContainer!);
 				this._tools.set(tool.type, t);
 			}
@@ -258,6 +266,11 @@ export class ChartDrawingsToolbar {
 			this._chartDrawingsManager.removeSelectedDrawing();
 		}
 	}
+
+	private _onClickTextDrawingTool(): void {
+		this._chartDrawingsManager.setTextForSelectedDrawing();
+	}
+
 
 	// selecting new drawing tool
 	// Make sure the clicks bubble up back to here so we can adjust the toolbar

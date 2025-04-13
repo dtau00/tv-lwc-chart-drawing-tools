@@ -1,7 +1,5 @@
 v1
 --
-text
-line styling
 
 rectangle line (not fill)
 circle
@@ -14,6 +12,10 @@ seperate mouse handlers for chart manager, use DI?  then we'll start a lot of pr
 check dispsol of all event handlers (tools, subtools, charts, etc..)
 properly handle historical days for secondsperbar
 
+fix lineStyle type, type it correctly
+make sure to check view.points when looking for selection
+setting, chaging, saving styling between view and drawing baseprops is confusing
+fix text adding to style.  super hacky. maybe have a single base drawing options we can cast as
 v2
 --
 add line styling

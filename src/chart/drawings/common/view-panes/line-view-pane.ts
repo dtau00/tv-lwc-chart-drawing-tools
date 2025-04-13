@@ -14,13 +14,15 @@ class LinePaneRenderer implements IPrimitivePaneRenderer {
 	private _lineColor: string;
 	private _lineWidth: number;
 	private _lineDash: string;
+	private _text: string;
 
-	constructor(p1: ViewPoint, p2: ViewPoint, lineColor: string, lineWidth: number, lineDash: string) {
+	constructor(p1: ViewPoint, p2: ViewPoint, lineColor: string, lineWidth: number, lineDash: string, text: string) {
 		this._p1 = p1;
 		this._p2 = p2;
 		this._lineColor = lineColor;
 		this._lineWidth = lineWidth;
 		this._lineDash = lineDash;
+		this._text = text
 	}
 
 	draw(target: CanvasRenderingTarget2D) {
@@ -42,6 +44,8 @@ class LinePaneRenderer implements IPrimitivePaneRenderer {
 
 			// draw ctx
 			ctx.beginPath();
+
+			// TODO hack, type this correctly
 			if(isValidDashFormat(this._lineDash)){				
 				const dash: [number, number] = JSON.parse(this._lineDash);
 				ctx.setLineDash(dash);
@@ -50,6 +54,13 @@ class LinePaneRenderer implements IPrimitivePaneRenderer {
 			ctx.lineTo(this._p2.x * xRatio, this._p2.y * yRatio);
 			ctx.stroke();
 			ctx.restore();
+
+			// add text to ctx
+			if(this._text){
+				ctx.font = "12px Arial"; 
+				ctx.fillStyle = this._lineColor
+				ctx.fillText(this._text, this._p1.x * xRatio,(this._p1.y * yRatio) - 4);
+			}
 		});
 	}
 }
@@ -100,7 +111,8 @@ export class LinePaneView extends PaneViewBase implements IPrimitivePaneView {
 			this._p2,       
 			options.lineColor,
 			options.lineWidth,
-			options.lineDash
+			options.lineDash,
+			options.text
 		);
 	}
 }

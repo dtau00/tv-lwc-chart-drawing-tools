@@ -43,7 +43,7 @@ export class SubToolOpacity extends SubTool {
 
     private _getNextOpacity(): string {
         let val = Number(this.value) + 0.05
-        if (val > 1) val = 0
+        if (val > 1) val = .20
         return val.toString()
     }
 }

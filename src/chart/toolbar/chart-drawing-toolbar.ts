@@ -12,6 +12,7 @@ import { ToolLineHorizontalRay } from '../../chart/toolbar/tools/tool/tool-line-
 import { ToolLineHorizontal } from '../../chart/toolbar/tools/tool/tool-line-horizontal.ts';
 import { ToolLineVertical } from '../../chart/toolbar/tools/tool/tool-line-vertical.ts';
 import { ToolFibonacci } from '../../chart/toolbar/tools/tool/tool-fibonacci.ts';
+import { ToolRemoveAll } from './tools/tool/tool-remove-all.ts';
 // This class is the main class for the chart drawing tools.
 
 export class ChartDrawingsToolbar {
@@ -60,6 +61,7 @@ export class ChartDrawingsToolbar {
 	private _initializeToolClickMap(){
 		this._toolClickMap = {
 			[DrawingToolType.Remove]: () => this._onClickRemoveDrawingTool(),
+			[DrawingToolType.RemoveAll]: () => this._onClickRemoveAllDrawingTool(),
 		};
 	}
 
@@ -96,6 +98,7 @@ export class ChartDrawingsToolbar {
 		this._toolFactory.set(DrawingToolType.HorizontalLine, ToolLineHorizontal);
 		this._toolFactory.set(DrawingToolType.VerticalLine, ToolLineVertical);
 		this._toolFactory.set(DrawingToolType.Remove, ToolRemove);
+		this._toolFactory.set(DrawingToolType.RemoveAll, ToolRemoveAll);
 	}
 
 	private _toolClicked(toolType: DrawingToolType){
@@ -120,25 +123,24 @@ export class ChartDrawingsToolbar {
 			if(!toolClass || tool.type === DrawingToolType.None) 
 				return;
 
-			if(tool.type === DrawingToolType.Remove)
-				this._initializeRemoveTool(tool);
-			else
-				this._initializeStandardTool(tool, toolClass);
+			// TODO clean this up 
+			let t = null
+			if(tool.type === DrawingToolType.Remove){
+				const t = new ToolRemove(tool.name, tool.description, tool.icon, tool.type);
+				const button = t.addToolButtonToContainer(this._drawingsToolbarContainer!);
+				this._tools.set(tool.type, t);
+			}
+			else if(tool.type === DrawingToolType.RemoveAll){
+				const t = new ToolRemoveAll(tool.name, tool.description, tool.icon, tool.type);
+				const button = t.addToolButtonToContainer(this._drawingsToolbarContainer!);
+				this._tools.set(tool.type, t);
+			}
+			else{
+				const t = new toolClass(tool.name, tool.description, tool.icon, tool.type);
+				const button = t.addToolButtonToContainer(this._drawingsToolbarContainer!);
+				this._tools.set(tool.type, t);
+			}
 		});
-	}
-
-	private _initializeRemoveTool(tool: DrawingToolInfo): void {
-		const t = new ToolRemove(tool.name, tool.description, tool.icon, tool.type);
-		const button = t.addToolButtonToContainer(this._drawingsToolbarContainer!);
-		this._tools.set(tool.type, t);
-		//this._toolButtons.set(button, clickHandler);
-	}
-
-	private _initializeStandardTool(tool: DrawingToolInfo, toolClass: new (...args: any[]) => Tool): void {
-		const t = new toolClass(tool.name, tool.description, tool.icon, tool.type);
-		const button = t.addToolButtonToContainer(this._drawingsToolbarContainer!);
-		this._tools.set(tool.type, t);
-		//this._toolButtons.set(button, clickHandler);
 	}
 
 	private _populateSubToolbar(toolType: DrawingToolType): void {
@@ -247,6 +249,14 @@ export class ChartDrawingsToolbar {
 	// remove/delete drawing
 	private _onClickRemoveDrawingTool(): void {
 		this._chartDrawingsManager.removeSelectedDrawing();
+	}
+
+	// remove/delete drawing
+	private _onClickRemoveAllDrawingTool(): void {
+		if(confirm('Are you sure you want to remove all drawings from this symbol?')){
+			this._chartDrawingsManager.removeDrawingsForCurrentChartSymbol();
+			this._chartDrawingsManager.removeSelectedDrawing();
+		}
 	}
 
 	// selecting new drawing tool

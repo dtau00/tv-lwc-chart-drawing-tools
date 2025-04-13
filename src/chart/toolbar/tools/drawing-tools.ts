@@ -16,6 +16,7 @@ export enum DrawingToolType {
     //Circle = 'circle',
     Fibonacci = 'fibonacci',
     Remove = 'remove',
+    RemoveAll = 'remove-all',
     None = 'none'  // For when no tool is selected
 }
 
@@ -83,8 +84,14 @@ export const AVAILABLE_TOOLS: DrawingToolInfo[] = [
     {
         type: DrawingToolType.Remove,
         name: 'remove',
+        icon: '🗑️',
+        description: 'Remove the selected drawing'
+    },
+    {
+        type: DrawingToolType.RemoveAll,
+        name: 'remove',
         icon: '❌',
-        description: 'Remove the last drawing'
+        description: 'Remove all drawings for the symbol'
     },
 ];
 

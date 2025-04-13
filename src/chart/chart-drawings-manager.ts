@@ -156,6 +156,23 @@ export class ChartDrawingsManager {
         console.log("all loaded drawings ", this._drawings);
     }
 
+    // TODO this is messy, can be cleaned up
+    public removeDrawingsForCurrentChartSymbol(){
+        if(this._currentChartContainer){
+            const symbolName = this._currentChartContainer.symbolName
+            const drawings = this._drawings.get(symbolName) || [];
+            for(const drawing of drawings){
+                for(const chart of this._chartContainers.values()){
+                    if(chart.symbolName === symbolName)
+                        chart.remPrim(drawing.drawingView as PluginBase)
+               }
+                drawing.remove()
+            }
+            this._drawings.set(symbolName, []);
+            this.saveDrawings(symbolName);
+        }
+    }
+
     public removeSelectedDrawing(): void {
        if(!this._selectedDrawing)
             return;

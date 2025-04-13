@@ -6,6 +6,7 @@ import SubTool from "../sub-tools/sub-tool-base";
 import { ConfigStorage } from "../../../common/storage";
 import { toolKeyName } from "../../../common/tool-key";
 import { DrawingToolType } from "./drawing-tools";
+import { eventBus, ButtonEvents, createToolButtonEventDetails } from "../../../common/event-bus";
 
 abstract class Tool implements ITool {
     toolType: DrawingToolType;
@@ -13,9 +14,8 @@ abstract class Tool implements ITool {
     description: string;
     icon: string;
     button: HTMLDivElement;
-    private _immediatelyStartDrawing: boolean; // immediately starts drawing after first chart is selected.  Often used for single user input drawings.
+    private _immediatelyStartDrawing: boolean; // immediately starts drawing after first chart is selected.  Often used for single user input drawings, like vertical line.
     protected subTools: SubTool[] = [];
-    private _listener: (evt: MouseEvent) => void;
 
     constructor(name: string, description: string, icon: string, toolType: DrawingToolType, immediatelyStartDrawing? : boolean) {
         this.name = name;
@@ -23,39 +23,44 @@ abstract class Tool implements ITool {
         this.icon = icon;
         this.toolType = toolType;
         this._immediatelyStartDrawing = immediatelyStartDrawing ?? false
+
+        this.onClick = this.onClick.bind(this);
     }
 
-    get immediatelyStartDrawing(){
-        return this._immediatelyStartDrawing
-    }
+    get immediatelyStartDrawing(){ return this._immediatelyStartDrawing }
 
     abstract getNewDrawingObject(chart: IChartApi, series: ISeriesApi<SeriesType>, symbolName: string): any;
     abstract setSubToolbarButtons(container: HTMLDivElement): HTMLDivElement[];
 
-    setToolbarButton(container: HTMLDivElement, listener?: (evt: MouseEvent) => void): HTMLDivElement {
-        this._listener = listener || (() => void 0);
-        this.button = createToolbarButton(this.name, this.description, this.icon, 'div', (evt: MouseEvent) => this._listener(evt), 'click', container!);
+    dispose(): void {
+        this.button.removeEventListener('click', this.onClick);
+        this.disposeSubButtons()
+    }
+
+    disposeSubButtons(): void {
+        this.subTools.forEach(subTool => subTool.dispose());
+    }
+
+    addToolButtonToContainer(container: HTMLDivElement): HTMLDivElement {
+        this.button = createToolbarButton(this.name, this.description, this.icon, 'div', container!);
+        this.button.addEventListener('click', this.onClick)
         return this.button;
     }
 
-    dispose(): void {
-        this.subTools.forEach(subTool => subTool.dispose());
-        this.button.removeEventListener('click', this._listener);
-    }
-
-    setProps(value?: any): void {
-
-    }
-
     valueUpdatedCallback = (value: any) => {
-        this._saveProps(value);
+        this._setToolStyleProperties(value);
+    }
+
+    protected onClick(evt: MouseEvent): void {
+        console.log('tool button onClick, sending event', this.toolType)
+        eventBus.dispatchEvent(new CustomEvent(ButtonEvents.ToolClicked, createToolButtonEventDetails(this.toolType)))
     }
 
     private _loadProps(): void {
         //this.options = ConfigStorage.loadConfig(this._keyName(), this.options);
     }
 
-    private _saveProps(value: any): void {
+    private _setToolStyleProperties(value: any): void {
         const keyName = toolKeyName(this.name);
         let overrideOptions = ConfigStorage.loadConfig(keyName, {}) || {};
         overrideOptions[value.property] = value.value;

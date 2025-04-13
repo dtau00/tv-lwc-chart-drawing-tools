@@ -43,7 +43,7 @@ export const AVAILABLE_TOOLS: DrawingToolInfo[] = [
     {
         type: DrawingToolType.HorizontalLineRay,
         name: 'horizontal-line-ray',
-        icon: ':-',
+        icon: '→',
         description: 'Draw horizontal line rays on the chart'
     },
     {

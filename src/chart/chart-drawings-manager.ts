@@ -15,6 +15,7 @@ import { LineHorizontalDrawing } from './drawings/line-horizontal/line-horizonta
 import { LineVerticalDrawing } from './drawings/line-vertical/line-vertical-drawing.ts';
 import { LineHorizontalRayDrawing } from './drawings/line-horizontal-ray/line-horizontal-ray-drawing.ts';
 import { FibonacciDrawing } from './drawings/fibonacci/fibonacci-drawing.ts';
+
 // manage charts
     // when chart is created, register it with ChartManager
     // when chart is destroyed, unregister it from ChartManager
@@ -56,7 +57,6 @@ export class ChartDrawingsManager {
     private constructor() {
         this._charts = new Map();
         this._drawings = new Map();
-
         this._listenForChartEvents();
     }
 
@@ -211,6 +211,14 @@ export class ChartDrawingsManager {
         this.unselectDrawing();
     }
 
+    public subToolClicked(): void{
+        if(this._selectedDrawing){  
+            this._selectedDrawing.setBaseStyleOptionsFromConfig();
+            if(this._selectedDrawing.isCompleted)
+             this.saveDrawings(this._selectedDrawing.symbolName);
+        }
+    }
+
     private _addPrimativeToChartContainers(symbolName: string, primative: PluginBase): void {
         const containers = Array.from(this._chartContainers.values()).filter(c => c.symbolName === symbolName);
         for(const container of containers){
@@ -225,7 +233,7 @@ export class ChartDrawingsManager {
     }
 
     private _emitOpenToolbarEvent(chartId: string, toolType: DrawingToolType): void {
-        eventBus.dispatchEvent(new CustomEvent(ChartEvents.SetToolbarTool, { detail: {chartId: chartId, toolType: toolType} }));
+        eventBus.dispatchEvent(new CustomEvent(ChartEvents.SetToolbar, { detail: {chartId: chartId, toolType: toolType} }));
     }
 
     private _listenForChartEvents=()=> {
@@ -240,17 +248,6 @@ export class ChartDrawingsManager {
             }
             this._creatingNewDrawingFromToolbar = false;
             this.unselectDrawing();
-        });
-
-        eventBus.addEventListener(ChartEvents.SubToolSet, (event: Event) => {
-            const customEvent = event as CustomEvent<string>;
-            console.log("subtool set", customEvent.detail);
-            if(this._selectedDrawing){  
-                this._selectedDrawing.setBaseStyleOptionsFromConfig();
-                if(this._selectedDrawing.isCompleted)
-                 this.saveDrawings(this._selectedDrawing.symbolName);
-                //this._addPrimativeToChartContainers(this._selectedDrawing.symbolName, this._selectedDrawing.drawingView as PluginBase);
-            }
         });
     }
 

@@ -3,8 +3,9 @@ import { DrawingSubTools, DrawingSubToolType } from "./drawing-sub-tools";
 import { unselectAllDivsForGroup } from "../../../common/utils/html.ts";
 import { createSubToolbarButton, createToolbarButton, ToolbarButton } from "../../../chart/toolbar/common.ts";
 import ISubTool from "./sub-tool-interface";
-import { ChartEvents, eventBus } from '../../../common/event-bus';
+import { ButtonEvents, ChartEvents, createSubToolButtonEventDetails, eventBus } from '../../../common/event-bus';
 import { subToolKeyName, subToolValueKeyName } from "../../../common/tool-key.ts";
+import { DrawingToolType } from "../tools/drawing-tools.ts";
 
 abstract class SubTool implements ISubTool {
     private _div: HTMLDivElement | HTMLInputElement;
@@ -45,12 +46,11 @@ abstract class SubTool implements ISubTool {
         this.setValue(this._value, false);
     }
 
-    abstract updateDiv(): void;
     abstract init(): void;
-    abstract dispose(): void;
+    abstract dispose(): void
+    abstract updateDiv(): void;;
     
-
-    setToolbarButton(container: HTMLDivElement): void {
+    addToolButtonToContainer(container: HTMLDivElement): void {
         this._container = container;
         this._div = createSubToolbarButton(this._name, this._description, this._icon, this._buttonType, container!);
         this.updateDiv()
@@ -68,16 +68,6 @@ abstract class SubTool implements ISubTool {
         this.updateDiv();
     }
 
-    initiateValueUpdatedCallback = (): void => {
-        if (this._valueUpdatedCallback) {
-            const val = {
-                property: this._propertyName,
-                value: this.value,
-            }
-            this._valueUpdatedCallback(val);
-        }
-    }
-
     public setSelectedStyling(): void {
         const key = this._subToolKeyName()
         const selectIndex = Number(localStorage.getItem(key))
@@ -87,19 +77,44 @@ abstract class SubTool implements ISubTool {
     }
 
     protected setSelectedTool(index?: number): void {
-        localStorage.setItem(this._subToolKeyName(), index?.toString() || '');
-        unselectAllDivsForGroup(this._container!, [this.type]);
-        this.div.classList.add('selected');
-        this.initiateValueUpdatedCallback()
-        eventBus.dispatchEvent(new CustomEvent(ChartEvents.SubToolSet, { detail: { type : this.type, index : this._index, name : this._name, property : this._propertyName } }));
+        this._setSelectedSubToolStylingForTool(); // set styling
+        this._saveSelectedSubToolIndex(index!); // save the selected index for future ref
+        this._initiateValueUpdatedCallback(); // send the value back to the parent tool
+        const eventDetails = createSubToolButtonEventDetails(DrawingToolType[this._parentTool], this._type, this._name, this._propertyName, this._index)
+        eventBus.dispatchEvent(new CustomEvent(ButtonEvents.SubToolClicked, eventDetails));
     }
 
-    protected _saveValue(value: any): void {
+    // TODO its a bit wierd to do this here
+    private _setSelectedSubToolStylingForTool(){
+        unselectAllDivsForGroup(this._container!, [this.type]);
+        this.div.classList.add('selected');
+    }
+
+    // send selected values back to parent tool
+    private _initiateValueUpdatedCallback = (): void => {
+        if (this._valueUpdatedCallback) {
+            const val = {
+                property: this._propertyName,
+                value: this.value,
+            }
+            this._valueUpdatedCallback(val);
+        }
+    }
+
+    private _saveSelectedSubToolIndex(index : number){
+        localStorage.setItem(this._subToolKeyName(), index.toString() || '');
+    }
+
+    private _saveValue(value: any): void {
         this._value = value;
         ConfigStorage.saveConfig(this._keyName(), this._value);
     }
 
-    private _getDefaultValue(): void {
+    private _loadValue(): void {
+        this._value = ConfigStorage.loadConfig(this._keyName(), this._value);
+    }
+
+    private _getDefaultValue(): any {
         let val 
         let drawingSubTool = DrawingSubTools.get(this._type);
         if (drawingSubTool)
@@ -114,12 +129,5 @@ abstract class SubTool implements ISubTool {
     private _subToolKeyName(): string {
         return subToolKeyName(this._parentTool,this._propertyName)
     }
-
-    private _loadValue(): void {
-        this._value = ConfigStorage.loadConfig(this._keyName(), this._value);
-    }
 }
 export default SubTool;
-
-
-

@@ -5,7 +5,7 @@ import { ToolLine } from '../../chart/toolbar/tools/tool/tool-line.ts';
 import { ToolRectangle } from '../../chart/toolbar/tools/tool/tool-rectangle.ts';
 import { ToolRemove } from '../../chart/toolbar/tools/tool/tool-remove.ts';
 import Tool from '../toolbar/tools/tool-base.ts';
-import { ChartEvents, eventBus } from '../../common/event-bus';
+import { ButtonEvents, ChartEvents, eventBus, ToolButtonEventDetails } from '../../common/event-bus';
 import { ToolRectangleExtended } from '../../chart/toolbar/tools/tool/tool-rectangle-extended.ts';
 import { ChartDrawingBase } from '../drawings/chart-drawing-base.ts';
 import { ToolLineHorizontalRay } from '../../chart/toolbar/tools/tool/tool-line-horizontal-ray.ts';
@@ -23,6 +23,8 @@ export class ChartDrawingsToolbar {
 	private _tools: Map<DrawingToolType, Tool> = new Map();
 	private _toolFactory: Map<DrawingToolType, new (...args: any[]) => Tool> = new Map();
 	private _toolButtons: Map<HTMLDivElement, EventListener> = new Map();
+	private _toolClickMap: Partial<Record<DrawingToolType, () => void>>
+
 	private _initialized: boolean = false;
 	private _chartId: string | undefined;
 	constructor(
@@ -41,6 +43,8 @@ export class ChartDrawingsToolbar {
 
 		this._initializeMouseEvents();
 		this._listenForChartEvents();
+
+		this._initializeToolClickMap()
 	}
 
 	// Expose the event bus so others can listen for chart and drawing events
@@ -51,6 +55,12 @@ export class ChartDrawingsToolbar {
 	private _initializeMouseEvents(){
 		this._drawingsToolbarContainer?.addEventListener("contextmenu", this._disableRightClick); // we want to change behavior of right click on toolbar
 		this._drawingsSubToolbarContainer?.addEventListener("contextmenu", this._disableRightClick); // we want to change behavior of right click on toolbar
+	}
+
+	private _initializeToolClickMap(){
+		this._toolClickMap = {
+			[DrawingToolType.Remove]: () => this._onClickRemoveDrawingTool(),
+		};
 	}
 
 	// TODO: dispose should be called when the chart is destroyed
@@ -64,7 +74,10 @@ export class ChartDrawingsToolbar {
 		eventBus.removeEventListener(ChartEvents.CompletedDrawingSelected, this._listenForChartEvents);
 		eventBus.removeEventListener(ChartEvents.CompletedDrawingUnSelected, this._listenForChartEvents);
 		eventBus.removeEventListener(ChartEvents.UnsetToolbar, this._listenForChartEvents);
-		eventBus.removeEventListener(ChartEvents.SetToolbarTool, this._listenForChartEvents);
+		eventBus.removeEventListener(ChartEvents.SetToolbar, this._listenForChartEvents);
+		eventBus.removeEventListener(ButtonEvents.ToolClicked, this._listenForChartEvents);
+		eventBus.removeEventListener(ButtonEvents.SubToolClicked, this._listenForChartEvents);
+		
 		// todo verify events are being removed
 		this._toolButtons.forEach((handler, button) => {
 			button.removeEventListener('click', handler);
@@ -83,6 +96,12 @@ export class ChartDrawingsToolbar {
 		this._toolFactory.set(DrawingToolType.HorizontalLine, ToolLineHorizontal);
 		this._toolFactory.set(DrawingToolType.VerticalLine, ToolLineVertical);
 		this._toolFactory.set(DrawingToolType.Remove, ToolRemove);
+	}
+
+	private _toolClicked(toolType: DrawingToolType){
+		// get from toolMap, or default
+		const click = this._toolClickMap[toolType] ?? (() => this._onClickDrawingTool(toolType));
+		click();
 	}
 
 	private _initializeToolbar() {
@@ -109,19 +128,17 @@ export class ChartDrawingsToolbar {
 	}
 
 	private _initializeRemoveTool(tool: DrawingToolInfo): void {
-		const clickHandler = () => this._onClickRemoveDrawingTool();
 		const t = new ToolRemove(tool.name, tool.description, tool.icon, tool.type);
-		const button = t.setToolbarButton(this._drawingsToolbarContainer!, clickHandler);
+		const button = t.addToolButtonToContainer(this._drawingsToolbarContainer!);
 		this._tools.set(tool.type, t);
-		this._toolButtons.set(button, clickHandler);
+		//this._toolButtons.set(button, clickHandler);
 	}
 
 	private _initializeStandardTool(tool: DrawingToolInfo, toolClass: new (...args: any[]) => Tool): void {
-		const clickHandler = () => this._onClickDrawingTool(tool.type);
 		const t = new toolClass(tool.name, tool.description, tool.icon, tool.type);
-		const button = t.setToolbarButton(this._drawingsToolbarContainer!, clickHandler);
+		const button = t.addToolButtonToContainer(this._drawingsToolbarContainer!);
 		this._tools.set(tool.type, t);
-		this._toolButtons.set(button, clickHandler);
+		//this._toolButtons.set(button, clickHandler);
 	}
 
 	private _populateSubToolbar(toolType: DrawingToolType): void {
@@ -137,7 +154,7 @@ export class ChartDrawingsToolbar {
 		if(!unselectViewOnly){ // truly unselecting, not just changing views between charts
 			// dispose all  subtools
 			if(this._selectedDrawingTool !== DrawingToolType.None){
-				this._tools.get(this._selectedDrawingTool)?.dispose();
+				this._tools.get(this._selectedDrawingTool)?.disposeSubButtons();
 			}
 			this._selectedDrawingTool = DrawingToolType.None;
 			this._chartDrawingsManager.unselectDrawing();
@@ -203,7 +220,7 @@ export class ChartDrawingsToolbar {
         });
 
 		// request to set toolbar for  given chart.  Used when a drawing tool is active, and switching to active chart
-		eventBus.addEventListener(ChartEvents.SetToolbarTool, (event: Event) => {
+		eventBus.addEventListener(ChartEvents.SetToolbar, (event: Event) => {
 			const customEvent = event as CustomEvent; // No type checking here
 			console.log('ChartEvents.SetToolbarTool', customEvent.detail)
             if(customEvent.detail.chartId === this._chartId){
@@ -211,6 +228,16 @@ export class ChartDrawingsToolbar {
 					this._selectTool(customEvent.detail.toolType);
 			}
         });
+
+		eventBus.addEventListener(ButtonEvents.ToolClicked, (event: Event) => {
+			const details = (event as CustomEvent).detail as ToolButtonEventDetails; 
+			this._toolClicked(details.toolType);
+		});
+
+		eventBus.addEventListener(ButtonEvents.SubToolClicked, (event: Event) => {
+			const details = (event as CustomEvent).detail as ToolButtonEventDetails; 
+			this._chartDrawingsManager.subToolClicked();
+		});
     }
 
 	private _disableRightClick(evt: MouseEvent): void {
@@ -227,11 +254,11 @@ export class ChartDrawingsToolbar {
 	// An event bus would be cleaner, but we might have a lot of events firing if we have hundreds of charts
 	private _onClickDrawingTool(toolType: DrawingToolType): void {
 		if(this._selectedDrawingTool === toolType){
-			console.log('_onClickDrawingTool', 'same clicked',toolType)
+			console.log('_onClickDrawingTool', 'same tool clicked',toolType)
 			this._unselectTool();
 		}
 		else {
-			console.log('_onClickDrawingTool', 'new clicked',toolType)
+			console.log('_onClickDrawingTool', 'new tool clicked',toolType)
 			this._selectTool(toolType);
 			this._startDrawingTool(toolType);
 		}

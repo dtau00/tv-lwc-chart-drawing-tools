@@ -6,10 +6,10 @@ interface ITool {
     description: string;
     icon: string;
 
-    setToolbarButton: (container: HTMLDivElement, listener?: (evt: MouseEvent) => void) => void;
+    dispose: () => void;
+    addToolButtonToContainer: (container: HTMLDivElement) => void;
     getNewDrawingObject: (chart: IChartApi, series: ISeriesApi<SeriesType>, symbolName: string) => ChartDrawingBase;
     setSubToolbarButtons: (container: HTMLDivElement) => HTMLDivElement[];
-    dispose: () => void;
 }
 
 export default ITool;

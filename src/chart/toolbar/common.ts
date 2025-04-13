@@ -7,10 +7,11 @@ const toolButtonWidth = '15px';
 const toolButtonHeight = '20px;'
 
 export function createSubToolbarButton(name: string, description: string, icon: string, type: ToolbarButton, container?: HTMLDivElement): HTMLDivElement | HTMLInputElement {
-  return createToolbarButton(name, description, icon, type, () => void 0, '', container);
+  //return createToolbarButton(name, description, icon, type, () => void 0, '', container);
+    return createToolbarButton(name, description, icon, type, container!);
 }
-
-export function createToolbarButton(name: string, description: string, icon: string, type: ToolbarButton, listener: (evt: MouseEvent) => void, eventType: 'click' | 'mousedown' | 'mouseup' | '' = '', container?: HTMLDivElement): HTMLDivElement | HTMLInputElement {
+/*
+export function createToolbarButton_(name: string, description: string, icon: string, type: ToolbarButton, listener: (evt: MouseEvent) => void, eventType: 'click' | 'mousedown' | 'mouseup' | '' = '', container?: HTMLDivElement): HTMLDivElement | HTMLInputElement {
   let div : HTMLInputElement | HTMLDivElement
 
   if(type === 'color'){
@@ -44,14 +45,45 @@ export function createToolbarButton(name: string, description: string, icon: str
   container?.appendChild(div);
   
   return div
+}*/
+
+export function createToolbarButton(name: string, description: string, icon: string, type: ToolbarButton, container: HTMLDivElement): HTMLDivElement | HTMLInputElement {
+  let div : HTMLInputElement | HTMLDivElement
+
+  switch (type) {
+    case 'color':
+      div = document.createElement('input') as HTMLInputElement;
+      if (div instanceof HTMLInputElement) { // make sure TS knows the type
+        div.type = 'color';
+        div.style.border = 'none';
+      }
+      break;
+    case 'div':
+      div = document.createElement('div') as HTMLDivElement;
+      div.innerHTML = icon;
+      break;
+    default:
+      throw Error(`unknown type while creating toolbar: ${type}`)
+  }
+
+  // set base properties
+  div.className = `toolbar-item ${name}`;
+  div.title = description;
+  div.style.width = toolButtonWidth;
+  div.style.height = toolButtonHeight;
+  div.style.display = 'flex';
+  div.style.alignItems = 'center';
+  div.style.justifyContent = 'center';
+  container.appendChild(div);
+  
+  return div
 }
 
 export function setSubToolbarButton(subTool: SubTool, subTools: SubTool[], container: HTMLDivElement){
-    subTool.setToolbarButton(container); 
+    subTool.addToolButtonToContainer(container); 
     subTool.setSelectedStyling();
     subTool.init()
     subTools.push(subTool);
-
 }
 
 // rgba to hex, then truncates value to fit color input

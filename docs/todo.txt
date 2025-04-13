@@ -1,13 +1,14 @@
 v1
 --
 
-cant select horizontal line
 
 delete all drawings for symbol
-rectangle line (not fill)
-circle
+
 text
 line styling
+
+rectangle line (not fill)
+circle
 
 
 dont allow access to baseprops, use getters and setters

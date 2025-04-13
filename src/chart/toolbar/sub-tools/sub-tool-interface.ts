@@ -6,10 +6,11 @@ interface ISubTool {
     value: any;
     parentTool: string;
     
-    setToolbarButton: (container: HTMLDivElement, listener?: (evt: MouseEvent) => void) => void;
-    updateDiv: () => void;
-    dispose(): void;
     init(): void;
+    dispose(): void;
+    updateDiv: () => void;
+    addToolButtonToContainer: (container: HTMLDivElement) => void;
+
 }
 
 export default ISubTool;

@@ -69,14 +69,16 @@ export class LineHorizontalDrawing extends ChartDrawingBase{
 		if (!this._chart || this._isDrawing || !this._series || this.drawingPoints.length < 2) 
 			return;
 
-		let p1 :Point, p2 : Point
-		[p1, p2] = convertAndNormalizeDrawingPointsToPoint( this.drawingPoints[0], this.drawingPoints[1], this._chart, this._series)
+		// we only change the second price.  All other values are the same
+		const price = this._series.coordinateToPrice(endPoint.y)!
+		let dp1: DrawingPoint = { time: this.drawingPoints[0].time, price} 
+		let dp2: DrawingPoint = { time: this.drawingPoints[1].time, price} 
 
-		// adjust coordinates based on the side
-		let yOffset = endPoint.y - startPoint.y;
-		p1 = { x: p1.x, y: (p1.y + yOffset) as Coordinate };
-		p2 = { x: p2.x, y: (p2.y + yOffset) as Coordinate };
-	
-		this.finalizeUpdatedPosition(p1, p2)
+		this.view().updatePoints([dp1, dp2]) 
+
+		//  store new points temporarily, we will set this back to the drawingPoints when the update is finished
+		// TODO we wont need this if we save directly from the class, consider adding save directly from the class
+		this.tmpDrawingPoints[0] = dp1
+		this.tmpDrawingPoints[1] = dp2
 	}
 }

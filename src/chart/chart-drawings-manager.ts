@@ -90,9 +90,10 @@ export class ChartDrawingsManager {
         return this._charts.get(chartId);
     }
 
-    public selectDrawing(drawing: ChartDrawingBase): void {
+    public setSelectedDrawing(drawing: ChartDrawingBase): void {
         this.unselectDrawing();
         this._selectedDrawing = drawing;
+
     }
 
 	public unselectDrawing(): void {

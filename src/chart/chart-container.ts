@@ -160,7 +160,7 @@ export class ChartContainer {
             this.addDrawingPrimative(primative);
     }
 
-    setChartDragging(enable: boolean): void {
+    setChartDraggable(enable: boolean): void {
         this._chart.applyOptions({
             handleScroll: enable,  // Toggle scroll behavior
         });

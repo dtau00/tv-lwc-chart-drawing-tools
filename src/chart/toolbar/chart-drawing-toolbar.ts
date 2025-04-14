@@ -108,6 +108,7 @@ export class ChartDrawingsToolbar {
 
 	private _initializeDrawingTools(): void {
 		if(this._initialized) return; // only initialize once, or we will have multiple listeners on the same button
+
 		AVAILABLE_TOOLS.forEach(tool => {
 			const toolClass = this._toolFactory.get(tool.type);
 			if(!toolClass || tool.type === DrawingToolType.None) 
@@ -239,7 +240,6 @@ export class ChartDrawingsToolbar {
 	private _onClickTextDrawingTool(): void {
 		this._chartDrawingsManager.setTextForSelectedDrawing();
 	}
-
 
 	// selecting new drawing tool
 	// Make sure the clicks bubble up back to here so we can adjust the toolbar

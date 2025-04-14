@@ -19,7 +19,7 @@ export const rectangleFillDrawingToolDefaultOptions: RectangleDrawingToolOptions
 	fillColor: 'rgba(200, 50, 100, 0.25)',
 	fillColorOpacity: 0.75,
 	strokeColor: '',
-	strokeColorOpacity: 0,
+	strokeColorOpacity: 1,
 	labelColor: 'rgb(50, 147, 200)',
 	labelTextColor: 'white',
 	showLabels: false,
@@ -66,10 +66,10 @@ export function normalizeRectangleDrawingToolOptions(
 			raw.fillColorOpacity ?? rectangleFillDrawingToolDefaultOptions.fillColorOpacity
 		),
 		strokeColor: typeof raw.strokeColor === 'string'
-			? raw.fillColor
+			? raw.strokeColor
 			: rectangleFillDrawingToolDefaultOptions.strokeColor,
 
-			strokeColorOpacity: Number(
+		strokeColorOpacity: Number(
 			raw.strokeColorOpacity ?? rectangleFillDrawingToolDefaultOptions.strokeColorOpacity
 		),
 

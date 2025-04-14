@@ -1,5 +1,5 @@
 import { ChartDrawingsManager } from '../chart-drawings-manager.ts';
-import { DrawingToolType, AVAILABLE_TOOLS, DrawingToolInfo } from '../toolbar/tools/drawing-tools.ts';
+import { DrawingToolType, AVAILABLE_TOOLS } from '../toolbar/tools/drawing-tools.ts';
 import { clearDiv, selectDivForGroup, unselectAllDivsForGroup } from '../../common/utils/html.ts';
 import { ToolLine } from '../../chart/toolbar/tools/tool/tool-line.ts';
 import { ToolRectangle } from '../../chart/toolbar/tools/tool/tool-rectangle.ts';
@@ -17,18 +17,38 @@ import { ToolText } from './tools/tool/tool-text.ts';
 // This class is the main class for the chart drawing tools.
 
 export class ChartDrawingsToolbar {
+	private _toolClickMap: Partial<Record<DrawingToolType, () => void>> = {
+		[DrawingToolType.Remove]: () => this._onClickRemoveDrawingTool(),
+		[DrawingToolType.RemoveAll]: () => this._onClickRemoveAllDrawingTool(),
+		[DrawingToolType.Text]: () => this._onClickTextDrawingTool(),
+	};
+	private _toolFactory =  new Map([
+		[DrawingToolType.Fibonacci, ToolFibonacci],
+		[DrawingToolType.Rectangle, ToolRectangle],
+		[DrawingToolType.RectangleExtended, ToolRectangleExtended],
+		[DrawingToolType.Line, ToolLine],
+		[DrawingToolType.HorizontalLineRay, ToolLineHorizontalRay],
+		[DrawingToolType.HorizontalLine, ToolLineHorizontal],
+		[DrawingToolType.VerticalLine, ToolLineVertical],
+		[DrawingToolType.Text, ToolText],
+		[DrawingToolType.Remove, ToolRemove],
+		[DrawingToolType.RemoveAll, ToolRemoveAll],
+	]);
+	private _toolMap = {
+		[DrawingToolType.Remove]: ToolRemove,
+		[DrawingToolType.RemoveAll]: ToolRemoveAll,
+		[DrawingToolType.Text]: ToolText,
+	};
 	private _drawingsToolbarContainer: HTMLDivElement | undefined;
 	private _drawingsSubToolbarContainer: HTMLDivElement | undefined;
 	private _chartDrawingsManager: ChartDrawingsManager;
 	private _selectedDrawingTool: DrawingToolType = DrawingToolType.None;
 	private _removeButton: HTMLDivElement | undefined;
 	private _tools: Map<DrawingToolType, Tool> = new Map();
-	private _toolFactory: Map<DrawingToolType, new (...args: any[]) => Tool> = new Map();
 	private _toolButtons: Map<HTMLDivElement, EventListener> = new Map();
-	private _toolClickMap: Partial<Record<DrawingToolType, () => void>>
-
 	private _initialized: boolean = false;
 	private _chartId: string | undefined;
+
 	constructor(
 		chartDrawingsManager: ChartDrawingsManager,
 		drawingsToolbarContainer: HTMLDivElement,
@@ -40,29 +60,14 @@ export class ChartDrawingsToolbar {
 		this._drawingsToolbarContainer = drawingsToolbarContainer;
 		this._drawingsSubToolbarContainer = drawingsSubToolbarContainer;
 
-		this._initializeToolFactory();
 		this._initializeToolbar();
 		this._initializeMouseEvents();
 		this._listenForChartEvents();
-		this._initializeToolClickMap()
-	}
-
-	// Expose the event bus so others can listen for chart and drawing events
-	get eventBus(): EventTarget {
-		return eventBus;
 	}
 
 	private _initializeMouseEvents(){
 		this._drawingsToolbarContainer?.addEventListener("contextmenu", this._disableRightClick); // we want to change behavior of right click on toolbar
 		this._drawingsSubToolbarContainer?.addEventListener("contextmenu", this._disableRightClick); // we want to change behavior of right click on toolbar
-	}
-
-	private _initializeToolClickMap(){
-		this._toolClickMap = {
-			[DrawingToolType.Remove]: () => this._onClickRemoveDrawingTool(),
-			[DrawingToolType.RemoveAll]: () => this._onClickRemoveAllDrawingTool(),
-			[DrawingToolType.Text]: () => this._onClickTextDrawingTool(),
-		};
 	}
 
 	// TODO: dispose should be called when the chart is destroyed
@@ -71,7 +76,6 @@ export class ChartDrawingsToolbar {
 		this._drawingsSubToolbarContainer?.removeEventListener("contextmenu", this._disableRightClick);
 		this._removeButton?.removeEventListener('click', this._onClickRemoveDrawingTool);
 
-		this._removeButton?.removeEventListener('click', this._onClickRemoveDrawingTool);
 		eventBus.removeEventListener(ChartEvents.NewDrawingCompleted, this._listenForChartEvents);
 		eventBus.removeEventListener(ChartEvents.CompletedDrawingSelected, this._listenForChartEvents);
 		eventBus.removeEventListener(ChartEvents.CompletedDrawingUnSelected, this._listenForChartEvents);
@@ -89,19 +93,6 @@ export class ChartDrawingsToolbar {
 		this._tools.clear();
 	}
 
-	private _initializeToolFactory(){
-		this._toolFactory.set(DrawingToolType.Fibonacci, ToolFibonacci);
-		this._toolFactory.set(DrawingToolType.Rectangle, ToolRectangle);
-		this._toolFactory.set(DrawingToolType.RectangleExtended, ToolRectangleExtended);
-		this._toolFactory.set(DrawingToolType.Line, ToolLine);
-		this._toolFactory.set(DrawingToolType.HorizontalLineRay, ToolLineHorizontalRay);
-		this._toolFactory.set(DrawingToolType.HorizontalLine, ToolLineHorizontal);
-		this._toolFactory.set(DrawingToolType.VerticalLine, ToolLineVertical);
-		this._toolFactory.set(DrawingToolType.Text, ToolText);
-		this._toolFactory.set(DrawingToolType.Remove, ToolRemove);
-		this._toolFactory.set(DrawingToolType.RemoveAll, ToolRemoveAll);
-	}
-
 	private _toolClicked(toolType: DrawingToolType){
 		// get from toolMap, or default
 		const click = this._toolClickMap[toolType] ?? (() => this._onClickDrawingTool(toolType));
@@ -112,8 +103,6 @@ export class ChartDrawingsToolbar {
 		if (!this._drawingsToolbarContainer) return;
 		
 		this._initializeDrawingTools();
-		//this._addColorPicker(this._drawingsSubToolbarContainer!);
-		//this._initializeSubToolbar();
 		this._initialized = true;
 	}
 
@@ -124,28 +113,10 @@ export class ChartDrawingsToolbar {
 			if(!toolClass || tool.type === DrawingToolType.None) 
 				return;
 
-			// TODO clean this up 
-			let t = null
-			if(tool.type === DrawingToolType.Remove){
-				const t = new ToolRemove(tool.name, tool.description, tool.icon, tool.type);
-				const button = t.addToolButtonToContainer(this._drawingsToolbarContainer!);
-				this._tools.set(tool.type, t);
-			}
-			else if(tool.type === DrawingToolType.RemoveAll){
-				const t = new ToolRemoveAll(tool.name, tool.description, tool.icon, tool.type);
-				const button = t.addToolButtonToContainer(this._drawingsToolbarContainer!);
-				this._tools.set(tool.type, t);
-			}
-			else if(tool.type === DrawingToolType.Text){
-				const t = new ToolText(tool.name, tool.description, tool.icon, tool.type);
-				const button = t.addToolButtonToContainer(this._drawingsToolbarContainer!);
-				this._tools.set(tool.type, t);
-			}
-			else{
-				const t = new toolClass(tool.name, tool.description, tool.icon, tool.type);
-				const button = t.addToolButtonToContainer(this._drawingsToolbarContainer!);
-				this._tools.set(tool.type, t);
-			}
+			const ToolClass = this._toolMap[tool.type] ?? toolClass;
+			const t = new ToolClass(tool.name, tool.description, tool.icon, tool.type);
+			t.addToolButtonToContainer(this._drawingsToolbarContainer!);
+			this._tools.set(tool.type, t);
 		});
 	}
 

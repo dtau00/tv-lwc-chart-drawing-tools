@@ -11,6 +11,11 @@ export interface ViewPoint {
 	y: Coordinate | null;
 }
 
+export interface MousePointAndTime{
+  point: Point | null;
+  time: Time | null;
+}
+
 
 export function getPointFromMouseEvent(evt: MouseEvent): Point | null{
     return  { x: evt.clientX as Coordinate, y: evt.clientY as Coordinate};
@@ -19,6 +24,15 @@ export function getPointFromMouseEvent(evt: MouseEvent): Point | null{
 export function getChartPointFromMouseEvent(evt: MouseEvent, chartDivContainer: HTMLDivElement): Point | null{
     const rect = chartDivContainer.getBoundingClientRect();
     return  { x: evt.clientX - rect.left as Coordinate, y: evt.clientY - rect.top as Coordinate};
+}
+
+export function mouseEventToMouseEventParamsPointAndTime(evt: MouseEvent, chart: IChartApi, chartDivContainer: HTMLDivElement): MousePointAndTime{
+  const point = getChartPointFromMouseEvent(evt, chartDivContainer)
+  if(point){
+    const time = chart.timeScale().coordinateToTime(point.x)
+    return {point, time} as MousePointAndTime
+  }
+  return { point: null, time: null }
 }
 
 export function containsPoints(chart: IChartApi, series: ISeriesApi<SeriesType>, point: Point, points: DrawingPoint[], offset: number = 0){

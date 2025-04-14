@@ -4,7 +4,7 @@ import { lineDrawingToolDefaultOptions as drawingToolDefaultOptions, LineDrawing
 import { IChartApi, ISeriesApi, MouseEventParams, Point, SeriesType,} from 'lightweight-charts';
 import { ChartDrawingBase, ChartDrawingBaseProps } from '../../../chart/drawings/chart-drawing-base';
 import { DrawingToolType } from '../../toolbar/tools/drawing-tools';
-import { isPointNearLine, convertAndNormalizeDrawingPointsToPoint, getClosestHandleOnLine, LineHandle, offsetPoints, resizeLineByHandle } from '../../../common/points';
+import { isPointNearLine, convertAndNormalizeDrawingPointsToPoint, getClosestHandleOnLine, LineHandle, offsetPoints, resizeLineByHandle, MousePointAndTime } from '../../../common/points';
 import { DrawingPoint } from '../../../common/points';
 
 export class LineDrawing extends ChartDrawingBase{
@@ -46,7 +46,7 @@ export class LineDrawing extends ChartDrawingBase{
 		this._setCursor(point);
 	}
 
-	onDrag(param: MouseEventParams, startPoint: Point, endPoint: Point): void {
+	onDrag(param: MousePointAndTime, startPoint: Point, endPoint: Point): void {
 		if(param.point){
 			this._updatePosition(startPoint, endPoint, this._side);
 		}

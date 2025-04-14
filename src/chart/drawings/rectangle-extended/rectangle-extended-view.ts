@@ -1,7 +1,7 @@
 import { RectangleDrawingToolOptions  as DrawingOptions} from '../common/options/rectangle-options';
 import { RectanglePaneView as PaneView} from '../common/view-panes/rectangle-view-pane';
 
-import { DrawingPoint } from '../../../common/points';
+import { DrawingPoint, MousePointAndTime } from '../../../common/points';
 import { IChartApi, ISeriesApi, MouseEventParams, SeriesType, Time } from 'lightweight-charts';
 import { ViewBase } from '../../../chart/drawings/drawing-view-base';
 import { DrawingToolType } from '../../toolbar/tools/drawing-tools';
@@ -30,7 +30,7 @@ export class RectangleExtendedView extends ViewBase {
 	}
 
 	// override the base class method to extend the rectangle to the end of the chart
-	updateInitialPoint(p: DrawingPoint, param: MouseEventParams) {
+	updateInitialPoint(p: DrawingPoint, param: MousePointAndTime) {
 		if(!this.points[0] || !this.points[1]){
 			return
 		}

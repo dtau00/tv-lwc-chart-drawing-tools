@@ -1,7 +1,7 @@
 import { LinePaneView as PaneView} from '../common/view-panes/line-view-pane';
 import { LineDrawingToolOptions  as DrawingOptions} from '../common/options/line-options';
 
-import { DrawingPoint } from '../../../common/points';
+import { DrawingPoint, MousePointAndTime } from '../../../common/points';
 import { IChartApi, ISeriesApi, SeriesType } from 'lightweight-charts';
 import { ViewBase } from '../../../chart/drawings/drawing-view-base';
 import { DrawingToolType } from '../../toolbar/tools/drawing-tools';
@@ -30,7 +30,7 @@ export class LineVertical extends ViewBase {
 	}
 
 	// override the base class method to extend the vertical line
-	updateInitialPoint(p: DrawingPoint, param: MouseEventParams) {
+	updateInitialPoint(p: DrawingPoint, param: MousePointAndTime) {
 		if(!this.points[0])
 			return
 

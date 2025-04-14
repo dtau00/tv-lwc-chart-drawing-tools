@@ -5,6 +5,8 @@ import { PluginBase } from "../plugins/plugin-base.ts";
 import { ensureDefined } from "../common/utils/assertions.ts";
 import { ChartDrawingsManager } from "./chart-drawings-manager.ts";
 import { ChartDrawingBase } from "./drawings/chart-drawing-base.ts";
+import { createChartMouseHandlers, initializeListeners, removeListeners } from "./chart-mouse-handlers.ts";
+import { removeListener } from "process";
 
 type DummyBar = {
     time : Time,
@@ -25,6 +27,7 @@ export class ChartContainer {
     private _chart: IChartApi;
     private _series: ISeriesApi<SeriesType>;
     private _primatives : PluginBase[] = [];  // TODO; we dont need this, its tracked within the drawingView
+    private _handlers: ReturnType<typeof createChartMouseHandlers>;
 
     private _whiteSpaceTotal: number = 100;
     private _whiteSpaceSeries: ISeriesApi<SeriesType>;
@@ -52,7 +55,8 @@ export class ChartContainer {
         this._chart = chart;
         this._series = series;
 
-        this._initializeListeners();
+        this._handlers = createChartMouseHandlers(this);
+        initializeListeners(this._handlers, this);
     }
 
     public get chart(): IChartApi { return this._chart;}
@@ -63,9 +67,10 @@ export class ChartContainer {
     public get chartId(): string { return this._chartId;}
     public get tags(): string[] { return this._tags;}
     public get chartDivContainer(): HTMLDivElement { return this._chartDivContainer;}
+    public get chartManager(): ChartDrawingsManager { return this._chartManager;  }
 
     dispose() : void{
-        this._removeListeners();
+        removeListeners(this._handlers, this);
         this._chart.remove();
     }
 
@@ -90,11 +95,9 @@ export class ChartContainer {
 		if(!this._dataInitialized)
 			throw new Error('Cant updateData before initializing base data')
 
-		// update series with new data.  track number of new bars
-		this._series.update(bar)
+		this._series.update(bar) // update series with new data.  track number of new bars
 
-		// if we have new bars, generate same amount of dummy bars to keep the whitespacing
-		if(bar.time > this._lastSeriesDate){
+		if(bar.time > this._lastSeriesDate){ // if we have new bars, generate same amount of dummy bars to keep the whitespacing
 			this._lastSeriesDate = bar.time
 			const dummyBars = this._generateDummyBars(this._lastWhiteSpaceSeriesDate, this._secondsPerBar, 1)
 			this._whiteSpaceSeries.update(dummyBars[0])
@@ -157,6 +160,12 @@ export class ChartContainer {
             this.addDrawingPrimative(primative);
     }
 
+    setChartDragging(enable: boolean): void {
+        this._chart.applyOptions({
+            handleScroll: enable,  // Toggle scroll behavior
+        });
+    }
+
     private _initWhitespaceSeries(data : CandlestickData[]): ISeriesApi<SeriesType>{
         const whitespaceSeries = this._chart.addSeries(LineSeries);
     
@@ -211,48 +220,6 @@ export class ChartContainer {
 
         const visibleTo = Math.floor(logicalRange.to);
         return Math.max(0, visibleTo - lastDataIndex);
-    }
-
-    private _initializeListeners() : void{
-       this._chart.subscribeCrosshairMove(this._onCrosshairMoveChartHandler);
-
-        this._chartDivContainer .addEventListener('mousedown', this._onMouseDownChartHandler);
-        this._chartDivContainer .addEventListener('mouseup', this._onMouseUpChartHandler);
-        this._chartDivContainer .addEventListener('contextmenu', this._rightClickHandler);
-       //this._chartDivContainer .addEventListener('wheel', this._onWheelChart);
-   }
-
-    private _removeListeners() : void{
-        this._chart.unsubscribeCrosshairMove(this._onCrosshairMoveChartHandler)    
-
-        this._chartDivContainer.removeEventListener('mousedown', this._onMouseDownChartHandler);
-        this._chartDivContainer.removeEventListener('mouseup', this._onMouseUpChartHandler);
-        this._chartDivContainer.removeEventListener('contextmenu', this._rightClickHandler);
-        //this._chartDivContainer.removeEventListener('wheel', this._onWheelChart);
-    }
-    
-    private _onCrosshairMoveChartHandler = (param: MouseEventParams) : void => {
-        this._chartManager.onMouseMove(param);
-        this._chartManager.checkCurrentChartContainer(this);
-        this._chartManager.selectedDrawing?.onMouseMove(param);
-    }
-
-    private _rightClickHandler=(evt: MouseEvent): void => {
-        evt.preventDefault()
-        //this._chartManager.onRightClick(evt, this)
-    }
-
-    // mouse down, we want to detect if its dragging
-    private _onMouseDownChartHandler=(evt: MouseEvent): void => {
-        this._chartManager.onMouseDown(evt, this);
-    }       
-
-    private _onMouseUpChartHandler=(evt: MouseEvent): void => {
-        this._chartManager.onMouseUp(evt, this);
-    }
-
-    private _onWheelChart=(evt: WheelEvent): void => {
-        //console.log('onWheelChart', evt);
     }
 }
 

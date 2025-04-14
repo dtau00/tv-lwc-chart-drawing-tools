@@ -1,5 +1,5 @@
 import { IPrimitivePaneView } from "lightweight-charts";
-import { ViewBase } from "../../drawings/drawing-view-base";
+import { ViewBase } from "../drawings/drawing-view-base";
 
 
 export class PaneViewBase implements IPrimitivePaneView {

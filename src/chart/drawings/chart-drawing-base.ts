@@ -4,7 +4,7 @@ import { IChartDrawing } from './chart-drawing-interface';
 import { generateUniqueId } from '../../common/utils/id-generator';
 import { PluginBase } from '../../plugins/plugin-base';
 import { ensureDefined } from '../../common/utils/assertions';
-import { DrawingPoint } from '../../common/points';
+import { DrawingPoint, MousePointAndTime } from '../../common/points';
 
 import { ChartEvents, eventBus } from '../../common/event-bus';
 import { containsPoints, leftRightPoints, pointToDrawingPoints, topBottomPoints } from '../../common/points';
@@ -133,7 +133,7 @@ export abstract class ChartDrawingBase implements IChartDrawing {
     }
 
     abstract select(): void;
-    abstract onDrag(param: MouseEventParams, startPoint: Point, endPoint: Point): void;
+    abstract onDrag(param: MousePointAndTime, startPoint: Point, endPoint: Point): void;
     abstract onHoverWhenSelected(point: Point): void;   
     abstract normalizeStyleOptions(options: {}): void;  
 
@@ -186,7 +186,9 @@ export abstract class ChartDrawingBase implements IChartDrawing {
 		this.tmpDrawingPoints = [];
 	}
 
-    onClick(point? : Point, time? : Time) {
+    onClick(param: MousePointAndTime) {
+        const point = param.point;
+        const time = param.time;
         console.log('onClick', 'chart-drawing-base',point);
 		if (this._isDrawing || !point || !time || !this._series) 
 			return;
@@ -202,8 +204,8 @@ export abstract class ChartDrawingBase implements IChartDrawing {
 		}
 	}
 
-	onMouseMove(param: MouseEventParams) {
-		if (!this._chart || this._isDrawing || !this._series || !param.point) 
+	onMouseMove(param: MousePointAndTime) {
+		if (!this._chart || this._isDrawing || !this._series || !param.point || !param.time) 
 			return;
 
 		const price = this._series.coordinateToPrice(param.point.y);

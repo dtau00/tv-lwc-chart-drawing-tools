@@ -4,7 +4,7 @@ import { rectangleDrawingToolDefaultOptions as drawingToolDefaultOptions, normal
 import { IChartApi, ISeriesApi, MouseEventParams, Point, SeriesType, Time} from 'lightweight-charts';
 import { ChartDrawingBase, ChartDrawingBaseProps } from '../../../chart/drawings/chart-drawing-base';
 import { DrawingToolType } from '../../toolbar/tools/drawing-tools';
-import { BoxSide, DrawingPoint, getBoxHoverTarget, getCursorForBoxSide, getUpdateBoxPosition, pointToDrawingPoints } from '../../../common/points';
+import { BoxSide, DrawingPoint, getBoxHoverTarget, getCursorForBoxSide, getUpdateBoxPosition, MousePointAndTime, pointToDrawingPoints } from '../../../common/points';
 import { MAX_TIME } from '../../../common/utils/time';
 
 export class RectangleExtendedDrawing extends ChartDrawingBase{
@@ -55,7 +55,7 @@ export class RectangleExtendedDrawing extends ChartDrawingBase{
 		this._setCursor(point);
 	}
 
-	onDrag(param: MouseEventParams, startPoint: Point, endPoint: Point): void {
+	onDrag(param: MousePointAndTime, startPoint: Point, endPoint: Point): void {
 		if(param.point){
 			this._updatePosition(startPoint, endPoint, this._side);
 		}

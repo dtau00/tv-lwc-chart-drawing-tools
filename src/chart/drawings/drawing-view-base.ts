@@ -1,5 +1,5 @@
 import { mergeOpacityIntoRgba } from '../../common/utils/rgba-string';
-import { DrawingPoint } from '../../common/points';
+import { DrawingPoint, MousePointAndTime } from '../../common/points';
 import {  removeUndefinedKeys } from '../../common/utils/objects'
 import { toolKeyName } from '../../common/tool-key'
 import { IChartApi, ISeriesApi, MouseEventParams, SeriesType } from 'lightweight-charts';
@@ -97,7 +97,7 @@ export class ViewBase extends PluginBase {
             return overrides;
         }
 
-        updateInitialPoint(p: DrawingPoint, param: MouseEventParams) {
+        updateInitialPoint(p: DrawingPoint, param: MousePointAndTime) {
             if(this.points[0]){
                 this.points[0] = p;
                 this._paneViews[0].update();

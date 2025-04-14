@@ -16,9 +16,10 @@ fix lineStyle type, type it correctly
 make sure to check view.points when looking for selection
 setting, chaging, saving styling between view and drawing baseprops is confusing
 fix text adding to style.  super hacky. maybe have a single base drawing options we can cast as
+
 v2
 --
-add line styling
+
 priorizie chart drawing selection
 configurable subtools per drawing
 slider for opacity change

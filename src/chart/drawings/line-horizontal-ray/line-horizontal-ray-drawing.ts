@@ -4,7 +4,7 @@ import { lineDrawingToolDefaultOptions as drawingToolDefaultOptions, LineDrawing
 import { IChartApi, ISeriesApi, MouseEventParams, Point, SeriesType,Coordinate} from 'lightweight-charts';
 import { ChartDrawingBase, ChartDrawingBaseProps } from '../../../chart/drawings/chart-drawing-base';
 import { DrawingToolType } from '../../toolbar/tools/drawing-tools';
-import { isPointNearLine, convertAndNormalizeDrawingPointsToPoint, isPointOverStraightLineDrawing, pointToDrawingPoints } from '../../../common/points';
+import { isPointNearLine, convertAndNormalizeDrawingPointsToPoint, isPointOverStraightLineDrawing, pointToDrawingPoints, MousePointAndTime } from '../../../common/points';
 import { DrawingPoint } from '../../../common/points';
 import { MAX_TIME } from '../../../common/utils/time';
 
@@ -66,7 +66,7 @@ export class LineHorizontalRayDrawing extends ChartDrawingBase{
 		this._setCursor(point);
 	}
 
-	onDrag(param: MouseEventParams, startPoint: Point, endPoint: Point): void {
+	onDrag(param: MousePointAndTime, startPoint: Point, endPoint: Point): void {
 		if(param.point){
 			this._updatePosition(startPoint, endPoint);
 		}

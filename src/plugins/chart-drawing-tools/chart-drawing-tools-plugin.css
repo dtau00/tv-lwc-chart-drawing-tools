@@ -10,8 +10,12 @@
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
     cursor: default;
+
+    position: relative; /* base for subtoolbar */
 }
 .chart {
+    position: relative;
+	top: 0;
     border-top-left-radius: 0px;
     border-top-right-radius: 0px;
     width: 100%;
@@ -32,11 +36,22 @@ body {
 }
 
 .sub-toolbar{
+    position: absolute;
+	top: 30px; /* right below toolbar */
+	left: 0;
+	right: 0;
+    z-index: 3; /* higher than toolbar/chart */
+
     margin-left: 20px;
     display: flex;
     flex-direction: row;
     gap: 5px;
-
+    background-color: rgba(255,255,255, .4);
+    width: fit-content;;
+    padding-left:7px;
+    padding-right:7px;
+    border-bottom-right-radius: 7px;
+    border-bottom-left-radius: 7px;;
 }
 
 .sub-toolbar.selected{

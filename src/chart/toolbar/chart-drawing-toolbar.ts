@@ -42,10 +42,8 @@ export class ChartDrawingsToolbar {
 
 		this._initializeToolFactory();
 		this._initializeToolbar();
-
 		this._initializeMouseEvents();
 		this._listenForChartEvents();
-
 		this._initializeToolClickMap()
 	}
 

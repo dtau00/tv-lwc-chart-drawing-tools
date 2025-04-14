@@ -3,7 +3,7 @@ import { LineVertical as View } from './line-vertical-view';
 import { lineDrawingToolDefaultOptions as drawingToolDefaultOptions, LineDrawingToolOptions, normalizeLineDrawingToolOptions } from '../common/options/line-options';
 import { ChartDrawingBase, ChartDrawingBaseProps } from '../../../chart/drawings/chart-drawing-base';
 import { DrawingToolType } from '../../toolbar/tools/drawing-tools';
-import { isPointNearLine, convertAndNormalizeDrawingPointsToPoint } from '../../../common/points';
+import { isPointNearLine, convertAndNormalizeDrawingPointsToPoint, MousePointAndTime } from '../../../common/points';
 import { DrawingPoint } from '../../../common/points';
 
 export class LineVerticalDrawing extends ChartDrawingBase{
@@ -49,7 +49,7 @@ export class LineVerticalDrawing extends ChartDrawingBase{
 		this._setCursor(point);
 	}
 
-	onDrag(param: MouseEventParams, startPoint: Point, endPoint: Point): void {
+	onDrag(param: MousePointAndTime, startPoint: Point, endPoint: Point): void {
 		if(param.point){
 			this._updatePosition(startPoint, endPoint);
 		}

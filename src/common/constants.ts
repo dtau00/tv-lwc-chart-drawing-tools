@@ -1,0 +1,1 @@
+export const TOTAL_SUBTOOLS_PER_TYPE = 3

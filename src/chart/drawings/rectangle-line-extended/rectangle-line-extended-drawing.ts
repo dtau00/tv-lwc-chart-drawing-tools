@@ -1,16 +1,15 @@
-import { RectangleExtendedView as View} from './rectangle-extended-view';
-import { rectangleFillDrawingToolDefaultOptions as drawingToolDefaultOptions, normalizeRectangleDrawingToolOptions } from '../common/options/rectangle-options';
+import { RectangleLineExtendedView as View} from './rectangle-line-extended-view';
+import { rectangleLineDrawingToolDefaultOptions as drawingToolDefaultOptions, normalizeRectangleDrawingToolOptions } from '../common/options/rectangle-options';
 
-import { IChartApi, ISeriesApi, MouseEventParams, Point, SeriesType, Time} from 'lightweight-charts';
+import { IChartApi, ISeriesApi, Point, SeriesType, Time} from 'lightweight-charts';
 import { ChartDrawingBase, ChartDrawingBaseProps } from '../../../chart/drawings/chart-drawing-base';
 import { DrawingToolType } from '../../toolbar/tools/drawing-tools';
 import { BoxSide, DrawingPoint, getBoxHoverTarget, getCursorForBoxSide, getUpdateBoxPosition, MousePointAndTime, pointToDrawingPoints } from '../../../common/points';
 import { MAX_TIME } from '../../../common/utils/time';
 
-export class RectangleExtendedDrawing extends ChartDrawingBase{
+export class RectangleLineExtendedDrawing extends ChartDrawingBase{
 	private static readonly TOTAL_DRAWING_POINTS = 2; // Set the drawing points for this type of drawing.  A box will have 2, a line ray will have 1, etc...
-	private static readonly TOOL_TYPE = DrawingToolType.RectangleExtended
-
+	private static readonly TOOL_TYPE = DrawingToolType.RectangleLineExtended
 	private _side: BoxSide;
 
 	constructor(
@@ -33,7 +32,7 @@ export class RectangleExtendedDrawing extends ChartDrawingBase{
 				this.overrideDrawingPoints([p1, p2]);
 			}
 		}
-		super( RectangleExtendedDrawing.TOOL_TYPE, chart, series, symbolName, RectangleExtendedDrawing.TOTAL_DRAWING_POINTS, drawingToolDefaultOptions, baseProps, _finalizeDrawingPoints);
+		super( RectangleLineExtendedDrawing.TOOL_TYPE, chart, series, symbolName, RectangleLineExtendedDrawing.TOTAL_DRAWING_POINTS, drawingToolDefaultOptions, baseProps, _finalizeDrawingPoints);
 		
 		this.initialize(baseProps);
 		if(baseProps)
@@ -50,7 +49,7 @@ export class RectangleExtendedDrawing extends ChartDrawingBase{
 	// set the style when drawing is selected
 	select(): void {
 		this.view().applyOptions({ 
-			fillColor: 'rgba(100, 100, 100, 0.5)', 
+			strokeColor: 'rgba(100, 100, 100, 0.5)', 
 			//strokeColor: 'rgb(218, 250, 9)',
 			//strokeColorOpacity: 1
 		})

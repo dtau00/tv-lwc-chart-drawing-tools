@@ -8,6 +8,7 @@ import { DrawingPoint } from '../../../common/points';
 
 export class LineVerticalDrawing extends ChartDrawingBase{
 	private static readonly TOTAL_DRAWING_POINTS = 2; // Set the drawing points for this type of drawing.  A box will have 2, a line ray will have 1, etc...
+	private static readonly TOOL_TYPE = DrawingToolType.VerticalLine
 
 	constructor(
 		chart: IChartApi,
@@ -19,7 +20,7 @@ export class LineVerticalDrawing extends ChartDrawingBase{
 			let p2 = this.drawingPoints[1];
 			this.overrideDrawingPoints([{time: p2.time, price: 0}, {time: p2.time, price: 9999999}]);
 		}
-		super( DrawingToolType.VerticalLine, chart, series, symbolName, LineVerticalDrawing.TOTAL_DRAWING_POINTS, drawingToolDefaultOptions, baseProps, _finalizeDrawingPoints);
+		super( LineVerticalDrawing.TOOL_TYPE, chart, series, symbolName, LineVerticalDrawing.TOTAL_DRAWING_POINTS, drawingToolDefaultOptions, baseProps, _finalizeDrawingPoints);
 		
 		this.initialize(baseProps);
 		if(baseProps)

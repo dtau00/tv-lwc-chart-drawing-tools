@@ -1,9 +1,9 @@
 
 import { Rectangle } from '../../rectangle/rectangle-view'
-import { RectangleDrawingToolOptions } from '../../common/options/rectangle-options';
+import { RectangleDrawingToolOptions as DrawingOptions } from '../options/rectangle-options';
 
 import { CanvasRenderingTarget2D } from 'fancy-canvas';
-import { Coordinate, IPrimitivePaneRenderer, IPrimitivePaneView } from 'lightweight-charts';
+import { IPrimitivePaneRenderer, IPrimitivePaneView } from 'lightweight-charts';
 import { positionsBox } from '../../../../common/utils/dimensions/positions';
 import { ViewPoint } from '../../../../common/points';
 import { PaneViewBase } from '../../../../chart/drawings/drawing-pane-view-base';
@@ -14,11 +14,13 @@ class RectanglePaneRenderer implements IPrimitivePaneRenderer {
 	private _p2: ViewPoint;
 	private _fillColor: string;
 	private _text: string;
+	private _strokeColor: string;
 
-	constructor(p1: ViewPoint, p2: ViewPoint, fillColor: string, text: string) {
+	constructor(p1: ViewPoint, p2: ViewPoint, fillColor: string, strokeColor: string, text: string) {
 		this._p1 = p1;
 		this._p2 = p2;
 		this._fillColor = fillColor;
+		this._strokeColor = strokeColor;
 		this._text = text;
 	}
 
@@ -38,18 +40,32 @@ class RectanglePaneRenderer implements IPrimitivePaneRenderer {
 			const ctx = scope.context;
 			const horizontalPositions = positionsBox(this._p1.x, this._p2.x, xRatio);
 			const verticalPositions = positionsBox(this._p1.y, this._p2.y, yRatio);
-			ctx.fillStyle = this._fillColor;
-			ctx.fillRect(
-				horizontalPositions.position,
-				verticalPositions.position,
-				horizontalPositions.length,
-				verticalPositions.length
-			);
+
+			console.log('stroking', this._fillColor, this._strokeColor)
+			if(this._fillColor){
+				ctx.fillStyle = this._fillColor;
+				ctx.fillRect(
+					horizontalPositions.position,
+					verticalPositions.position,
+					horizontalPositions.length,
+					verticalPositions.length
+				);
+			}
+
+			if(this._strokeColor){
+				ctx.strokeStyle = this._strokeColor;
+				ctx.strokeRect(
+					horizontalPositions.position,
+					verticalPositions.position,
+					horizontalPositions.length,
+					verticalPositions.length
+				);
+			}
 
 			// add text to ctx
 			if(this._text){
 				ctx.font = "12px Arial"; 
-				ctx.fillStyle = this._fillColor
+				ctx.fillStyle = this._fillColor || this._strokeColor
 				ctx.fillText(this._text, this._p1.x * xRatio,(this._p1.y * yRatio) - 4);
 			}
 		});
@@ -65,19 +81,6 @@ export class RectanglePaneView extends PaneViewBase implements IPrimitivePaneVie
 		super();
 		this._source = source;
 	}
-
-	/*
-	update() {
-		const series = this._source.series;
-		const y1 = series.priceToCoordinate(this._source.points[0].price);
-		const y2 = series.priceToCoordinate(this._source.points[1].price);
-		const timeScale = this._source.chart.timeScale();
-		const x1 = timeScale.timeToCoordinate(this._source.points[0].time);
-		const x2 = timeScale.timeToCoordinate(this._source.points[1].time);
-		this._p1 = { x: x1, y: y1 };
-		this._p2 = { x: x2, y: y2 };
-	}
-*/
 
 	update() {
 		const chart = this._source.chart
@@ -100,11 +103,12 @@ export class RectanglePaneView extends PaneViewBase implements IPrimitivePaneVie
 	}
 
 	renderer() {
-		const options = this._source._options as RectangleDrawingToolOptions
+		const options = this._source._options as DrawingOptions
 		return new RectanglePaneRenderer(
 			this._p1,
 			this._p2,
 			options.fillColor,
+			options.strokeColor,
 			options.text
 		);
 	}

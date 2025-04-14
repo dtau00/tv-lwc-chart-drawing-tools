@@ -4,6 +4,8 @@ export interface RectangleDrawingToolOptions {
 	//opacity: number,
 	fillColor: string;
 	fillColorOpacity: number;
+	strokeColor: string;
+	strokeColorOpacity: number;
 	labelColor: string;
 	labelTextColor: string;
 	showLabels: boolean;
@@ -12,10 +14,32 @@ export interface RectangleDrawingToolOptions {
 	timeLabelFormatter: (time: Time) => string;
 }
 
-export const rectangleDrawingToolDefaultOptions: RectangleDrawingToolOptions = {
+export const rectangleFillDrawingToolDefaultOptions: RectangleDrawingToolOptions = {
 	//opacity: 1, // this doesnt seem to do anything
 	fillColor: 'rgba(200, 50, 100, 0.25)',
 	fillColorOpacity: 0.75,
+	strokeColor: '',
+	strokeColorOpacity: 0,
+	labelColor: 'rgb(50, 147, 200)',
+	labelTextColor: 'white',
+	showLabels: false,
+	text: '',
+	priceLabelFormatter: (price: number) => price.toFixed(2),
+	timeLabelFormatter: (time: Time) => {
+		if (typeof time == 'string') return time;
+		const date = isBusinessDay(time)
+			? new Date(time.year, time.month, time.day)
+			: new Date(time * 1000);
+		return date.toLocaleDateString();
+	},
+};
+
+export const rectangleLineDrawingToolDefaultOptions: RectangleDrawingToolOptions = {
+	//opacity: 1, // this doesnt seem to do anything
+	fillColor: '',
+	fillColorOpacity: 0.0,
+	strokeColor: 'rgba(200, 50, 100, 0.75)',
+	strokeColorOpacity: 0.75,
 	labelColor: 'rgb(50, 147, 200)',
 	labelTextColor: 'white',
 	showLabels: false,
@@ -36,20 +60,27 @@ export function normalizeRectangleDrawingToolOptions(
 	return {
 		fillColor: typeof raw.fillColor === 'string'
 			? raw.fillColor
-			: rectangleDrawingToolDefaultOptions.fillColor,
+			: rectangleFillDrawingToolDefaultOptions.fillColor,
 
 		fillColorOpacity: Number(
-			raw.fillColorOpacity ?? rectangleDrawingToolDefaultOptions.fillColorOpacity
+			raw.fillColorOpacity ?? rectangleFillDrawingToolDefaultOptions.fillColorOpacity
+		),
+		strokeColor: typeof raw.strokeColor === 'string'
+			? raw.fillColor
+			: rectangleFillDrawingToolDefaultOptions.strokeColor,
+
+			strokeColorOpacity: Number(
+			raw.strokeColorOpacity ?? rectangleFillDrawingToolDefaultOptions.strokeColorOpacity
 		),
 
 		labelColor: typeof raw.labelColor === 'string'
 			? raw.labelColor
-			: rectangleDrawingToolDefaultOptions.labelColor,
+			: rectangleFillDrawingToolDefaultOptions.labelColor,
 
 		labelTextColor: typeof raw.labelTextColor === 'string'
 			? raw.labelTextColor
-			: rectangleDrawingToolDefaultOptions.labelTextColor,
-		text: typeof raw.text === 'string' ? raw.text : rectangleDrawingToolDefaultOptions.text,
+			: rectangleFillDrawingToolDefaultOptions.labelTextColor,
+		text: typeof raw.text === 'string' ? raw.text : rectangleFillDrawingToolDefaultOptions.text,
 		showLabels:
 			typeof raw.showLabels === 'boolean'
 				? raw.showLabels
@@ -57,16 +88,16 @@ export function normalizeRectangleDrawingToolOptions(
 				? true
 				: raw.showLabels === 'false'
 				? false
-				: rectangleDrawingToolDefaultOptions.showLabels,
+				: rectangleFillDrawingToolDefaultOptions.showLabels,
 
 		priceLabelFormatter:
 			typeof raw.priceLabelFormatter === 'function'
 				? raw.priceLabelFormatter
-				: rectangleDrawingToolDefaultOptions.priceLabelFormatter,
+				: rectangleFillDrawingToolDefaultOptions.priceLabelFormatter,
 
 		timeLabelFormatter:
 			typeof raw.timeLabelFormatter === 'function'
 				? raw.timeLabelFormatter
-				: rectangleDrawingToolDefaultOptions.timeLabelFormatter,
+				: rectangleFillDrawingToolDefaultOptions.timeLabelFormatter,
 	};
 }

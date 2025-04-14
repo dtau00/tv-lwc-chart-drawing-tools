@@ -10,6 +10,7 @@ import { MAX_TIME } from '../../../common/utils/time';
 
 export class LineHorizontalDrawing extends ChartDrawingBase{
 	private static readonly TOTAL_DRAWING_POINTS = 2; // Set the drawing points for this type of drawing.  A box will have 2, a line ray will have 1, etc...
+	private static readonly TOOL_TYPE = DrawingToolType.HorizontalLine
 
 	constructor(
 		chart: IChartApi,
@@ -24,7 +25,7 @@ export class LineHorizontalDrawing extends ChartDrawingBase{
 			const dp2 = {time : MAX_TIME, price} as DrawingPoint
 			this.overrideDrawingPoints([dp1, dp2]);
 		}
-		super( DrawingToolType.HorizontalLine, chart, series, symbolName, LineHorizontalDrawing.TOTAL_DRAWING_POINTS, drawingToolDefaultOptions, baseProps, _finalizeDrawingPoints);
+		super( LineHorizontalDrawing.TOOL_TYPE, chart, series, symbolName, LineHorizontalDrawing.TOTAL_DRAWING_POINTS, drawingToolDefaultOptions, baseProps, _finalizeDrawingPoints);
 		
 		this.initialize(baseProps);
 		if(baseProps)

@@ -10,6 +10,7 @@ import { MAX_TIME } from '../../../common/utils/time';
 
 export class LineHorizontalRayDrawing extends ChartDrawingBase{
 	private static readonly TOTAL_DRAWING_POINTS = 2; // Set the drawing points for this type of drawing.  A box will have 2, a line ray will have 1, etc...
+	private static readonly TOOL_TYPE = DrawingToolType.HorizontalLineRay
 
 	constructor(
 		chart: IChartApi,
@@ -34,7 +35,7 @@ export class LineHorizontalRayDrawing extends ChartDrawingBase{
 				this.overrideDrawingPoints([points[0],points[1]]);
 			}
 		}
-		super( DrawingToolType.HorizontalLineRay, chart, series, symbolName, LineHorizontalRayDrawing.TOTAL_DRAWING_POINTS, drawingToolDefaultOptions, baseProps, _finalizeDrawingPoints);
+		super( LineHorizontalRayDrawing.TOOL_TYPE, chart, series, symbolName, LineHorizontalRayDrawing.TOTAL_DRAWING_POINTS, drawingToolDefaultOptions, baseProps, _finalizeDrawingPoints);
 		
 		this.initialize(baseProps);
 		if(baseProps)

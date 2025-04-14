@@ -1,10 +1,8 @@
 v1
 --
 
-rectangle line (not fill)
+extended rect can 'jump' while moving
 circle
-
-dont allow access to baseprops, use getters and setters
 
 test multi symbol
   - do i need to set current chart for drawing when a drawing is selected?
@@ -14,9 +12,10 @@ properly handle historical days for secondsperbar
 
 fix lineStyle type, type it correctly
 make sure to check view.points when looking for selection
-setting, chaging, saving styling between view and drawing baseprops is confusing
-fix text adding to style.  super hacky. maybe have a single base drawing options we can cast as
+dont allow access to baseprops, use getters and setters
 
+fix text adding to style.  super hacky. maybe have a single base drawing options we can cast as
+setting, chaging, saving styling between view and drawing baseprops is confusing, needs refactor
 toolbar needs refactoring, break out to toolbar-manager
 
 v2

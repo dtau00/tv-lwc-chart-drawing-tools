@@ -7,7 +7,9 @@ export interface DrawingToolInfo {
 
 export enum DrawingToolType {
     Rectangle = 'rectangle',
+    RectangleLine = 'rectangle-line',
     RectangleExtended = 'rectangle-extended',
+    RectangleLineExtended = 'rectangle-line-extended',
     Line = 'line',
     HorizontalLineRay = 'horizontal-line-ray',
     HorizontalLine = 'horizontal-line',
@@ -26,13 +28,25 @@ export const AVAILABLE_TOOLS: DrawingToolInfo[] = [
     {
         type: DrawingToolType.Rectangle,
         name: 'rectangle', 
-        icon: '▭',
+        icon: '▬',
         description: 'Draw rectangles on the chart'
     },
     {
         type: DrawingToolType.RectangleExtended,
         name: 'rectangle-extended',
-        icon: '⌧',
+        icon: '▬▸',
+        description: 'Draw rectangles on the chart'
+    },
+    {
+        type: DrawingToolType.RectangleLine,
+        name: 'rectangle-line', 
+        icon: '▭',
+        description: 'Draw rectangles on the chart'
+    },
+    {
+        type: DrawingToolType.RectangleLineExtended,
+        name: 'rectangle-line-extended',
+        icon: '▭>',
         description: 'Draw rectangles on the chart'
     },
     {

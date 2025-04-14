@@ -8,6 +8,7 @@ import { BoxSide, getBoxHoverTarget, getCursorForBoxSide, getUpdateBoxPosition, 
 
 export class FibonacciDrawing extends ChartDrawingBase{
 	private static readonly TOTAL_DRAWING_POINTS = 2; // Set the drawing points for this type of drawing.  A box will have 2, a line ray will have 1, etc...
+	private static readonly TOOL_TYPE = DrawingToolType.Fibonacci
 	private _side: BoxSide;
 	constructor(
 		chart: IChartApi,
@@ -15,7 +16,7 @@ export class FibonacciDrawing extends ChartDrawingBase{
 		symbolName: string,
 		baseProps?: ChartDrawingBaseProps,
 	) {
-		super( DrawingToolType.Fibonacci, chart, series, symbolName, FibonacciDrawing.TOTAL_DRAWING_POINTS, drawingToolDefaultOptions, baseProps);
+		super( FibonacciDrawing.TOOL_TYPE, chart, series, symbolName, FibonacciDrawing.TOTAL_DRAWING_POINTS, drawingToolDefaultOptions, baseProps);
 		
 		this.initialize(baseProps)
 		if(baseProps)

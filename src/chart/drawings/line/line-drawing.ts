@@ -9,6 +9,7 @@ import { DrawingPoint } from '../../../common/points';
 
 export class LineDrawing extends ChartDrawingBase{
 	private static readonly TOTAL_DRAWING_POINTS = 2; // Set the drawing points for this type of drawing.  A box will have 2, a line ray will have 1, etc...
+	private static readonly TOOL_TYPE = DrawingToolType.Line
 	private _side : LineHandle;
 
 	constructor(
@@ -17,7 +18,7 @@ export class LineDrawing extends ChartDrawingBase{
 		symbolName: string,
 		baseProps?: ChartDrawingBaseProps,
 	) {
-		super( DrawingToolType.Line, chart, series, symbolName, LineDrawing.TOTAL_DRAWING_POINTS, drawingToolDefaultOptions, baseProps);
+		super( LineDrawing.TOOL_TYPE, chart, series, symbolName, LineDrawing.TOTAL_DRAWING_POINTS, drawingToolDefaultOptions, baseProps);
 		
 		this.initialize(baseProps);
 		if(baseProps)

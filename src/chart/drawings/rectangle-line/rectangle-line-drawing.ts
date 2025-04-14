@@ -1,15 +1,14 @@
-import { Rectangle as View } from './rectangle-view';
-import { rectangleFillDrawingToolDefaultOptions as drawingToolDefaultOptions, normalizeRectangleDrawingToolOptions } from '../common/options/rectangle-options';
+import { RectangleLine as View } from './rectangle-line-view';
+import { rectangleLineDrawingToolDefaultOptions as drawingToolDefaultOptions, normalizeRectangleDrawingToolOptions } from '../common/options/rectangle-options';
 
 import { IChartApi, ISeriesApi, Point, SeriesType,} from 'lightweight-charts';
 import { ChartDrawingBase, ChartDrawingBaseProps } from '../../../chart/drawings/chart-drawing-base';
 import { DrawingToolType } from '../../toolbar/tools/drawing-tools';
 import { BoxSide, getBoxHoverTarget, getCursorForBoxSide, getUpdateBoxPosition, MousePointAndTime  } from '../../../common/points';
 
-export class RectangleDrawing extends ChartDrawingBase{
+export class RectangleLineDrawing extends ChartDrawingBase{
 	private static readonly TOTAL_DRAWING_POINTS = 2; // Set the drawing points for this type of drawing.  A box will have 2, a line ray will have 1, etc...
-	private static readonly TOOL_TYPE = DrawingToolType.Rectangle
-
+	private static readonly TOOL_TYPE = DrawingToolType.RectangleLine
 	private _side: BoxSide;
 	constructor(
 		chart: IChartApi,
@@ -19,7 +18,7 @@ export class RectangleDrawing extends ChartDrawingBase{
 	) {
 		// MAKE SURE TO UPDATE THIS WHEN CREATING NEW DRAWING TOOLS
 
-		super(RectangleDrawing.TOOL_TYPE, chart, series, symbolName, RectangleDrawing.TOTAL_DRAWING_POINTS, drawingToolDefaultOptions, baseProps);
+		super(RectangleLineDrawing.TOOL_TYPE, chart, series, symbolName, RectangleLineDrawing.TOTAL_DRAWING_POINTS, drawingToolDefaultOptions, baseProps);
 
 		this.initialize(baseProps)
 		if(baseProps)
@@ -36,7 +35,7 @@ export class RectangleDrawing extends ChartDrawingBase{
 	// set the style when drawing is selected
 	select(): void {
 		this.view().applyOptions({ 
-			fillColor: 'rgba(100, 100, 100, 0.5)', 
+			strokeColor: 'rgba(100, 100, 100, 0.5)', 
 			//strokeColor: 'rgb(218, 250, 9)',
 			//strokeColorOpacity: 1
 		})

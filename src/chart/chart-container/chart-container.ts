@@ -1,10 +1,10 @@
 import { CandlestickData, ISeriesApi, LineSeries, MouseEventParams, SeriesType, Time } from "lightweight-charts";
 
 import { IChartApi } from "lightweight-charts";
-import { PluginBase } from "../plugins/plugin-base.ts";
-import { ensureDefined } from "../common/utils/assertions.ts";
-import { ChartDrawingsManager } from "./chart-drawings-manager.ts";
-import { ChartDrawingBase } from "./drawings/chart-drawing-base.ts";
+import { PluginBase } from "../../plugins/plugin-base.ts";
+import { ensureDefined } from "../../common/utils/assertions.ts";
+import { ChartDrawingsManager } from "../chart-drawings-manager.ts";
+import { ChartDrawingBase } from "../drawings/chart-drawing-base.ts";
 import { createChartMouseHandlers, initializeListeners, removeListeners } from "./chart-mouse-handlers.ts";
 import { removeListener } from "process";
 

@@ -1,19 +1,10 @@
 import { ChartDrawingsManager } from '../chart-drawings-manager.ts';
 import { DrawingToolType, AVAILABLE_TOOLS } from '../toolbar/tools/drawing-tools.ts';
 import { clearDiv, selectDivForGroup, unselectAllDivsForGroup } from '../../common/utils/html.ts';
-import { ToolLine } from '../../chart/toolbar/tools/tool/tool-line.ts';
-import { ToolRectangle } from '../../chart/toolbar/tools/tool/tool-rectangle.ts';
-import { ToolRemove } from '../../chart/toolbar/tools/tool/tool-remove.ts';
 import Tool from '../toolbar/tools/tool-base.ts';
 import { ButtonEvents, ChartEvents, eventBus, ToolButtonEventDetails } from '../../common/event-bus';
-import { ToolRectangleExtended } from '../../chart/toolbar/tools/tool/tool-rectangle-extended.ts';
 import { ChartDrawingBase } from '../drawings/chart-drawing-base.ts';
-import { ToolLineHorizontalRay } from '../../chart/toolbar/tools/tool/tool-line-horizontal-ray.ts';
-import { ToolLineHorizontal } from '../../chart/toolbar/tools/tool/tool-line-horizontal.ts';
-import { ToolLineVertical } from '../../chart/toolbar/tools/tool/tool-line-vertical.ts';
-import { ToolFibonacci } from '../../chart/toolbar/tools/tool/tool-fibonacci.ts';
-import { ToolRemoveAll } from './tools/tool/tool-remove-all.ts';
-import { ToolText } from './tools/tool/tool-text.ts';
+import { DrawingToolFactory } from '../../common/factories/drawing-tool-type-to-tool-factory.ts';
 // This class is the main class for the chart drawing tools.
 
 export class ChartDrawingsToolbar {
@@ -22,23 +13,7 @@ export class ChartDrawingsToolbar {
 		[DrawingToolType.RemoveAll]: () => this._onClickRemoveAllDrawingTool(),
 		[DrawingToolType.Text]: () => this._onClickTextDrawingTool(),
 	};
-	private _toolFactory =  new Map([
-		[DrawingToolType.Fibonacci, ToolFibonacci],
-		[DrawingToolType.Rectangle, ToolRectangle],
-		[DrawingToolType.RectangleExtended, ToolRectangleExtended],
-		[DrawingToolType.Line, ToolLine],
-		[DrawingToolType.HorizontalLineRay, ToolLineHorizontalRay],
-		[DrawingToolType.HorizontalLine, ToolLineHorizontal],
-		[DrawingToolType.VerticalLine, ToolLineVertical],
-		[DrawingToolType.Text, ToolText],
-		[DrawingToolType.Remove, ToolRemove],
-		[DrawingToolType.RemoveAll, ToolRemoveAll],
-	]);
-	private _toolMap = {
-		[DrawingToolType.Remove]: ToolRemove,
-		[DrawingToolType.RemoveAll]: ToolRemoveAll,
-		[DrawingToolType.Text]: ToolText,
-	};
+
 	private _drawingsToolbarContainer: HTMLDivElement | undefined;
 	private _drawingsSubToolbarContainer: HTMLDivElement | undefined;
 	private _chartDrawingsManager: ChartDrawingsManager;
@@ -48,6 +23,7 @@ export class ChartDrawingsToolbar {
 	private _toolButtons: Map<HTMLDivElement, EventListener> = new Map();
 	private _initialized: boolean = false;
 	private _chartId: string | undefined;
+	private _toolFactory = DrawingToolFactory
 
 	constructor(
 		chartDrawingsManager: ChartDrawingsManager,
@@ -114,7 +90,8 @@ export class ChartDrawingsToolbar {
 			if(!toolClass || tool.type === DrawingToolType.None) 
 				return;
 
-			const ToolClass = this._toolMap[tool.type] ?? toolClass;
+			// if its not a general tool, that its a tool
+			const ToolClass = toolClass//this._generalToolMap[tool.type] ?? toolClass;
 			const t = new ToolClass(tool.name, tool.description, tool.icon, tool.type);
 			t.addToolButtonToContainer(this._drawingsToolbarContainer!);
 			this._tools.set(tool.type, t);

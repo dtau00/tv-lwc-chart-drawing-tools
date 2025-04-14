@@ -14,20 +14,23 @@ abstract class Tool implements ITool {
     description: string;
     icon: string;
     button: HTMLDivElement;
+    private _isGeneralButtonType: boolean;  // a general button type doesnt draw, but does other things, like delete a drawing
     private _immediatelyStartDrawing: boolean; // immediately starts drawing after first chart is selected.  Often used for single user input drawings, like vertical line.
     protected subTools: SubTool[] = [];
 
-    constructor(name: string, description: string, icon: string, toolType: DrawingToolType, immediatelyStartDrawing? : boolean) {
+    constructor(name: string, description: string, icon: string, toolType: DrawingToolType, immediatelyStartDrawing? : boolean, isGeneralButtonType?: boolean) {
         this.name = name;
         this.description = description;
         this.icon = icon;
         this.toolType = toolType;
+        this._isGeneralButtonType = isGeneralButtonType ?? false
         this._immediatelyStartDrawing = immediatelyStartDrawing ?? false
 
         this.onClick = this.onClick.bind(this);
     }
 
     get immediatelyStartDrawing(){ return this._immediatelyStartDrawing }
+    get isGeneralButtonType(){ return this._isGeneralButtonType }
 
     abstract getNewDrawingObject(chart: IChartApi, series: ISeriesApi<SeriesType>, symbolName: string): any;
     abstract setSubToolbarButtons(container: HTMLDivElement): HTMLDivElement[];

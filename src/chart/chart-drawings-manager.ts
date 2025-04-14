@@ -3,16 +3,10 @@ import { IChartApi, ISeriesApi, SeriesType } from 'lightweight-charts';
 import { ChartDrawingBase, ChartDrawingBaseProps } from './drawings/chart-drawing-base.ts';
 import { DrawingToolType } from './toolbar/tools/drawing-tools.ts';
 import { DataStorage } from '../common/storage.ts';
-import { ChartContainer } from './chart-container.ts';
+import { ChartContainer } from './chart-container/chart-container.ts';
 import { ChartEvents, eventBus } from '../common/event-bus';
 import { PluginBase } from '../plugins/plugin-base.ts';
-import { RectangleExtendedDrawing } from './drawings/rectangle-extended/rectangle-extended-drawing.ts';
-import { RectangleDrawing } from './drawings/rectangle/rectangle-drawing.ts';
-import { LineDrawing } from './drawings/line/line-drawing.ts';
-import { LineHorizontalDrawing } from './drawings/line-horizontal/line-horizontal-drawing.ts';
-import { LineVerticalDrawing } from './drawings/line-vertical/line-vertical-drawing.ts';
-import { LineHorizontalRayDrawing } from './drawings/line-horizontal-ray/line-horizontal-ray-drawing.ts';
-import { FibonacciDrawing } from './drawings/fibonacci/fibonacci-drawing.ts';
+import { DrawingObjectFactory } from '../common/factories/drawing-tool-to-object-factory.ts';
 
 // manage charts
     // when chart is created, register it with ChartManager
@@ -35,17 +29,9 @@ export class ChartDrawingsManager {
     private _currentChartContainer: ChartContainer | null; // current chart mouse is hovering over
     private _creatingNewDrawingFromToolbar: boolean = false;
     private _initalized: boolean = false
-
-    private _drawingFactoryMap: Partial<Record<DrawingToolType, (chart: IChartApi, series: ISeriesApi<SeriesType>, symbolName: string, item: ChartDrawingBaseProps) => ChartDrawingBase>> = {
-        [DrawingToolType.Rectangle]: (chart, series, symbolName, item) => new RectangleDrawing(chart, series, symbolName, item),
-        [DrawingToolType.RectangleExtended]: (chart, series, symbolName, item) => new RectangleExtendedDrawing(chart, series, symbolName, item),
-        [DrawingToolType.Line]: (chart, series, symbolName, item) => new LineDrawing(chart, series, symbolName, item),
-        [DrawingToolType.HorizontalLine]: (chart, series, symbolName, item) => new LineHorizontalDrawing(chart, series, symbolName, item),
-        [DrawingToolType.VerticalLine]: (chart, series, symbolName, item) => new LineVerticalDrawing(chart, series, symbolName, item),
-        [DrawingToolType.HorizontalLineRay]: (chart, series, symbolName, item) => new LineHorizontalRayDrawing(chart, series, symbolName, item),
-        [DrawingToolType.Fibonacci]: (chart, series, symbolName, item) => new FibonacciDrawing(chart, series, symbolName, item),
-    };
-
+    private _drawingFactoryMap = DrawingObjectFactory;
+    //private _drawingFactoryMap: Partial<Record<DrawingToolType, (chart: IChartApi, series: ISeriesApi<SeriesType>, symbolName: string, item: ChartDrawingBaseProps) => ChartDrawingBase>> = DrawingObjectFactory;
+    
     private constructor() {
         this._charts = new Map();
         this._drawings = new Map();

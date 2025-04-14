@@ -1,8 +1,8 @@
 import { Point } from 'lightweight-charts';
 import type { ChartContainer } from './chart-container';
-import { getChartPointFromMouseEvent, mouseEventToMouseEventParamsPointAndTime, MousePointAndTime } from '../common/points';
-import { ChartDrawingsManager } from './chart-drawings-manager';
-import { ChartDrawingBase } from './drawings/chart-drawing-base';
+import { getChartPointFromMouseEvent, mouseEventToMouseEventParamsPointAndTime, MousePointAndTime } from '../../common/points';
+import { ChartDrawingsManager } from '../chart-drawings-manager';
+import { ChartDrawingBase } from '../drawings/chart-drawing-base';
 
 //private static readonly MouseHoldTimeMs = 10;
 //private static readonly MouseHoldMaxOffsetPoints = 3;

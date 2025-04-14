@@ -14,6 +14,6 @@ export class ToolRemove extends Tool {
     }
 
     constructor(name: string, description: string, icon: string, toolType: DrawingToolType) {
-        super(name, description, icon, toolType);
+        super(name, description, icon, toolType, false, true);
     }
 }

@@ -18,10 +18,10 @@ export class ToolFibonacci extends Tool {
     setSubToolbarButtons(container: HTMLDivElement): HTMLDivElement[] {
         let buttons: HTMLDivElement[] = [];
 
-        createColorSubTools('lineColor', this.name, TOTAL_SUBTOOLS_PER_TYPE,  container, this.subTools, this.valueUpdatedCallback)
+        createColorSubTools('color', this.name, TOTAL_SUBTOOLS_PER_TYPE,  container, this.subTools, this.valueUpdatedCallback)
         container.appendChild(createSpacer());
 
-        createOpacitySubTools('lineColorOpacity', this.name, TOTAL_SUBTOOLS_PER_TYPE, container, this.subTools, this.valueUpdatedCallback)
+        createOpacitySubTools('colorOpacity', this.name, TOTAL_SUBTOOLS_PER_TYPE, container, this.subTools, this.valueUpdatedCallback)
 
         return buttons; 
     }

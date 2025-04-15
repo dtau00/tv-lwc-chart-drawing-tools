@@ -1,10 +1,11 @@
-import { Rectangle as View } from './rectangle-view';
+import { Rectangle, Rectangle as View } from './rectangle-view';
 import { rectangleFillDrawingToolDefaultOptions as drawingToolDefaultOptions, normalizeRectangleDrawingToolOptions } from '../common/options/rectangle-options';
 
 import { IChartApi, ISeriesApi, Point, SeriesType,} from 'lightweight-charts';
 import { ChartDrawingBase, ChartDrawingBaseProps } from '../../../chart/drawings/chart-drawing-base';
 import { DrawingToolType } from '../../toolbar/tools/drawing-tools';
 import { BoxSide, getBoxHoverTarget, getCursorForBoxSide, getUpdateBoxPosition, MousePointAndTime  } from '../../../common/points';
+import { ViewBase } from '../drawing-view-base';
 
 export class RectangleDrawing extends ChartDrawingBase{
 	private static readonly TOTAL_DRAWING_POINTS = 2; // Set the drawing points for this type of drawing.  A box will have 2, a line ray will have 1, etc...
@@ -23,10 +24,14 @@ export class RectangleDrawing extends ChartDrawingBase{
 
 		this.initialize(baseProps)
 		if(baseProps)
-			this.drawingView = new View(chart, series, this.toolType, drawingToolDefaultOptions, this.styleOptions, this.drawingPoints); 
+			this.drawingView = new View(chart, series, this.toolType, drawingToolDefaultOptions, this.id, this.styleOptions, this.drawingPoints); 
 		else
-			this.drawingView = new View(chart, series, this.toolType, drawingToolDefaultOptions); 
+			this.drawingView = new View(chart, series, this.toolType, drawingToolDefaultOptions, this.id); 
 	}
+
+	createNewView(chart: IChartApi, series: ISeriesApi<SeriesType>): ViewBase{
+        return new View(chart, series, this.toolType, this._defaultOptions, this.id, this.styleOptions, this.drawingPoints); 
+    }
 	
 	normalizeStyleOptions(options : any){
 		this.basePropsStyleOptions =normalizeRectangleDrawingToolOptions(options)

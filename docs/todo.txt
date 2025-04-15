@@ -22,19 +22,13 @@ v2
 --
 
 priorizie chart drawing selection
-configurable subtools per drawing
 slider for opacity change
-fix rectangles showing at edges of pane
 multi chart support of same symbol, synced drawings
-add text to drawing
 allow users to modify styling
-sub-tool bar to allow additional customization of drawing 
-more drawings!
 new context menu when r-clicking a drawing, to allow additional functions
     - change styling (colors, opacity, )
   - text
   - delete / duplicate drawing
-rclick to cancel drawing selection / creation
 clear all by filter (symbol, group, userid)
 support mutiplie charts.  change to one drawing will adjust drawing on all other charts at the same time
   - by symbolName, group, userId

@@ -7,6 +7,7 @@ import { ChartDrawingsManager } from "../chart-drawings-manager.ts";
 import { ChartDrawingBase } from "../drawings/chart-drawing-base.ts";
 import { createChartMouseHandlers, initializeListeners, removeListeners } from "./chart-mouse-handlers.ts";
 import { removeListener } from "process";
+import { ViewBase } from "../drawings/drawing-view-base.ts";
 
 type DummyBar = {
     time : Time,
@@ -26,7 +27,7 @@ export class ChartContainer {
     private _tags: string[] = [];
     private _chart: IChartApi;
     private _series: ISeriesApi<SeriesType>;
-    private _primatives : PluginBase[] = [];  // TODO; we dont need this, its tracked within the drawingView
+    private _primatives : Map<string, ViewBase> = new Map();  
     private _handlers: ReturnType<typeof createChartMouseHandlers>;
 
     private _whiteSpaceTotal: number = 100;
@@ -116,26 +117,75 @@ export class ChartContainer {
         return true;
     }
 
+    setChartDrawing(chartDrawing: ChartDrawingBase){
+        this.removePrimative(chartDrawing.id)
+
+        const primative = chartDrawing.createNewView(this._chart, this._series)
+        this._primatives.set(primative.drawingId, primative)
+        ensureDefined(this._series).attachPrimitive(primative); // add to series, draws on the chart
+    }
+
+    setChartDrawings(chartDrawings: ChartDrawingBase[]){
+        for(const drawing of chartDrawings)
+            this.setChartDrawing(drawing)
+    }
+
+
+    removeAllPrimatives(){
+        for(const prim of this._primatives.values()){
+            ensureDefined(this._series).detachPrimitive(prim);
+        }
+        this._primatives.clear();
+    }
+
+    removePrimative(drawingId: string){
+        if(this._primatives.has(drawingId)){
+            const prim = this._primatives.get(drawingId)
+            if(prim){
+                ensureDefined(this._series).detachPrimitive(prim);
+                this._primatives.delete(drawingId)
+            }
+        }
+    }
+
+    reDrawChartDrawings(chartDrawings: ChartDrawingBase[]){
+        this.removeAllPrimatives()
+        this.setChartDrawings(chartDrawings)
+    }
+
+    // sets this as the 'active' chart, for drawing manipulation of the primative
+    setChartDrawingsToThisChart(chartDrawings: ChartDrawingBase[]){
+        this.removeAllPrimatives() // remove all previous primates
+        for(const drawing of chartDrawings){ // change the view of the chart drawing to this chart.  This goes through a different rendering pipeline 
+            drawing.setNewView(this._chart, this._series)
+        }
+    }
+
+    /*
     // adds a new primative to the series
-    addDrawingPrimative(primative: PluginBase) : void{
+    private _addDrawingPrimative(primative: ViewBase) : void{
         console.log('addDrawingPrimative', primative);
+        this._primatives.set(primative.drawingId, primative)
         ensureDefined(this._series).attachPrimitive(primative); // add to series, draws on the chart
     }
 
     // updates a primative by replacing it
-    updateDrawingPrimative(drawing: ChartDrawingBase) : void{
+    setDrawingPrimative(primative: ViewBase) : void{
         //const primative = drawing.primative;
-        this.removeDrawingPrimative(drawing.drawingView?.baseId ?? "");
-        this.addDrawingPrimative(drawing.drawingView as PluginBase);
+        //this.removeDrawingPrimative(drawing.drawingView?.baseId ?? "");
+        //this.addDrawingPrimative(drawing.drawingView as PluginBase);
+        this.removeDrawingPrimative(primative.drawingId)
+        this._addDrawingPrimative(primative)
     }
 
     // removes a primative from the series
-    removeDrawingPrimative(id: string) : void{
-        const primative = this._primatives.find(p => p.baseId === id);
-        if(primative){
-            console.log('removeDrawingPrimative', primative);
-            ensureDefined(this._series).detachPrimitive(primative);
-            this._primatives = this._primatives.filter(p => p.baseId !== id);
+    removeDrawingPrimative(drawingId: string) : void{
+        if(this._primatives.has(drawingId)){
+            const prim = this._primatives.get(drawingId)
+            if(prim){
+                ensureDefined(this._series).detachPrimitive(prim);
+                this._primatives.delete(drawingId)
+            }
         }
     }
 
@@ -145,11 +195,12 @@ export class ChartContainer {
         console.log('remPrim', primative);
         ensureDefined(this._series).detachPrimitive(primative);
     }
-
+*/
     // re-syncs all primatives with the chartDrawings
     // this is not ideal, its slow, so use sparingly
     // better to call the individual updates
     updatePrimatives(primatives: PluginBase[]) : void{
+        /*
         console.log('updatePrimatives', primatives);
         // remove all primatives
        for(const primate of this._primatives)
@@ -157,7 +208,7 @@ export class ChartContainer {
         
         // re-add all primatives
         for(const primative of primatives)
-            this.addDrawingPrimative(primative);
+            this.addDrawingPrimative(primative);*/
     }
 
     setChartDraggable(enable: boolean): void {

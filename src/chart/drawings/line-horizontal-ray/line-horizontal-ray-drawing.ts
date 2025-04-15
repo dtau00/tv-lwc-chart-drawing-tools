@@ -7,6 +7,7 @@ import { DrawingToolType } from '../../toolbar/tools/drawing-tools';
 import { isPointNearLine, convertAndNormalizeDrawingPointsToPoint, isPointOverStraightLineDrawing, pointToDrawingPoints, MousePointAndTime } from '../../../common/points';
 import { DrawingPoint } from '../../../common/points';
 import { MAX_TIME } from '../../../common/utils/time';
+import { ViewBase } from '../drawing-view-base';
 
 export class LineHorizontalRayDrawing extends ChartDrawingBase{
 	private static readonly TOTAL_DRAWING_POINTS = 2; // Set the drawing points for this type of drawing.  A box will have 2, a line ray will have 1, etc...
@@ -39,11 +40,15 @@ export class LineHorizontalRayDrawing extends ChartDrawingBase{
 		
 		this.initialize(baseProps);
 		if(baseProps)
-			this.drawingView = new View(chart, series, this.toolType, drawingToolDefaultOptions, this.styleOptions, this.drawingPoints); 
+			this.drawingView = new View(chart, series, this.toolType, drawingToolDefaultOptions, this.id, this.styleOptions, this.drawingPoints); 
 		else
-			this.drawingView = new View(chart, series, this.toolType, drawingToolDefaultOptions); 
+			this.drawingView = new View(chart, series, this.toolType, drawingToolDefaultOptions, this.id); 
 	}
 
+	createNewView(chart: IChartApi, series: ISeriesApi<SeriesType>): ViewBase{
+        return new View(chart, series, this.toolType, this._defaultOptions, this.id, this.styleOptions, this.drawingPoints); 
+    }
+	
 	normalizeStyleOptions(options : any){
 		this.basePropsStyleOptions = normalizeLineDrawingToolOptions(options)
 	}

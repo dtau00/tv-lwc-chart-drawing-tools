@@ -136,6 +136,17 @@ export abstract class ChartDrawingBase implements IChartDrawing {
     abstract onDrag(param: MousePointAndTime, startPoint: Point, endPoint: Point): void;
     abstract onHoverWhenSelected(point: Point): void;   
     abstract normalizeStyleOptions(options: {}): void;  
+	abstract createNewView(chart: IChartApi, series: ISeriesApi<SeriesType>): ViewBase;
+
+    setNewView(chart: IChartApi, series: ISeriesApi<SeriesType>){
+		if(this.drawingView)
+			ensureDefined(this._series).detachPrimitive(this.drawingView);
+
+        this._chart = chart
+		this._series = series
+		this.drawingView = this.createNewView(chart, series)
+        ensureDefined(this._series).attachPrimitive(this.drawingView)
+	}
 
     // set the style options to base properties, this is used when loading from config
     setBaseStyleOptionsFromConfig() {    
@@ -172,6 +183,7 @@ export abstract class ChartDrawingBase implements IChartDrawing {
     remove() {
 		this.stopDrawing();
 		this.removePreviewDrawing();
+        ensureDefined(this._series).detachPrimitive(this.drawingView as PluginBase);
 		//this.removeChartDrawing();
 		this._chart = undefined;
 		this._series = undefined;
@@ -187,18 +199,14 @@ export abstract class ChartDrawingBase implements IChartDrawing {
 	}
 
     onClick(param: MousePointAndTime) {
-        const point = param.point;
-        const time = param.time;
-        console.log('onClick', 'chart-drawing-base',point);
-		if (this._isDrawing || !point || !time || !this._series) 
-			return;
+		if (this._isDrawing || !param.point || !param.time || !this._series)  return;
 
-		const price = this._series.coordinateToPrice(point.y);
+		const price = this._series.coordinateToPrice(param.point.y);
 
 		// if initial drawing is not completed, add the point
 		if(!this._isCompleted && price !== null){
 			this.addPoint({
-				time: time,
+				time: param.time,
 				price,
 			});
 		}
@@ -253,6 +261,8 @@ export abstract class ChartDrawingBase implements IChartDrawing {
         if(this._drawingFinishedCallback){
             this._drawingFinishedCallback();
         }
+        if(this._chart && this._series)
+            this.setNewView(this._chart, this._series)
         eventBus.dispatchEvent(new CustomEvent(ChartEvents.NewDrawingCompleted, { detail: {id: this.id, type: this.type } }));
     }
 

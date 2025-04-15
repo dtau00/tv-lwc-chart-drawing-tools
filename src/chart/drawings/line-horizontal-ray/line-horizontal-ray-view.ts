@@ -14,11 +14,12 @@ export class LineHorizontalRay extends ViewBase {
 		series: ISeriesApi<SeriesType>,
 		toolType: DrawingToolType,
 		defaultOptions: {},
+		drawingId: string,
 		options: Partial<DrawingOptions> = {},
 		drawingPoints?: DrawingPoint[]
 	) {
 
-		super(chart, series, toolType, defaultOptions, options);
+		super(chart, series, toolType, defaultOptions, options, drawingId);
 
 		this.initializeDrawingViews(drawingPoints);
 	}

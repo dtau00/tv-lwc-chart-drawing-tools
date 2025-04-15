@@ -7,6 +7,7 @@ import { ChartContainer } from './chart-container/chart-container.ts';
 import { ChartEvents, eventBus } from '../common/event-bus';
 import { PluginBase } from '../plugins/plugin-base.ts';
 import { DrawingObjectFactory } from '../common/factories/drawing-tool-to-object-factory.ts';
+import { ViewBase } from './drawings/drawing-view-base.ts';
 
 // manage charts
     // when chart is created, register it with ChartManager
@@ -102,6 +103,7 @@ export class ChartDrawingsManager {
         let data = symbolDrawings.map(drawing => drawing.getBasePropsForLoading()); // get map data
         //console.log("save drawings for ", symbolName, data);
         DataStorage.saveData<ChartDrawingBaseProps[]>(`${symbolName}-drawings`, data); // save drawings for symbol
+        this._reDrawChartDrawingsForCharts(symbolName)
     }
 
     public setTextForSelectedDrawing(){
@@ -115,30 +117,31 @@ export class ChartDrawingsManager {
 
     // TODO this is messy, can be cleaned up
     public removeDrawingsForCurrentChartSymbol(){
-        if(this._currentChartContainer){
-            const symbolName = this._currentChartContainer.symbolName
-            const drawings = this._drawings.get(symbolName) || [];
-            for(const drawing of drawings){
-                for(const chart of this._chartContainers.values()){
-                    if(chart.symbolName === symbolName)
-                        chart.remPrim(drawing.drawingView as PluginBase)
-               }
-                drawing.remove()
-            }
-            this._drawings.set(symbolName, []);
-            this.saveDrawings(symbolName);
+        if(!this._currentChartContainer) return
+
+        const symbolName = this._currentChartContainer.symbolName
+        const drawings = this._drawings.get(symbolName) ?? [];
+        const charts = Array.from(this._chartContainers.values())
+            .filter(o => o.symbolName === symbolName);
+
+        // remove all primatives and drawings all charts
+        for(const drawing of drawings){ // iterate through all drawings
+            for(const chart of charts) // iterate all charts for each drawing
+                chart.removePrimative(drawing.id) // remove primative from chart
+            drawing.remove() // dispose
         }
+
+        this._drawings.set(symbolName, []); // clear out all drawings
+        this.saveDrawings(symbolName); // save empty list
     }
 
     public removeSelectedDrawing(): void {
-       if(!this._selectedDrawing)
-            return;
+       if(!this._selectedDrawing) return;
 
-       // remove the actual primative from all charts
-       // todo filter by symbol
-       //const charts = this._chartContainers.values().filter(o => o.symbolName == this._selectedDrawing?.symbolName)
-       for(const chart of this._chartContainers.values()){
-            chart.remPrim(this._selectedDrawing.drawingView as PluginBase)
+        // remove primative from all chart
+       const charts = this._getChartContainersForSymbol(this._selectedDrawing.symbolName)
+       for(const chart of charts){
+            chart.removePrimative(this._selectedDrawing.id)
        }
 
        this._selectedDrawing.remove();
@@ -160,19 +163,52 @@ export class ChartDrawingsManager {
 	}
 
     // making this more explicit, should only be set by the ChartContainer
-    public checkCurrentChartContainer(container: ChartContainer | null): void {
+    public switchCurrentContainerIfChanged(container: ChartContainer | null): void {
         if(container !== this._currentChartContainer){ 
             console.log("changing current chart container", container);
-            if(this._currentChartContainer?.chartId)
-                this.closeToolbars(this._currentChartContainer.chartId, false);
-            if(container?.chartId)
-                this.openToolbars(container.chartId, this._currentDrawingTool?.toolType || DrawingToolType.None);
-            this._currentChartContainer = container;
 
+            // switch current containers
+            const previousCurrentContainer = this._currentChartContainer
+            this._currentChartContainer = container
+
+            // flip tool bars
+            if(previousCurrentContainer?.chartId)
+                this.closeToolbars(previousCurrentContainer.chartId, false);
+            if( this._currentChartContainer?.chartId)
+                this.openToolbars(this._currentChartContainer.chartId, this._currentDrawingTool?.toolType || DrawingToolType.None);
+
+            // redraw all drawings for the last current chart container, before switching
+            const previousChartDrawings = this._getDrawingsForChartContainer(previousCurrentContainer)
+            previousCurrentContainer?.reDrawChartDrawings(previousChartDrawings)
+
+            // set all drawings to current chart, so it will update primates on the correct chart
+            const currentChartDrawings = this._getDrawingsForChartContainer(this._currentChartContainer)
+            this.currentChartContainer?.setChartDrawingsToThisChart(currentChartDrawings)
+
+            // if we are creating a new drawing...
             if(this._creatingNewDrawingFromToolbar){
                 this.startToolDrawing(this._currentDrawingTool!);
                 console.log('switched charts while new drawing in progress, restart drawing')
             }
+        }
+    }
+
+    private _getDrawingsForChartContainer(chartContainer?: ChartContainer | null): ChartDrawingBase[]{
+        if(!chartContainer) return []
+            
+        return  this.drawings.get(chartContainer.symbolName) ?? []
+    }
+
+    // redraw the chart drawings for a given symbol.  option to skip curent chart (which goes through a different rendering pipeline)
+    private _reDrawChartDrawingsForCharts(symbol: string, skipCurrentChart: boolean = true){
+        const drawings = this._drawings.get(symbol)
+        const charts = this._chartContainers.values()
+        if(!drawings || !charts) return
+
+        for(const chart of charts){
+            const dontSkip = (!skipCurrentChart || chart.chartId !== this._currentChartContainer?.chartId)
+            if(chart.symbolName === symbol && dontSkip)
+                chart.setChartDrawings(drawings)
         }
     }
 
@@ -205,7 +241,7 @@ export class ChartDrawingsManager {
     
     private _loadDrawings(chartContainer: ChartContainer): void {
         const symbolName = chartContainer.symbolName;
-    
+
         if (!this._drawings.has(symbolName)) {
             this._drawings.set(symbolName, []);
             const data = DataStorage.loadData<ChartDrawingBaseProps[]>(`${symbolName}-drawings`, []);
@@ -217,7 +253,7 @@ export class ChartDrawingsManager {
                     if (factory) {
                         const drawing = factory(chartContainer.chart, chartContainer.series, symbolName, item);
                         this._drawings.get(symbolName)?.push(drawing);
-                        chartContainer.addDrawingPrimative(drawing.drawingView as PluginBase);
+                        chartContainer.setChartDrawing(drawing);
                     } else {
                         console.warn(`No factory found for drawing type: ${item.type}`);
                     }
@@ -227,17 +263,24 @@ export class ChartDrawingsManager {
             console.log("drawings already loaded for chart, just adding primatives ", symbolName);
             const drawings = this._drawings.get(symbolName) || [];
             for (const drawing of drawings) {
-                chartContainer.addDrawingPrimative(drawing.drawingView as PluginBase);
+                chartContainer.setChartDrawing(drawing);
             }
         }
     
         console.log("all loaded drawings ", this._drawings);
     }
 
-    private _addPrimativeToChartContainers(symbolName: string, primative: PluginBase): void {
-        const containers = Array.from(this._chartContainers.values()).filter(c => c.symbolName === symbolName);
+    private _getChartContainersForSymbol(symbol: string){
+        return  Array.from(this._chartContainers.values())
+            .filter(c => c.symbolName === symbol);
+    }
+
+    private _addDrawingToChartContainers(symbolName: string, chartDrawing: ChartDrawingBase): void {
+        const containers = this._getChartContainersForSymbol(symbolName)
         for(const container of containers){
-            container.addDrawingPrimative(primative);
+            if(container.chartId !== this.currentChartContainer?.chartId)
+                container.setChartDrawing(chartDrawing)
+                //container.setChartDrawing(primative);
         }
     }
 
@@ -249,7 +292,7 @@ export class ChartDrawingsManager {
                 const drawings = this._drawings.get(this._selectedDrawing.symbolName) || [];
                 this._drawings.set(this._selectedDrawing.symbolName, [...drawings, this._selectedDrawing]);
                 this.saveDrawings(this._selectedDrawing.symbolName);
-                this._addPrimativeToChartContainers(this._selectedDrawing.symbolName, this._selectedDrawing.drawingView as PluginBase);
+                this._addDrawingToChartContainers(this._selectedDrawing.symbolName, this._selectedDrawing);
             }
             this._creatingNewDrawingFromToolbar = false;
             this.unselectDrawing();
@@ -263,6 +306,5 @@ export class ChartDrawingsManager {
             this.removeSelectedDrawing();
         }
     }
-
 }
 

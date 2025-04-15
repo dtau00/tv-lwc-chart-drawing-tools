@@ -64,7 +64,7 @@ export function createChartMouseHandlers(chartContainer: ChartContainer) {
 
       _processOnMouseMove(mgr, param, isMouseDragging, mouseDownStartPoint);
 
-      mgr.checkCurrentChartContainer(chartContainer); // check if hovering over new chart
+      mgr.switchCurrentContainerIfChanged(chartContainer); // check if hovering over new chart
       mgr.selectedDrawing?.onMouseMove(param); // pass event onto the drawing for processing
     },
 
@@ -123,7 +123,7 @@ function _processOnMouseUp(evt: MouseEvent, chartContainer: ChartContainer, isMo
       mgr.saveDrawings(mgr.selectedDrawing?.symbolName || '');
   }
   else if(param.point){ // mouse clicked
-      mgr.checkCurrentChartContainer(chartContainer);
+      mgr.switchCurrentContainerIfChanged(chartContainer);
 
       if(mgr.creatingNewDrawingFromToolbar){
         _processNewToolbarDrawingOnChartMouseEvent(chartContainer, param)

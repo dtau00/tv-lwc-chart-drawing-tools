@@ -18,12 +18,6 @@ export abstract class PluginBase implements ISeriesPrimitive<Time> {
 	
 	get baseId(): string { return this._baseId; }
 
-	protected dataUpdated?(scope: DataChangedScope): void;
-	protected requestUpdate(): void {
-		if (this._requestUpdate) this._requestUpdate();
-	}
-	private _requestUpdate?: () => void;
-
 	public attached({ chart, series, requestUpdate }: SeriesAttachedParameter<Time>) {
 		this._chart = chart;
 		this._series = series;
@@ -46,6 +40,13 @@ export abstract class PluginBase implements ISeriesPrimitive<Time> {
 	public get series(): ISeriesApi<keyof SeriesOptionsMap> {
 		return ensureDefined(this._series);
 	}
+
+	protected dataUpdated?(scope: DataChangedScope): void;
+	protected requestUpdate(): void {
+		if (this._requestUpdate) this._requestUpdate();
+	}
+
+	private _requestUpdate?: () => void;
 
 	// This method is a class property to maintain the
 	// lexical 'this' scope (due to the use of the arrow function)

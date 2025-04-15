@@ -9,6 +9,7 @@ import { DrawingToolType } from "./drawing-tools";
 import { eventBus, ButtonEvents, createToolButtonEventDetails } from "../../../common/event-bus";
 
 abstract class Tool implements ITool {
+    private _toolbarId: string;
     toolType: DrawingToolType;
     name: string;
     description: string;
@@ -18,7 +19,8 @@ abstract class Tool implements ITool {
     private _immediatelyStartDrawing: boolean; // immediately starts drawing after first chart is selected.  Often used for single user input drawings, like vertical line.
     protected subTools: SubTool[] = [];
 
-    constructor(name: string, description: string, icon: string, toolType: DrawingToolType, immediatelyStartDrawing? : boolean, isGeneralButtonType?: boolean) {
+    constructor(toolbarId: string, name: string, description: string, icon: string, toolType: DrawingToolType, immediatelyStartDrawing? : boolean, isGeneralButtonType?: boolean) {
+        this._toolbarId = toolbarId;
         this.name = name;
         this.description = description;
         this.icon = icon;
@@ -29,6 +31,7 @@ abstract class Tool implements ITool {
         this.onClick = this.onClick.bind(this);
     }
 
+    get toolbarId() {return this._toolbarId}
     get immediatelyStartDrawing(){ return this._immediatelyStartDrawing }
     get isGeneralButtonType(){ return this._isGeneralButtonType }
 
@@ -56,7 +59,7 @@ abstract class Tool implements ITool {
 
     protected onClick(evt: MouseEvent): void {
         console.log('tool button onClick, sending event', this.toolType)
-        eventBus.dispatchEvent(new CustomEvent(ButtonEvents.ToolClicked, createToolButtonEventDetails(this.toolType)))
+        eventBus.dispatchEvent(new CustomEvent(ButtonEvents.ToolClicked, createToolButtonEventDetails(this._toolbarId, this.toolType)))
     }
 
     private _loadProps(): void {

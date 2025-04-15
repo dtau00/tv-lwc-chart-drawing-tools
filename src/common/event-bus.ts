@@ -3,12 +3,26 @@ import { DrawingToolType } from "../chart/toolbar/tools/drawing-tools";
 
 export const eventBus = new EventTarget();
 
-export enum ChartEvents {
+export enum DrawingEvents {//ChartEvents {
     NewDrawingCompleted = 'newDrawingCompleted',
-    UnsetToolbar = 'unsetToolbar',
-    SetToolbar = 'setToolbar',
     CompletedDrawingSelected = 'completedDrawingSelected',
     CompletedDrawingUnSelected = 'completedDrawingUnSelected',
+}
+
+export interface DrawingEventDetails{
+   // toolbarId: string,
+    drawingId: string,
+    toolType: string,
+}
+
+export function createDrawingEventDetails(drawingId: string, toolType: string){
+    return {
+        detail : {
+          //  toolbarId,
+            drawingId,
+            toolType
+        } as DrawingEventDetails
+    }
 }
 
 export enum ButtonEvents {
@@ -17,27 +31,32 @@ export enum ButtonEvents {
 }
 
 export interface ToolButtonEventDetails {
-    toolType : DrawingToolType
+    toolbarId: string,
+    toolType: DrawingToolType
 }
-export function createToolButtonEventDetails(toolType: DrawingToolType) {
+
+export function createToolButtonEventDetails(toolbarId: string, toolType: DrawingToolType) {
     return {
         detail : {
+            toolbarId,
             toolType
         } as ToolButtonEventDetails
     }
 }
 
 export interface SubToolButtonEventDetails {
-    toolType : DrawingToolType,
-    type : DrawingSubToolType,
+    toolbarId: string,
+    toolType: DrawingToolType,
+    type: DrawingSubToolType,
     name: string,
     property: string,
     index: number
 }
 
-export function createSubToolButtonEventDetails(toolType: DrawingToolType, type: DrawingSubToolType, name: string, property: string, index: number) {
+export function createSubToolButtonEventDetails(toolbarId: string, toolType: DrawingToolType, type: DrawingSubToolType, name: string, property: string, index: number) {
     return {
         detail : {
+            toolbarId,
             toolType,
             type, 
             name,

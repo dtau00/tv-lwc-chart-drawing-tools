@@ -3,6 +3,8 @@ import type { ChartContainer } from './chart-container';
 import { getChartPointFromMouseEvent, mouseEventToMouseEventParamsPointAndTime, MousePointAndTime } from '../../common/points';
 import { ChartDrawingsManager } from '../chart-drawings-manager';
 import { ChartDrawingBase } from '../drawings/chart-drawing-base';
+import { AVAILABLE_TOOLS, DrawingToolType } from '../toolbar/tools/drawing-tools';
+import { unselectAllDivsForGroup } from '../../common/utils/html';
 
 //private static readonly MouseHoldTimeMs = 10;
 //private static readonly MouseHoldMaxOffsetPoints = 3;
@@ -108,10 +110,24 @@ function _processOnMouseMove(mgr : ChartDrawingsManager, param: MousePointAndTim
 }
 
 function _processOnRightClick(chartContainer: ChartContainer){
-  const mgr = chartContainer.chartManager;
-  mgr.unselectDrawing();
-  mgr.unselectTool();
-  mgr.closeToolbars(chartContainer.chartId, true);
+  	// dispose all  subtools
+    // TODO in the future we open a context window when hovering over drawing
+    const chartManager = chartContainer.chartManager;
+    const toolbarManager = chartManager.toolbarManager
+    const toolbar = toolbarManager.getToolbar(chartContainer.chartId)
+    if(toolbarManager.currentToolType !== DrawingToolType.None){
+      if(toolbar){
+        const tool = toolbar.tools.get(toolbarManager.currentToolType)
+        tool?.disposeSubButtons();
+        toolbarManager.unsetToolbar(chartContainer.chartId);
+        unselectAllDivsForGroup(toolbar.toolbarContainer!, AVAILABLE_TOOLS.map(t => t.name));
+      }
+    }
+  
+    toolbarManager.setCurrentToolType(DrawingToolType.None)
+    chartManager.unselectDrawing();
+    chartManager.unselectTool();
+    document.body.style.cursor = 'default';
 }
 
 function _processOnMouseUp(evt: MouseEvent, chartContainer: ChartContainer, isMouseDragging: boolean): void{

@@ -13,7 +13,7 @@ export class ToolText extends Tool {
         throw new Error("Method not implemented.");
     }
 
-    constructor(name: string, description: string, icon: string, toolType: DrawingToolType) {
-        super(name, description, icon, toolType, false, true);
+    constructor(toolbarId: string, name: string, description: string, icon: string, toolType: DrawingToolType) {
+        super(toolbarId, name, description, icon, toolType, false, true);
     }
 }

@@ -9,8 +9,8 @@ import { RectangleLineDrawing } from "../../../drawings/rectangle-line/rectangle
 export class ToolRectangleLine extends Tool {
     private _totalSubToolsPerType: number = TOTAL_SUBTOOLS_PER_TYPE
     
-    constructor(name: string, description: string, icon: string, toolType: DrawingToolType) {
-        super(name, description, icon, toolType);
+    constructor(toolbarId: string, name: string, description: string, icon: string, toolType: DrawingToolType) {
+        super(toolbarId, name, description, icon, toolType);
     }
 
     getNewDrawingObject(chart: IChartApi, series: ISeriesApi<SeriesType>, symbolName: string): RectangleLineDrawing {
@@ -20,10 +20,10 @@ export class ToolRectangleLine extends Tool {
     setSubToolbarButtons(container: HTMLDivElement): HTMLDivElement[] {
         let buttons: HTMLDivElement[] = [];
 
-        createColorSubTools('strokeColor', this.name, this._totalSubToolsPerType,  container, this.subTools, this.valueUpdatedCallback)
+        createColorSubTools(this.toolbarId, 'strokeColor', this.name, this._totalSubToolsPerType,  container, this.subTools, this.valueUpdatedCallback)
         container.appendChild(createSpacer());
 
-        createOpacitySubTools('strokeColorOpacity', this.name, this._totalSubToolsPerType, container, this.subTools, this.valueUpdatedCallback)
+        createOpacitySubTools(this.toolbarId, 'strokeColorOpacity', this.name, this._totalSubToolsPerType, container, this.subTools, this.valueUpdatedCallback)
 
         return buttons; 
     }

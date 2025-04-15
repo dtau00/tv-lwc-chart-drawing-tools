@@ -6,8 +6,8 @@ export class SubToolColor extends SubTool {
     private _openColorPickerToggle: boolean = false;
     private _lastSelectedIndex: number = 0;
 
-    constructor(propertyName: string, parentTool: string, name: string, description: string, icon: string, index: number, valueUpdatedCallback?: (value: any) => void) {
-        super(propertyName, parentTool, 'color', name, description, icon, index, DrawingSubToolType.Color, valueUpdatedCallback);
+    constructor(toolbarId: string, propertyName: string, parentTool: string, name: string, description: string, icon: string, index: number, valueUpdatedCallback?: (value: any) => void) {
+        super(toolbarId, propertyName, parentTool, 'color', name, description, icon, index, DrawingSubToolType.Color, valueUpdatedCallback);
 
         this._onMouseDown = this._onMouseDown.bind(this);
         this._onChange = this._onChange.bind(this);

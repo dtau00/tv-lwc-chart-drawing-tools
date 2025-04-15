@@ -1,5 +1,5 @@
-export function clearDiv(toolbar: HTMLDivElement): void{
-    toolbar!.innerHTML = '';
+export function clearDiv(div: HTMLDivElement): void{
+    div!.innerHTML = '';
 }
 
 export function selectDivForGroup(container: HTMLDivElement, names: string[], targetName: string): void {
@@ -9,6 +9,7 @@ export function selectDivForGroup(container: HTMLDivElement, names: string[], ta
 
 export function unselectAllDivsForGroup(container: HTMLDivElement, names: string[]): void {
     if(!container) return;
+    
     for(const name of names){
         const elems = container?.querySelectorAll(`.${name}`);
         for(const elem of elems){

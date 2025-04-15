@@ -6,7 +6,6 @@ import { ChartDrawingsToolbar } from '../../chart/toolbar/chart-drawing-toolbar.
 import { ChartContainer } from '../../chart/chart-container/chart-container.ts';
 
 export class ChartDrawingToolsPlugin {
-	private _toolbar: ChartDrawingsToolbar;
 	private _chartDrawingsManager: ChartDrawingsManager;
 	private _chartContainer: ChartContainer | null;
 
@@ -17,8 +16,8 @@ export class ChartDrawingToolsPlugin {
 		symbolName: string,
 		secondsPerBar: number,
 		chartDivContainer: HTMLDivElement,
-		drawingsToolbarContainer: HTMLDivElement,
-		subToolbarContainer: HTMLDivElement,
+		drawingsToolbarContainer?: HTMLDivElement,
+		subToolbarContainer?: HTMLDivElement,
 		id?: string,
 		tags?: string[] | [],
 		autoScroll?: number | 5,
@@ -36,7 +35,8 @@ export class ChartDrawingToolsPlugin {
 		this.setData(data)
 
 		// Create the toolbar
-		this._toolbar = new ChartDrawingsToolbar(this._chartDrawingsManager, drawingsToolbarContainer, subToolbarContainer, chartId);
+		if(drawingsToolbarContainer && subToolbarContainer)
+			this._chartDrawingsManager.registerToolbar(drawingsToolbarContainer, subToolbarContainer, chartId)
 	}
 
 	// Expose the event bus so others can listen for chart and drawing events

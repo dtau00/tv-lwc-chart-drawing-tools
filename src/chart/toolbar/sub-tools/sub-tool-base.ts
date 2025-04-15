@@ -3,11 +3,12 @@ import { DrawingSubTools, DrawingSubToolType } from "./drawing-sub-tools";
 import { unselectAllDivsForGroup } from "../../../common/utils/html.ts";
 import { createSubToolbarButton, ToolbarButton } from "../../../chart/toolbar/common.ts";
 import ISubTool from "./sub-tool-interface";
-import { ButtonEvents, ChartEvents, createSubToolButtonEventDetails, eventBus } from '../../../common/event-bus';
+import { ButtonEvents, createSubToolButtonEventDetails, eventBus } from '../../../common/event-bus';
 import { subToolKeyName, subToolValueKeyName } from "../../../common/tool-key.ts";
 import { DrawingToolType } from "../tools/drawing-tools.ts";
 
 abstract class SubTool implements ISubTool {
+    private _toolbarId: string;
     private _div: HTMLDivElement | HTMLInputElement;
     private _name: string;
     private _description: string;
@@ -21,6 +22,7 @@ abstract class SubTool implements ISubTool {
     private _valueUpdatedCallback?: (value: any) => void;
     private _buttonType: ToolbarButton;
 
+    get toolbarId(): string {return this._toolbarId }
     get value(): any { return this._value; }
     get name(): string { return this._name; }
     get description(): string { return this._description; }
@@ -31,7 +33,8 @@ abstract class SubTool implements ISubTool {
     get buttonType(): ToolbarButton { return this._buttonType; }
     get index(): number { return this._index; }
 
-    constructor(propertyName: string, parentTool: string, buttonType: ToolbarButton, name: string, description: string, icon: string, index: number, type: DrawingSubToolType, valueUpdatedCallback?: (value: any) => void) {
+    constructor(toolbarId: string, propertyName: string, parentTool: string, buttonType: ToolbarButton, name: string, description: string, icon: string, index: number, type: DrawingSubToolType, valueUpdatedCallback?: (value: any) => void) {
+        this._toolbarId = toolbarId;
         this._name = name;
         this._description = description;
         this._icon = icon;
@@ -84,7 +87,7 @@ abstract class SubTool implements ISubTool {
         this._setSelectedSubToolStylingForTool(); // set styling
         this._saveSelectedSubToolIndex(index!); // save the selected index for future ref
         this._initiateValueUpdatedCallback(); // send the value back to the parent tool
-        const eventDetails = createSubToolButtonEventDetails(DrawingToolType[this._parentTool], this._type, this._name, this._propertyName, this._index)
+        const eventDetails = createSubToolButtonEventDetails(this.toolbarId, DrawingToolType[this._parentTool], this._type, this._name, this._propertyName, this._index)
         eventBus.dispatchEvent(new CustomEvent(ButtonEvents.SubToolClicked, eventDetails));
     }
 

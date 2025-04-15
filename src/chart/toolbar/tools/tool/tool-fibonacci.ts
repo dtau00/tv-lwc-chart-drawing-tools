@@ -7,8 +7,8 @@ import { createColorSubTools, createOpacitySubTools } from "../common";
 import { TOTAL_SUBTOOLS_PER_TYPE } from "../../../../common/constants";
 
 export class ToolFibonacci extends Tool {
-    constructor(name: string, description: string, icon: string, toolType: DrawingToolType) {
-        super(name, description, icon, toolType);
+    constructor(toolbarId: string, name: string, description: string, icon: string, toolType: DrawingToolType) {
+        super(toolbarId, name, description, icon, toolType);
     }
 
     getNewDrawingObject(chart: IChartApi, series: ISeriesApi<SeriesType>, symbolName: string): FibonacciDrawing {
@@ -18,10 +18,10 @@ export class ToolFibonacci extends Tool {
     setSubToolbarButtons(container: HTMLDivElement): HTMLDivElement[] {
         let buttons: HTMLDivElement[] = [];
 
-        createColorSubTools('color', this.name, TOTAL_SUBTOOLS_PER_TYPE,  container, this.subTools, this.valueUpdatedCallback)
+        createColorSubTools(this.toolbarId, 'color', this.name, TOTAL_SUBTOOLS_PER_TYPE,  container, this.subTools, this.valueUpdatedCallback)
         container.appendChild(createSpacer());
 
-        createOpacitySubTools('colorOpacity', this.name, TOTAL_SUBTOOLS_PER_TYPE, container, this.subTools, this.valueUpdatedCallback)
+        createOpacitySubTools(this.toolbarId, 'colorOpacity', this.name, TOTAL_SUBTOOLS_PER_TYPE, container, this.subTools, this.valueUpdatedCallback)
 
         return buttons; 
     }

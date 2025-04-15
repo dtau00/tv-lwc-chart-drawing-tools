@@ -6,8 +6,8 @@ const values = ['[1,1]','[1,2]','[1,3]','[1,4]','[1,5]',
                          '[2,2]','[2,3]','[2,4]','[2,5]']
 
 export class SubToolDotted extends SubTool {
-    constructor(propertyName: string, parentTool: string, name: string, description: string, icon: string, index: number, valueUpdatedCallback?: (value: any) => void) {
-        super(propertyName, parentTool, 'div', name, description, icon, index, DrawingSubToolType.Thickness, valueUpdatedCallback);
+    constructor(toolbarId: string, propertyName: string, parentTool: string, name: string, description: string, icon: string, index: number, valueUpdatedCallback?: (value: any) => void) {
+        super(toolbarId, propertyName, parentTool, 'div', name, description, icon, index, DrawingSubToolType.Thickness, valueUpdatedCallback);
 
         this._onMouseDown = this._onMouseDown.bind(this);
     }

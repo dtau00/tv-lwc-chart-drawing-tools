@@ -2,8 +2,8 @@ import SubTool from "../../../toolbar/sub-tools/sub-tool-base";
 import { DrawingSubToolType } from "../../../toolbar/sub-tools/drawing-sub-tools";
 
 export class SubToolOpacity extends SubTool {
-    constructor(propertyName: string, parentTool: string, name: string, description: string, icon: string, index: number, valueUpdatedCallback?: (value: any) => void) {
-        super(propertyName, parentTool, 'div', name, description, icon, index, DrawingSubToolType.Opacity, valueUpdatedCallback);
+    constructor(toolbarId: string, propertyName: string, parentTool: string, name: string, description: string, icon: string, index: number, valueUpdatedCallback?: (value: any) => void) {
+        super(toolbarId, propertyName, parentTool, 'div', name, description, icon, index, DrawingSubToolType.Opacity, valueUpdatedCallback);
 
         this._onMouseDown = this._onMouseDown.bind(this);
     }

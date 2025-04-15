@@ -9,52 +9,52 @@ import { SubToolSolid } from "../sub-tools/sub-tool/sub-tool-solid";
 import { SubToolThickness } from "../sub-tools/sub-tool/sub-tool-thickness";
 
 //lineColor
-export function createColorSubTools(propertyName: string, parentToolName: string, totalButtons: number, container: HTMLDivElement, subTools: SubTool[],  valueUpdatedCallback?: (value: any) => void){
+export function createColorSubTools(toolbarId: string, propertyName: string, parentToolName: string, totalButtons: number, container: HTMLDivElement, subTools: SubTool[],  valueUpdatedCallback?: (value: any) => void){
     const type = DrawingSubTools.get(DrawingSubToolType.Color);
     if(type){
         for(let i = 0; i < totalButtons; i++){
-            const subTool = new SubToolColor(propertyName, parentToolName, type.name, type.description, type.icon, i, valueUpdatedCallback);
+            const subTool = new SubToolColor(toolbarId, propertyName, parentToolName, type.name, type.description, type.icon, i, valueUpdatedCallback);
             setSubToolbarButton(subTool, subTools, container);
         }
     }
 }
 
-export function createOpacitySubTools(propertyName: string, parentToolName: string, totalButtons: number, container: HTMLDivElement, subTools: SubTool[],  valueUpdatedCallback?: (value: any) => void){
+export function createOpacitySubTools(toolbarId: string, propertyName: string, parentToolName: string, totalButtons: number, container: HTMLDivElement, subTools: SubTool[],  valueUpdatedCallback?: (value: any) => void){
     const type = DrawingSubTools.get(DrawingSubToolType.Opacity);
     if(type){
         for(let i = 0; i < totalButtons; i++){
-            const subTool = new SubToolOpacity(propertyName, parentToolName, type.name, type.description, type.icon, i, valueUpdatedCallback);
+            const subTool = new SubToolOpacity(toolbarId, propertyName, parentToolName, type.name, type.description, type.icon, i, valueUpdatedCallback);
             setSubToolbarButton(subTool, subTools, container);
         }
     }
 }
 
-export function createThicknessSubTools(propertyName: string, parentToolName: string, totalButtons: number, container: HTMLDivElement, subTools: SubTool[],  valueUpdatedCallback?: (value: any) => void){
+export function createThicknessSubTools(toolbarId: string, propertyName: string, parentToolName: string, totalButtons: number, container: HTMLDivElement, subTools: SubTool[],  valueUpdatedCallback?: (value: any) => void){
     const type = DrawingSubTools.get(DrawingSubToolType.Thickness);
     if(type){
         for(let i = 0; i < totalButtons; i++){
-            const subTool = new SubToolThickness(propertyName, parentToolName, type.name, type.description, type.icon, i, valueUpdatedCallback);
+            const subTool = new SubToolThickness(toolbarId, propertyName, parentToolName, type.name, type.description, type.icon, i, valueUpdatedCallback);
             setSubToolbarButton(subTool, subTools, container);
         }
     }
 }
 
-export function createLineStyleSubTools(propertyName: string, parentToolName: string, container: HTMLDivElement, subTools: SubTool[],  valueUpdatedCallback?: (value: any) => void){
+export function createLineStyleSubTools(toolbarId: string, propertyName: string, parentToolName: string, container: HTMLDivElement, subTools: SubTool[],  valueUpdatedCallback?: (value: any) => void){
     let type = DrawingSubTools.get(DrawingSubToolType.Solid);
     if(type){
-        const subTool = new SubToolSolid(propertyName, parentToolName, type.name, type.description, type.icon, 0, valueUpdatedCallback);
+        const subTool = new SubToolSolid(toolbarId, propertyName, parentToolName, type.name, type.description, type.icon, 0, valueUpdatedCallback);
         setSubToolbarButton(subTool, subTools, container);
     }
 
     type = DrawingSubTools.get(DrawingSubToolType.Dotted);
     if(type){
-        const subTool = new SubToolDotted(propertyName, parentToolName, type.name, type.description, type.icon, 1, valueUpdatedCallback);
+        const subTool = new SubToolDotted(toolbarId, propertyName, parentToolName, type.name, type.description, type.icon, 1, valueUpdatedCallback);
         setSubToolbarButton(subTool, subTools, container);
     }
 
     type = DrawingSubTools.get(DrawingSubToolType.Dashed);
     if(type){
-        const subTool = new SubToolDashed(propertyName, parentToolName, type.name, type.description, type.icon, 2, valueUpdatedCallback);
+        const subTool = new SubToolDashed(toolbarId, propertyName, parentToolName, type.name, type.description, type.icon, 2, valueUpdatedCallback);
         setSubToolbarButton(subTool, subTools, container);
     }
 }

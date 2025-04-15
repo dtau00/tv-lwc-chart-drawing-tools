@@ -6,7 +6,7 @@ import { PluginBase } from '../../plugins/plugin-base';
 import { ensureDefined } from '../../common/utils/assertions';
 import { DrawingPoint, MousePointAndTime } from '../../common/points';
 
-import { ChartEvents, eventBus } from '../../common/event-bus';
+import { DrawingEvents, createDrawingEventDetails, eventBus } from '../../common/event-bus';
 import { containsPoints, leftRightPoints, pointToDrawingPoints, topBottomPoints } from '../../common/points';
 import { ViewBase } from '../drawings/drawing-view-base';
 
@@ -168,7 +168,8 @@ export abstract class ChartDrawingBase implements IChartDrawing {
 		this.removePreviewDrawing();
         this.stopDrawing();
         this._isSelected = false;
-        eventBus.dispatchEvent(new CustomEvent(ChartEvents.CompletedDrawingUnSelected, { detail: this.id }));
+        const details = createDrawingEventDetails(this.id, this.type)
+        eventBus.dispatchEvent(new CustomEvent(DrawingEvents.CompletedDrawingUnSelected, details));
         //this.draw(this._chart!, this._series!);
     }
 
@@ -240,7 +241,8 @@ export abstract class ChartDrawingBase implements IChartDrawing {
     // Common methods with default implementations
     protected selected(): void {
         this._isSelected = true;
-        eventBus.dispatchEvent(new CustomEvent(ChartEvents.CompletedDrawingSelected, { detail: this.id }));
+        const details = createDrawingEventDetails(this.id, this.type)
+        eventBus.dispatchEvent(new CustomEvent(DrawingEvents.CompletedDrawingSelected, details));
         //this.draw(this._chart!, this._series!);
     }
 
@@ -248,8 +250,10 @@ export abstract class ChartDrawingBase implements IChartDrawing {
     protected initialize(baseProps?: ChartDrawingBaseProps){
         // we're setting this after super() to make the code cleaner
         this._drawingFinishedCallback = this.finalizeDrawingPoints
+
         if(baseProps)
             this.normalizeStyleOptions(this.styleOptions);
+
         this.drawingView = this.createNewView(this._chart!, this._series!)
     }
 
@@ -268,7 +272,9 @@ export abstract class ChartDrawingBase implements IChartDrawing {
         }
         if(this._chart && this._series)
             this.setNewView(this._chart, this._series)
-        eventBus.dispatchEvent(new CustomEvent(ChartEvents.NewDrawingCompleted, { detail: {id: this.id, type: this.type } }));
+        
+        const details = createDrawingEventDetails(this.id, this.type)
+        eventBus.dispatchEvent(new CustomEvent(DrawingEvents.NewDrawingCompleted, details));
     }
 
     protected setChart(chart: IChartApi): void {

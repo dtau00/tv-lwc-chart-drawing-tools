@@ -1,13 +1,11 @@
 import Tool from './toolbar/tools/tool-base.ts';
 import { IChartApi, ISeriesApi, SeriesType } from 'lightweight-charts';
 import { ChartDrawingBase, ChartDrawingBaseProps } from './drawings/chart-drawing-base.ts';
-import { DrawingToolType } from './toolbar/tools/drawing-tools.ts';
 import { DataStorage } from '../common/storage.ts';
 import { ChartContainer } from './chart-container/chart-container.ts';
-import { ChartEvents, eventBus } from '../common/event-bus';
-import { PluginBase } from '../plugins/plugin-base.ts';
 import { DrawingObjectFactory } from '../common/factories/drawing-tool-to-object-factory.ts';
-import { ViewBase } from './drawings/drawing-view-base.ts';
+import { ChartDrawingsToolbarManager } from './toolbar/chart-drawing-toolbar-manager.ts';
+import { initializeEventBus } from './toolbar/chart-drawing-toolbar-event-bus-handlers.ts';
 
 // manage charts
     // when chart is created, register it with ChartManager
@@ -25,18 +23,18 @@ export class ChartDrawingsManager {
     private _chartContainers: Map<string, ChartContainer>= new Map();
     private _currentDrawingTool: Tool | null; // currently selected drawing tool
     private _selectedDrawing: ChartDrawingBase | null;
-    private _previewDrawing: ChartDrawingBase | null;
     private _charts: Map<string, IChartApi> = new Map();
     private _currentChartContainer: ChartContainer | null; // current chart mouse is hovering over
     private _creatingNewDrawingFromToolbar: boolean = false;
     private _initalized: boolean = false
     private _drawingFactoryMap = DrawingObjectFactory;
+    public toolbarManager = new ChartDrawingsToolbarManager()
     //private _drawingFactoryMap: Partial<Record<DrawingToolType, (chart: IChartApi, series: ISeriesApi<SeriesType>, symbolName: string, item: ChartDrawingBaseProps) => ChartDrawingBase>> = DrawingObjectFactory;
     
     private constructor() {
         this._charts = new Map();
         this._drawings = new Map();
-        this._listenForChartEvents();
+        initializeEventBus(this);
     }
 
     get drawings(): Map<string, ChartDrawingBase[]> { return this._drawings;}
@@ -44,6 +42,7 @@ export class ChartDrawingsManager {
     get currentChartContainer(): ChartContainer | null { return this._currentChartContainer;}
     get currentDrawingTool(): Tool | null { return this._currentDrawingTool;}
     get creatingNewDrawingFromToolbar(): boolean { return this._creatingNewDrawingFromToolbar;}
+    set creatingNewDrawingFromToolbar(val : boolean) { this._creatingNewDrawingFromToolbar = val}
 
     public static getInstance(): ChartDrawingsManager {
         if (!ChartDrawingsManager.instance) {
@@ -66,6 +65,10 @@ export class ChartDrawingsManager {
         
         this._loadDrawings(chartContainer);
         return chartContainer
+    }
+
+    public registerToolbar(toolbarDivContainer: HTMLDivElement, subToolbarDivContainer: HTMLDivElement, chartId?: string){
+        this.toolbarManager.addToolbar(toolbarDivContainer, subToolbarDivContainer, chartId)
     }
 
     public disposeChart(chartContainer: ChartContainer): void {
@@ -93,10 +96,6 @@ export class ChartDrawingsManager {
         this._creatingNewDrawingFromToolbar = false;
     }
 
-    public clearDrawings(symbolName: string): void {
-        // remove all drawings for the symbol
-    }
-
     public saveDrawings(symbolName: string): void {
         // create base data to be serialized
         const symbolDrawings = this._drawings.get(symbolName) || []; // get all drawings for symbol
@@ -104,15 +103,6 @@ export class ChartDrawingsManager {
         //console.log("save drawings for ", symbolName, data);
         DataStorage.saveData<ChartDrawingBaseProps[]>(`${symbolName}-drawings`, data); // save drawings for symbol
         this._reDrawChartDrawingsForCharts(symbolName)
-    }
-
-    public setTextForSelectedDrawing(){
-        if(this._selectedDrawing){
-            const res = prompt('enter text for selected drawing',this._selectedDrawing.text)
-            if(res !== null && res !== undefined){
-                this._selectedDrawing.text = res
-            }
-        }
     }
 
     // TODO this is messy, can be cleaned up
@@ -139,7 +129,7 @@ export class ChartDrawingsManager {
        if(!this._selectedDrawing) return;
 
         // remove primative from all chart
-       const charts = this._getChartContainersForSymbol(this._selectedDrawing.symbolName)
+       const charts = this.getChartContainersForSymbol(this._selectedDrawing.symbolName)
        for(const chart of charts){
             chart.removePrimative(this._selectedDrawing.id)
        }
@@ -155,9 +145,8 @@ export class ChartDrawingsManager {
     public destroy(): void {
        this._charts.clear();
        this._drawings.clear();
-       eventBus.removeEventListener(ChartEvents.NewDrawingCompleted, this._listenForChartEvents);
        for(const chartContainer of this._chartContainers.values()){
-        chartContainer.dispose();
+            chartContainer.dispose();
        }
        this._chartContainers.clear();
 	}
@@ -173,9 +162,10 @@ export class ChartDrawingsManager {
 
             // flip tool bars
             if(previousCurrentContainer?.chartId)
-                this.closeToolbars(previousCurrentContainer.chartId, false);
+                this.toolbarManager.unsetToolbar(previousCurrentContainer.chartId)
             if( this._currentChartContainer?.chartId)
-                this.openToolbars(this._currentChartContainer.chartId, this._currentDrawingTool?.toolType || DrawingToolType.None);
+                this.toolbarManager.setToolbar(this._currentChartContainer.chartId)
+               // this.openToolbars(this._currentChartContainer.chartId, this._currentDrawingTool?.toolType || DrawingToolType.None);
 
             // redraw all drawings for the last current chart container, before switching
             const previousChartDrawings = this._getDrawingsForChartContainer(previousCurrentContainer)
@@ -187,11 +177,27 @@ export class ChartDrawingsManager {
 
             // if we are creating a new drawing...
             if(this._creatingNewDrawingFromToolbar){
-                this.startToolDrawing(this._currentDrawingTool!);
+                this.startNewDrawing(this._currentDrawingTool!);
                 console.log('switched charts while new drawing in progress, restart drawing')
             }
         }
     }
+
+    public getChartContainersForSymbol(symbol: string){
+        return  Array.from(this._chartContainers.values())
+            .filter(c => c.symbolName === symbol);
+    }
+
+    public startNewDrawing(tool: Tool): void {
+        // if(!tool || !this._currentChartContainer) 
+         //    return;
+
+         this._selectedDrawing?.stopDrawing();
+         this._creatingNewDrawingFromToolbar = true;
+         this._currentDrawingTool = tool;
+         this.unselectDrawing();
+     }
+
 
     private _getDrawingsForChartContainer(chartContainer?: ChartContainer | null): ChartDrawingBase[]{
         if(!chartContainer) return []
@@ -212,33 +218,6 @@ export class ChartDrawingsManager {
         }
     }
 
-    public startToolDrawing(tool: Tool): void {
-       // if(!tool || !this._currentChartContainer) 
-        //    return;
-        this._selectedDrawing?.stopDrawing();
-        this._creatingNewDrawingFromToolbar = true;
-        this._currentDrawingTool = tool;
-        this.unselectDrawing();
-    }
-
-    public subToolClicked(): void{
-        if(this._selectedDrawing){  
-            this._selectedDrawing.setBaseStyleOptionsFromConfig();
-            if(this._selectedDrawing.isCompleted)
-             this.saveDrawings(this._selectedDrawing.symbolName);
-        }
-    }
-
-    // Event Bus Handlers ------------------------------------------------------------  
-    // TODO we should create a toolbar manager, and call that to close and open toolbars
-    public closeToolbars(chartId: string, closeAll: boolean): void {
-        eventBus.dispatchEvent(new CustomEvent(ChartEvents.UnsetToolbar, { detail: {chartId: chartId, closeAll} }));
-    }
-
-    public openToolbars(chartId: string, toolType: DrawingToolType): void {
-        eventBus.dispatchEvent(new CustomEvent(ChartEvents.SetToolbar, { detail: {chartId: chartId, toolType: toolType} }));
-    }
-    
     private _loadDrawings(chartContainer: ChartContainer): void {
         const symbolName = chartContainer.symbolName;
 
@@ -268,34 +247,6 @@ export class ChartDrawingsManager {
         }
     
         console.log("all loaded drawings ", this._drawings);
-    }
-
-    private _getChartContainersForSymbol(symbol: string){
-        return  Array.from(this._chartContainers.values())
-            .filter(c => c.symbolName === symbol);
-    }
-
-    private _addDrawingToChartContainers(symbolName: string, chartDrawing: ChartDrawingBase): void {
-        const containers = this._getChartContainersForSymbol(symbolName)
-        for(const container of containers){
-            if(container.chartId !== this.currentChartContainer?.chartId)
-                container.setChartDrawing(chartDrawing)
-        }
-    }
-
-    private _listenForChartEvents=()=> {
-        eventBus.addEventListener(ChartEvents.NewDrawingCompleted, (event: Event) => {
-            const customEvent = event as CustomEvent<string>;
-            console.log(`Chart Manager: Chart ${customEvent.detail} has finished rendering.`, this._selectedDrawing);
-            if(this._selectedDrawing){ 
-                const drawings = this._drawings.get(this._selectedDrawing.symbolName) || [];
-                this._drawings.set(this._selectedDrawing.symbolName, [...drawings, this._selectedDrawing]);
-                this.saveDrawings(this._selectedDrawing.symbolName);
-                this._addDrawingToChartContainers(this._selectedDrawing.symbolName, this._selectedDrawing);
-            }
-            this._creatingNewDrawingFromToolbar = false;
-            this.unselectDrawing();
-        });
     }
 
     // Chart Event Handlers ------------------------------------------------------------

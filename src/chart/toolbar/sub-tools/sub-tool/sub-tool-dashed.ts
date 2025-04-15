@@ -7,8 +7,8 @@ const values = ['[5,2]','[5,3]','[5,4]','[5,5]',
 
 
 export class SubToolDashed extends SubTool {
-    constructor(propertyName: string, parentTool: string, name: string, description: string, icon: string, index: number, valueUpdatedCallback?: (value: any) => void) {
-        super(propertyName, parentTool, 'div', name, description, icon, index, DrawingSubToolType.Thickness, valueUpdatedCallback);
+    constructor(toolbarId: string, propertyName: string, parentTool: string, name: string, description: string, icon: string, index: number, valueUpdatedCallback?: (value: any) => void) {
+        super(toolbarId, propertyName, parentTool, 'div', name, description, icon, index, DrawingSubToolType.Thickness, valueUpdatedCallback);
 
         this._onMouseDown = this._onMouseDown.bind(this);
     }

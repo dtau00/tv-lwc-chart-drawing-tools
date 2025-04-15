@@ -1,6 +1,6 @@
 {
   "name": "tv-lwc-chart-drawing-tools",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Drawing tools plugin for Lightweight Charts",
   "main": "index.js",
   "scripts": {

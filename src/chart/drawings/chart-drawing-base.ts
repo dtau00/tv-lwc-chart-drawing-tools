@@ -300,11 +300,16 @@ export abstract class ChartDrawingBase implements IChartDrawing {
 	// for now, funcitonally it shouldnt have a problem, since there can only be one active chart, and therefore preview
 	// at a time.*/
     protected removePreviewDrawing(force : boolean = false) {
-		if (force || !this._isCompleted) {
-            this.stopDrawing();
-			console.log('removePreviewDrawing', this.drawingView);
-			ensureDefined(this._series).detachPrimitive(this.drawingView as PluginBase);
-		}
+        try{
+            if (force || !this._isCompleted) {
+                this.stopDrawing();
+                console.log('removePreviewDrawing', this.drawingView);
+                ensureDefined(this._series).detachPrimitive(this.drawingView as PluginBase);
+            }
+        }
+        catch(err){
+            console.error(err)
+        }
 	}
 
     // set the style options to base properties, this is used when loading from config

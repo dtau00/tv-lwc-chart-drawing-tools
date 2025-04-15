@@ -50,7 +50,9 @@ This is an early release build.  Most of the basic drawings and funcitonality ar
 * Support for basic shapes : line, ray, vertical, horizontal, rectangle, etc...
 
 ## Using
-See /src/examples/example-adding-data-html for an exaample of adding live data.  Basically, dont add directly add new bars to the chart, update the plugin instead.  This is needed to pad the chart for extended drawings. 
+See /src/examples/example-adding-data-html for an example of adding live data.  Basically, dont add directly add new bars to the chart, update the plugin instead.  This is needed to pad the chart for extended drawings. 
+
+You can right click the sub buttons, and it'll cycle through different values. 
 
 Things to finish for v1 Release
 ---------------------------------

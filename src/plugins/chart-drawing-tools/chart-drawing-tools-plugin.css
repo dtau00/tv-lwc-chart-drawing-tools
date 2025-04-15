@@ -12,6 +12,7 @@
     cursor: default;
 
     position: relative; /* base for subtoolbar */
+    user-select: none;
 }
 .chart {
     position: relative;
@@ -52,6 +53,7 @@ body {
     padding-right:7px;
     border-bottom-right-radius: 7px;
     border-bottom-left-radius: 7px;;
+    user-select: none;
 }
 
 .sub-toolbar.selected{

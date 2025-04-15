@@ -11,7 +11,7 @@ import { ViewBase } from '../drawing-view-base';
 
 export class LineHorizontalRayDrawing extends ChartDrawingBase{
 	private static readonly TOTAL_DRAWING_POINTS = 2; // Set the drawing points for this type of drawing.  A box will have 2, a line ray will have 1, etc...
-	private static readonly TOOL_TYPE = DrawingToolType.HorizontalLineRay
+	private static readonly TOOL_TYPE = DrawingToolType.HorizontalLineRay // MAKE SURE TO UPDATE THIS WHEN CREATING NEW DRAWING TOOLS
 
 	constructor(
 		chart: IChartApi,
@@ -19,30 +19,9 @@ export class LineHorizontalRayDrawing extends ChartDrawingBase{
 		symbolName: string,
 		baseProps?: ChartDrawingBaseProps,
 	) {
-		const _finalizeDrawingPoints =()=>{
-			let points = this.drawingPoints;
-			const end = MAX_TIME//this._chart?.timeScale().getVisibleRange()?.to;
-			if(end){
-				const time = points[1].time
-				const price = points[1].price;
-				if(points[0].time > points[1].time){
-					points[0] = {time: end, price};
-					points[1] = {time: time, price};
-				}
-				else{
-					points[1] = {time: end, price};
-					points[0] = {time: time, price};
-				}
-				this.overrideDrawingPoints([points[0],points[1]]);
-			}
-		}
-		super( LineHorizontalRayDrawing.TOOL_TYPE, chart, series, symbolName, LineHorizontalRayDrawing.TOTAL_DRAWING_POINTS, drawingToolDefaultOptions, baseProps, _finalizeDrawingPoints);
+		super( LineHorizontalRayDrawing.TOOL_TYPE, chart, series, symbolName, LineHorizontalRayDrawing.TOTAL_DRAWING_POINTS, drawingToolDefaultOptions, baseProps);
 		
 		this.initialize(baseProps);
-		if(baseProps)
-			this.drawingView = new View(chart, series, this.toolType, drawingToolDefaultOptions, this.id, this.styleOptions, this.drawingPoints); 
-		else
-			this.drawingView = new View(chart, series, this.toolType, drawingToolDefaultOptions, this.id); 
 	}
 
 	createNewView(chart: IChartApi, series: ISeriesApi<SeriesType>): ViewBase{
@@ -75,6 +54,24 @@ export class LineHorizontalRayDrawing extends ChartDrawingBase{
 	onDrag(param: MousePointAndTime, startPoint: Point, endPoint: Point): void {
 		if(param.point){
 			this._updatePosition(startPoint, endPoint);
+		}
+	}
+
+	protected finalizeDrawingPoints =()=>{
+		let points = this.drawingPoints;
+		const end = MAX_TIME//this._chart?.timeScale().getVisibleRange()?.to;
+		if(end){
+			const time = points[1].time
+			const price = points[1].price;
+			if(points[0].time > points[1].time){
+				points[0] = {time: end, price};
+				points[1] = {time: time, price};
+			}
+			else{
+				points[1] = {time: end, price};
+				points[0] = {time: time, price};
+			}
+			this.overrideDrawingPoints([points[0],points[1]]);
 		}
 	}
 

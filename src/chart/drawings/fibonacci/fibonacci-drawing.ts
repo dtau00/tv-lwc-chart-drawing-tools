@@ -10,7 +10,7 @@ import { ensureDefined } from '../../../common/utils/assertions';
 
 export class FibonacciDrawing extends ChartDrawingBase{
 	private static readonly TOTAL_DRAWING_POINTS = 2; // Set the drawing points for this type of drawing.  A box will have 2, a line ray will have 1, etc...
-	private static readonly TOOL_TYPE = DrawingToolType.Fibonacci
+	private static readonly TOOL_TYPE = DrawingToolType.Fibonacci // MAKE SURE TO UPDATE THIS WHEN CREATING NEW DRAWING TOOLS
 	private _side: BoxSide;
 	constructor(
 		chart: IChartApi,
@@ -21,10 +21,6 @@ export class FibonacciDrawing extends ChartDrawingBase{
 		super( FibonacciDrawing.TOOL_TYPE, chart, series, symbolName, FibonacciDrawing.TOTAL_DRAWING_POINTS, drawingToolDefaultOptions, baseProps);
 		
 		this.initialize(baseProps)
-		if(baseProps)
-			this.drawingView = new View(chart, series, this.toolType, drawingToolDefaultOptions, this.id, this.styleOptions, this.drawingPoints); 
-		else
-			this.drawingView = new View(chart, series, this.toolType, drawingToolDefaultOptions, this.id); 
 	}
 
 	createNewView(chart: IChartApi, series: ISeriesApi<SeriesType>): ViewBase{
@@ -50,6 +46,10 @@ export class FibonacciDrawing extends ChartDrawingBase{
 		if(param.point){
 			this._updatePosition(startPoint, endPoint, this._side);
 		}
+	}
+
+	protected finalizeDrawingPoints =()=>{
+		// nothing to do
 	}
 
 	private _setCursor(point: Point): void {

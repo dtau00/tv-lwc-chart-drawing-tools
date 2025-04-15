@@ -280,7 +280,6 @@ export class ChartDrawingsManager {
         for(const container of containers){
             if(container.chartId !== this.currentChartContainer?.chartId)
                 container.setChartDrawing(chartDrawing)
-                //container.setChartDrawing(primative);
         }
     }
 
@@ -300,7 +299,6 @@ export class ChartDrawingsManager {
     }
 
     // Chart Event Handlers ------------------------------------------------------------
-
     private _onKeyDown = (evt: KeyboardEvent): void => {
         if (evt.key === 'Delete' || evt.key === 'Backspace') {
             this.removeSelectedDrawing();

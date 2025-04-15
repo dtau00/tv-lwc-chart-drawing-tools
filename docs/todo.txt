@@ -4,9 +4,6 @@ v1
 extended rect can 'jump' while moving
 circle
 
-test multi symbol
-  - do i need to set current chart for drawing when a drawing is selected?
-
 check dispsol of all event handlers (tools, subtools, charts, etc..)
 properly handle historical days for secondsperbar
 

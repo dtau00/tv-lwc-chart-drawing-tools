@@ -10,7 +10,7 @@ import { ViewBase } from '../drawing-view-base';
 
 export class LineDrawing extends ChartDrawingBase{
 	private static readonly TOTAL_DRAWING_POINTS = 2; // Set the drawing points for this type of drawing.  A box will have 2, a line ray will have 1, etc...
-	private static readonly TOOL_TYPE = DrawingToolType.Line
+	private static readonly TOOL_TYPE = DrawingToolType.Line // MAKE SURE TO UPDATE THIS WHEN CREATING NEW DRAWING TOOLS
 	private _side : LineHandle;
 
 	constructor(
@@ -22,10 +22,6 @@ export class LineDrawing extends ChartDrawingBase{
 		super( LineDrawing.TOOL_TYPE, chart, series, symbolName, LineDrawing.TOTAL_DRAWING_POINTS, drawingToolDefaultOptions, baseProps);
 		
 		this.initialize(baseProps);
-		if(baseProps)
-			this.drawingView = new View(chart, series, this.toolType, drawingToolDefaultOptions, this.id, this.styleOptions, this.drawingPoints); 
-		else
-			this.drawingView = new View(chart, series, this.toolType, drawingToolDefaultOptions, this.id); 
 	}
 
 	createNewView(chart: IChartApi, series: ISeriesApi<SeriesType>): ViewBase{
@@ -58,6 +54,10 @@ export class LineDrawing extends ChartDrawingBase{
 		}
 	}
 
+	protected finalizeDrawingPoints =()=>{
+		// nothing to do
+	}
+	
 	private _setCursor(point: Point): void {
 		// todo offset to handle thickness
 		this._side = getClosestHandleOnLine(this._chart!, this._series!, this.drawingPoints[0], this.drawingPoints[1], point);

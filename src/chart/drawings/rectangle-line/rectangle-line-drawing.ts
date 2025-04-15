@@ -9,7 +9,7 @@ import { ViewBase } from '../drawing-view-base';
 
 export class RectangleLineDrawing extends ChartDrawingBase{
 	private static readonly TOTAL_DRAWING_POINTS = 2; // Set the drawing points for this type of drawing.  A box will have 2, a line ray will have 1, etc...
-	private static readonly TOOL_TYPE = DrawingToolType.RectangleLine
+	private static readonly TOOL_TYPE = DrawingToolType.RectangleLine // MAKE SURE TO UPDATE THIS WHEN CREATING NEW DRAWING TOOLS
 	private _side: BoxSide;
 	constructor(
 		chart: IChartApi,
@@ -17,15 +17,9 @@ export class RectangleLineDrawing extends ChartDrawingBase{
 		symbolName: string,
 		baseProps?: ChartDrawingBaseProps,
 	) {
-		// MAKE SURE TO UPDATE THIS WHEN CREATING NEW DRAWING TOOLS
-
 		super(RectangleLineDrawing.TOOL_TYPE, chart, series, symbolName, RectangleLineDrawing.TOTAL_DRAWING_POINTS, drawingToolDefaultOptions, baseProps);
-
+		
 		this.initialize(baseProps)
-		if(baseProps)
-			this.drawingView = new View(chart, series, this.toolType, drawingToolDefaultOptions, this.id, this.styleOptions, this.drawingPoints); 
-		else
-			this.drawingView = new View(chart, series, this.toolType, drawingToolDefaultOptions, this.id); 
 	}
 	
 	createNewView(chart: IChartApi, series: ISeriesApi<SeriesType>): ViewBase{
@@ -57,6 +51,10 @@ export class RectangleLineDrawing extends ChartDrawingBase{
 		}
 	}
 
+	protected finalizeDrawingPoints =()=>{
+		// nothing to do
+	}
+	
 	private _setCursor(point: Point): void {
 		this._side = getBoxHoverTarget(this._chart!, this._series!, this.drawingPoints[0], this.drawingPoints[1], point);
 		document.body.style.cursor = getCursorForBoxSide(this._side);

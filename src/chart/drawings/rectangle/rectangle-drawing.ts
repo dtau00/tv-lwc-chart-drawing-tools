@@ -9,7 +9,7 @@ import { ViewBase } from '../drawing-view-base';
 
 export class RectangleDrawing extends ChartDrawingBase{
 	private static readonly TOTAL_DRAWING_POINTS = 2; // Set the drawing points for this type of drawing.  A box will have 2, a line ray will have 1, etc...
-	private static readonly TOOL_TYPE = DrawingToolType.Rectangle
+	private static readonly TOOL_TYPE = DrawingToolType.Rectangle // MAKE SURE TO UPDATE THIS WHEN CREATING NEW DRAWING TOOLS
 
 	private _side: BoxSide;
 	constructor(
@@ -18,15 +18,9 @@ export class RectangleDrawing extends ChartDrawingBase{
 		symbolName: string,
 		baseProps?: ChartDrawingBaseProps,
 	) {
-		// MAKE SURE TO UPDATE THIS WHEN CREATING NEW DRAWING TOOLS
-
 		super(RectangleDrawing.TOOL_TYPE, chart, series, symbolName, RectangleDrawing.TOTAL_DRAWING_POINTS, drawingToolDefaultOptions, baseProps);
 
 		this.initialize(baseProps)
-		if(baseProps)
-			this.drawingView = new View(chart, series, this.toolType, drawingToolDefaultOptions, this.id, this.styleOptions, this.drawingPoints); 
-		else
-			this.drawingView = new View(chart, series, this.toolType, drawingToolDefaultOptions, this.id); 
 	}
 
 	createNewView(chart: IChartApi, series: ISeriesApi<SeriesType>): ViewBase{
@@ -56,6 +50,10 @@ export class RectangleDrawing extends ChartDrawingBase{
 		if(param.point){
 			this._updatePosition(startPoint, endPoint, this._side);
 		}
+	}
+
+	protected finalizeDrawingPoints =()=>{
+		// nothing to do
 	}
 
 	private _setCursor(point: Point): void {

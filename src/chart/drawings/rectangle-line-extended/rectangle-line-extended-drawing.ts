@@ -10,7 +10,7 @@ import { ViewBase } from '../drawing-view-base';
 
 export class RectangleLineExtendedDrawing extends ChartDrawingBase{
 	private static readonly TOTAL_DRAWING_POINTS = 2; // Set the drawing points for this type of drawing.  A box will have 2, a line ray will have 1, etc...
-	private static readonly TOOL_TYPE = DrawingToolType.RectangleLineExtended
+	private static readonly TOOL_TYPE = DrawingToolType.RectangleLineExtended  // MAKE SURE TO UPDATE THIS WHEN CREATING NEW DRAWING TOOLS
 	private _side: BoxSide;
 
 	constructor(
@@ -19,27 +19,9 @@ export class RectangleLineExtendedDrawing extends ChartDrawingBase{
 		symbolName: string,
 		baseProps?: ChartDrawingBaseProps,
 	) {
-
-		const _finalizeDrawingPoints =()=>{
-			let p1 = this.drawingPoints[0];
-			let p2 = this.drawingPoints[1];
-			//const end = this._chart?.timeScale().getVisibleRange()?.to;
-			const end = MAX_TIME
-			if(end){
-				if(p1.time > p2.time)
-					p1.time = end as Time; 
-				else
-					p2.time = end as Time; 
-				this.overrideDrawingPoints([p1, p2]);
-			}
-		}
-		super( RectangleLineExtendedDrawing.TOOL_TYPE, chart, series, symbolName, RectangleLineExtendedDrawing.TOTAL_DRAWING_POINTS, drawingToolDefaultOptions, baseProps, _finalizeDrawingPoints);
+		super( RectangleLineExtendedDrawing.TOOL_TYPE, chart, series, symbolName, RectangleLineExtendedDrawing.TOTAL_DRAWING_POINTS, drawingToolDefaultOptions, baseProps);
 		
 		this.initialize(baseProps);
-		if(baseProps)
-			this.drawingView = new View(chart, series, this.toolType, drawingToolDefaultOptions, this.id, this.styleOptions, this.drawingPoints); 
-		else
-			this.drawingView = new View(chart, series, this.toolType, drawingToolDefaultOptions, this.id); 
 	}
 
 	createNewView(chart: IChartApi, series: ISeriesApi<SeriesType>): ViewBase{
@@ -68,6 +50,20 @@ export class RectangleLineExtendedDrawing extends ChartDrawingBase{
 	onDrag(param: MousePointAndTime, startPoint: Point, endPoint: Point): void {
 		if(param.point){
 			this._updatePosition(startPoint, endPoint, this._side);
+		}
+	}
+
+	protected finalizeDrawingPoints =()=>{
+		let p1 = this.drawingPoints[0];
+		let p2 = this.drawingPoints[1];
+		//const end = this._chart?.timeScale().getVisibleRange()?.to;
+		const end = MAX_TIME
+		if(end){
+			if(p1.time > p2.time)
+				p1.time = end as Time; 
+			else
+				p2.time = end as Time; 
+			this.overrideDrawingPoints([p1, p2]);
 		}
 	}
 

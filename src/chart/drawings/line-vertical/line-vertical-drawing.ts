@@ -9,7 +9,7 @@ import { ViewBase } from '../drawing-view-base';
 
 export class LineVerticalDrawing extends ChartDrawingBase{
 	private static readonly TOTAL_DRAWING_POINTS = 2; // Set the drawing points for this type of drawing.  A box will have 2, a line ray will have 1, etc...
-	private static readonly TOOL_TYPE = DrawingToolType.VerticalLine
+	private static readonly TOOL_TYPE = DrawingToolType.VerticalLine // MAKE SURE TO UPDATE THIS WHEN CREATING NEW DRAWING TOOLS
 
 	constructor(
 		chart: IChartApi,
@@ -17,17 +17,9 @@ export class LineVerticalDrawing extends ChartDrawingBase{
 		symbolName: string,
 		baseProps?: ChartDrawingBaseProps,
 	) {
-		const _finalizeDrawingPoints =()=>{
-			let p2 = this.drawingPoints[1];
-			this.overrideDrawingPoints([{time: p2.time, price: 0}, {time: p2.time, price: 9999999}]);
-		}
-		super( LineVerticalDrawing.TOOL_TYPE, chart, series, symbolName, LineVerticalDrawing.TOTAL_DRAWING_POINTS, drawingToolDefaultOptions, baseProps, _finalizeDrawingPoints);
+		super( LineVerticalDrawing.TOOL_TYPE, chart, series, symbolName, LineVerticalDrawing.TOTAL_DRAWING_POINTS, drawingToolDefaultOptions, baseProps);
 		
 		this.initialize(baseProps);
-		if(baseProps)
-			this.drawingView = new View(chart, series, this.toolType, drawingToolDefaultOptions, this.id, this.styleOptions, this.drawingPoints); 
-		else
-			this.drawingView = new View(chart, series, this.toolType, drawingToolDefaultOptions, this.id); 
 	}
 
 	createNewView(chart: IChartApi, series: ISeriesApi<SeriesType>): ViewBase{
@@ -59,6 +51,11 @@ export class LineVerticalDrawing extends ChartDrawingBase{
 		if(param.point){
 			this._updatePosition(startPoint, endPoint);
 		}
+	}
+
+	protected finalizeDrawingPoints =()=>{
+		let p2 = this.drawingPoints[1];
+		this.overrideDrawingPoints([{time: p2.time, price: 0}, {time: p2.time, price: 9999999}]);
 	}
 
 	private _setCursor(point: Point): void{

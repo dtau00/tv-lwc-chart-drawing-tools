@@ -52,16 +52,17 @@ export abstract class ChartDrawingBase implements IChartDrawing {
         totalDrawingPoints: number,
         defaultOptions: {},
         baseProps?: ChartDrawingBaseProps,
-        drawingFinishedCallback?: () => void | undefined
+        //drawingFinishedCallback?: () => void | undefined
     ) 
     {
         this._chart = chart;
         this._series = series;
         this._defaultOptions = defaultOptions;
 
+        /*
         if(drawingFinishedCallback){
             this._drawingFinishedCallback = drawingFinishedCallback;
-        }
+        }*/
         if(baseProps){
             this._baseProps = baseProps;
             this._isCompleted = true;
@@ -137,6 +138,7 @@ export abstract class ChartDrawingBase implements IChartDrawing {
     abstract onHoverWhenSelected(point: Point): void;   
     abstract normalizeStyleOptions(options: {}): void;  
 	abstract createNewView(chart: IChartApi, series: ISeriesApi<SeriesType>): ViewBase;
+    protected abstract finalizeDrawingPoints(): void;
 
     setNewView(chart: IChartApi, series: ISeriesApi<SeriesType>){
 		if(this.drawingView)
@@ -244,8 +246,11 @@ export abstract class ChartDrawingBase implements IChartDrawing {
 
         
     protected initialize(baseProps?: ChartDrawingBaseProps){
+        // we're setting this after super() to make the code cleaner
+        this._drawingFinishedCallback = this.finalizeDrawingPoints
         if(baseProps)
             this.normalizeStyleOptions(this.styleOptions);
+        this.drawingView = this.createNewView(this._chart!, this._series!)
     }
 
     protected overrideDrawingPoints(points: DrawingPoint[]): void {

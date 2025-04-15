@@ -11,7 +11,7 @@ import { ViewBase } from '../drawing-view-base';
 
 export class LineHorizontalDrawing extends ChartDrawingBase{
 	private static readonly TOTAL_DRAWING_POINTS = 2; // Set the drawing points for this type of drawing.  A box will have 2, a line ray will have 1, etc...
-	private static readonly TOOL_TYPE = DrawingToolType.HorizontalLine
+	private static readonly TOOL_TYPE = DrawingToolType.HorizontalLine // MAKE SURE TO UPDATE THIS WHEN CREATING NEW DRAWING TOOLS
 
 	constructor(
 		chart: IChartApi,
@@ -19,20 +19,9 @@ export class LineHorizontalDrawing extends ChartDrawingBase{
 		symbolName: string,
 		baseProps?: ChartDrawingBaseProps,
 	) {
-
-		const _finalizeDrawingPoints =()=>{
-			const price =  this.drawingPoints[1].price
-			const dp1 = {time : 1, price} as DrawingPoint
-			const dp2 = {time : MAX_TIME, price} as DrawingPoint
-			this.overrideDrawingPoints([dp1, dp2]);
-		}
-		super( LineHorizontalDrawing.TOOL_TYPE, chart, series, symbolName, LineHorizontalDrawing.TOTAL_DRAWING_POINTS, drawingToolDefaultOptions, baseProps, _finalizeDrawingPoints);
+		super( LineHorizontalDrawing.TOOL_TYPE, chart, series, symbolName, LineHorizontalDrawing.TOTAL_DRAWING_POINTS, drawingToolDefaultOptions, baseProps);
 		
 		this.initialize(baseProps);
-		if(baseProps)
-			this.drawingView = new View(chart, series, this.toolType, drawingToolDefaultOptions, this.id, this.styleOptions, this.drawingPoints); 
-		else
-			this.drawingView = new View(chart, series, this.toolType, drawingToolDefaultOptions, this.id); 
 	}
 
 	createNewView(chart: IChartApi, series: ISeriesApi<SeriesType>): ViewBase{
@@ -63,6 +52,13 @@ export class LineHorizontalDrawing extends ChartDrawingBase{
 		if(param.point){
 			this._updatePosition(startPoint, endPoint);
 		}
+	}
+
+	protected finalizeDrawingPoints =()=>{
+		const price =  this.drawingPoints[1].price
+		const dp1 = {time : 1, price} as DrawingPoint
+		const dp2 = {time : MAX_TIME, price} as DrawingPoint
+		this.overrideDrawingPoints([dp1, dp2]);
 	}
 
 	private _setCursor(point: Point): void {

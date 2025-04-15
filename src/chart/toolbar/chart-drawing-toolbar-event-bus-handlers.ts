@@ -13,56 +13,74 @@ const ToolClickMap: Partial<Record<DrawingToolType, () => void>> = {
 
 // The bus is an extension of the ChartManager, and coordinates the ChartManager, ToolBarManager, and ChartContainers
 // listens on the event bus for toolbar actions
+// we dont need to worry about disposing these since they are tied to the chart manager are long lived
 export function initializeEventBus(chartManager: ChartDrawingsManager){
-	
     eventBus.addEventListener(DrawingEvents.NewDrawingCompleted, (event: Event) => {
         const customEvent = event as CustomEvent<string>;
 		const selectedDrawing = chartManager.selectedDrawing;
-
         console.log(`Chart Manager: Chart ${customEvent.detail} has finished rendering.`, selectedDrawing);
-        if(selectedDrawing){ 
-            const drawings = chartManager.drawings.get(selectedDrawing.symbolName) || [];
-            chartManager.drawings.set(selectedDrawing.symbolName, [...drawings, selectedDrawing]);
-            chartManager.saveDrawings(selectedDrawing.symbolName);
-            _addDrawingToChartContainers(selectedDrawing.symbolName, selectedDrawing, chartManager);
-        }
-		const toolbarId = chartManager.currentChartContainer?.chartId ?? ''
-		_unselectTool(chartManager, toolbarId);
-        chartManager.creatingNewDrawingFromToolbar = false;
-        chartManager.unselectDrawing();
+
+		_processNewDrawing(selectedDrawing!, chartManager);
+		_resetToolbars(chartManager)
     });
 
 	eventBus.addEventListener(DrawingEvents.CompletedDrawingSelected, (event: Event) => {
 		const customEvent = event as CustomEvent<string>;
-		console.log('DrawingEvents.CompletedDrawingSelected', customEvent.detail)
 		const selectedDrawing = chartManager.selectedDrawing;
-		//console.log(`Chart Manager: Chart ${customEvent.detail} modify drawing`, selectedDrawing);
-		if(selectedDrawing){  
-			const chartId = chartManager.currentChartContainer?.chartId
-			if(chartId){
-				const toolBar = chartManager.toolbarManager.getToolbar(chartId)?.activateTool(selectedDrawing.toolType)
-				//this.openModifyDrawingToolbar(selectedDrawing)
-			}
+		console.log('DrawingEvents.CompletedDrawingSelected', customEvent.detail)
+
+		if(selectedDrawing){ // open the toolbar for the selected drawing
+			_activateToolbar(chartManager, selectedDrawing.toolType)
 		}
 	});
 
 	eventBus.addEventListener(DrawingEvents.CompletedDrawingUnSelected, (event: Event) => {
 		const customEvent = event as CustomEvent<string>;
 		console.log('DrawingEvents.CompletedDrawingUnSelected', customEvent.detail)
+
 		const toolbarId = chartManager.currentChartContainer?.chartId ?? ''
 		_unselectTool(chartManager, toolbarId);
+		_removeSubToolFromView(chartManager)
 	});
 
 	eventBus.addEventListener(ButtonEvents.ToolClicked, (event: Event) => {
-		console.log('tool clicked')
         const details = (event as CustomEvent).detail as ToolButtonEventDetails; 
+		console.log('DrawingEvents.ToolClicked', details)
+
         _toolClicked(details.toolType, details.toolbarId, chartManager);
     });
 
     eventBus.addEventListener(ButtonEvents.SubToolClicked, (event: Event) => {
         const details = (event as CustomEvent).detail as ToolButtonEventDetails; 
+		console.log('DrawingEvents.ToolClicked', details)
+
         _applyAndSaveCurrentStylingToSelectedDrawing(chartManager);
     });
+}
+
+function _activateToolbar(chartManager: ChartDrawingsManager, toolType: DrawingToolType){
+	const chartId = chartManager.currentChartContainer?.chartId
+	if(!chartId) return;
+
+	chartManager.toolbarManager.getToolbar(chartId)?.activateTool(toolType)
+}
+
+// process new drawing.  add to list, draw on other containers, save
+function _processNewDrawing(selectedDrawing: ChartDrawingBase, chartManager: ChartDrawingsManager){
+	if(!selectedDrawing) return;
+
+	const drawings = chartManager.drawings.get(selectedDrawing.symbolName) || [];
+	chartManager.drawings.set(selectedDrawing.symbolName, [...drawings, selectedDrawing]);
+	chartManager.saveDrawings(selectedDrawing.symbolName);
+	_addDrawingToChartContainers(selectedDrawing.symbolName, selectedDrawing, chartManager);
+}
+
+// reset the toolbar drawing process
+function _resetToolbars(chartManager: ChartDrawingsManager){
+	const toolbarId = chartManager.currentChartContainer?.chartId ?? ''
+	_unselectTool(chartManager, toolbarId);
+	chartManager.creatingNewDrawingFromToolbar = false;
+	chartManager.unselectDrawing();
 }
 
 function _applyAndSaveCurrentStylingToSelectedDrawing(chartManager: ChartDrawingsManager){
@@ -90,15 +108,15 @@ function _toolClicked(toolType: DrawingToolType, toolbarId: string, chartManager
 
 function _onClickDrawingTool(toolType: DrawingToolType, toolbarId: string, chartManager: ChartDrawingsManager): void {
 	const toolbarManager = chartManager.toolbarManager
-	console.log(toolbarManager.currentToolType, toolType)
+
 	if(toolbarManager.currentToolType === toolType){
 		console.log('_onClickDrawingTool', 'same tool clicked, unselecting',toolType)
 		_unselectTool(chartManager, toolbarId);
 		chartManager.unselectDrawing();
 	}
 	else {
-		toolbarManager.setCurrentToolType(toolType)
 		console.log('_onClickDrawingTool', 'new tool clicked',toolType)
+		toolbarManager.setCurrentToolType(toolType)
 		_selectTool(toolType,  toolbarId, chartManager);
 	}
 }
@@ -106,6 +124,7 @@ function _onClickDrawingTool(toolType: DrawingToolType, toolbarId: string, chart
 // remove/delete drawing
 function _onClickRemoveDrawingTool(chartManager: ChartDrawingsManager): void {
 	chartManager.removeSelectedDrawing();
+	_removeSubToolFromView(chartManager);
 }
 
 // remove/delete drawing
@@ -113,6 +132,8 @@ function _onClickRemoveAllDrawingTool(chartManager: ChartDrawingsManager): void 
 	if(confirm('Are you sure you want to remove all drawings from this symbol?')){
 		chartManager.removeDrawingsForCurrentChartSymbol();
 		chartManager.removeSelectedDrawing();
+		_removeSubToolFromView(chartManager);
+		_resetToolbars(chartManager)
 	}
 }
 
@@ -131,9 +152,17 @@ function _setTextForSelectedDrawing(chartManager: ChartDrawingsManager): void {
 }
 
 // TODO is there an issue with not releasing 
-function _removeSubToolFromView(toolbar: ChartDrawingsToolbar){
-	unselectAllDivsForGroup(toolbar.toolbarContainer!, AVAILABLE_TOOLS.map(t => t.name));
-	clearDiv(toolbar.subToolbarContainer!);
+function _removeSubToolFromView(chartManager?: ChartDrawingsManager){
+	if(!chartManager) return;
+
+	const chartId = chartManager.currentChartContainer?.chartId
+	if(chartId){
+		const toolbar = chartManager.toolbarManager.getToolbar(chartId)
+		if(toolbar){
+			unselectAllDivsForGroup(toolbar.toolbarContainer!, AVAILABLE_TOOLS.map(t => t.name));
+			clearDiv(toolbar.subToolbarContainer!);
+		}
+	}
 }
 
 function _unselectTool(chartManager: ChartDrawingsManager, toolbarId: string): void {
@@ -144,12 +173,12 @@ function _unselectTool(chartManager: ChartDrawingsManager, toolbarId: string): v
 		if(toolbar){
 			const tool = toolbar.tools.get(toolbarManager.currentToolType)
 			tool?.disposeSubButtons();
-			_removeSubToolFromView(toolbar)
+			_removeSubToolFromView(chartManager)
 		}
 	}
 
 	toolbarManager.setCurrentToolType(DrawingToolType.None)
-	//chartManager.unselectDrawing();
+	//chartManager.unselectDrawing(); // this can cause an infinite loop
 	chartManager.unselectTool();
 	document.body.style.cursor = 'default';
 }
@@ -159,7 +188,7 @@ function _selectTool(toolType: DrawingToolType, toolbarId: string, chartManager:
 	const toolbar = toolbarManager.getToolbar(toolbarId)
 	if(!toolbar) return;
 
-	chartManager.unselectDrawing();
+	//chartManager.unselectDrawing();
 	unselectAllDivsForGroup(toolbar.toolbarContainer!, AVAILABLE_TOOLS.map(t => t.name));
 	clearDiv(toolbar.subToolbarContainer!);
 

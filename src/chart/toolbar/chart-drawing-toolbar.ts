@@ -38,7 +38,6 @@ export class ChartDrawingsToolbar {
 	public dispose(){
 		this._drawingsToolbarContainer?.removeEventListener("contextmenu", this._disableRightClick);
 		this._drawingsSubToolbarContainer?.removeEventListener("contextmenu", this._disableRightClick);
-		//this._removeButton?.removeEventListener('click', this._onClickRemoveDrawingTool);
 		
 		// todo verify events are being removed
 		this._toolButtons.forEach((handler, button) => {

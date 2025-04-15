@@ -11,11 +11,9 @@
 
 <!-- markdownlint-enable no-inline-html -->
 
-Chart Drawing Tools is a plug-in to allow users to perform one of the most requested functions of the lightweight charts library, add Chart Drawings!  My goal is to build a solid framework that includes the plumbing, so others can focus on simply adding new drawing.  We will start by focusing on the core drawing functionalities, develop more advanced features such as syncing of drawings between charts, then extend it for deeper integration, such as an API to communicate with the plug-in to, say, externally manage orders with drawings in the plug-in.
+Chart Drawing Tools is a plug-in that allows users to perform one of the most requested functions of the lightweight charts library, add Chart Drawings!  My goal is to build a solid framework that includes the plumbing, so others can focus on simply adding new drawing.  We will start by focusing on the core drawing functionalities, develop more advanced features such as syncing of drawings between charts, then extend it for deeper integration, such as an API to communicate with the plug-in to, say, externally manage orders with drawings in the plug-in.
 
-Check /docs/...drawio.pdf for more informaiton.
-
-This is a very early preview build; the architecture and structure is still being worked on.  So it is still missing a lot of core features, and expect major breaking changes.  We will be adding test cases once the structure is more solidified.
+This is an early release build.  Most of the basic drawings and funcitonality are implemented.  Useful for those that just want a basic drawing package.
 
 ## Installing
 
@@ -44,19 +42,17 @@ This is a very early preview build; the architecture and structure is still bein
 
 ## Features
 * Toolbar for selecting drawings
-* Sub-tool bar for styling the drawing (color, opacity)
+* Sub-tool bar for styling the drawing (color, opacity, thickness, line style, etc..)
 * Draw, Select, Delete, Edit
 * Auto save/load configuration and drawings
 * Synced toolbar control between charts
-* Synced drawings of the same symbol (buggy)
-* Support for basic shapes : line, ray, vertical, horizontal, rectangle, rectangle-extended, etc...
+* Synced drawings of the same symbol
+* Support for basic shapes : line, ray, vertical, horizontal, rectangle, etc...
 
 Things to finish for v1 Release
 ---------------------------------
 - Verify handlers are properly disposed (mem leak)
 - Add test cases
-
-See /docs for a mini-roadmap of whats to come.
 
 ## License
 

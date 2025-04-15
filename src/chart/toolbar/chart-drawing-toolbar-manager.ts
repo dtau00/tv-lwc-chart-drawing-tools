@@ -10,7 +10,7 @@ export class ChartDrawingsToolbarManager {
     private _toolbars: ChartDrawingsToolbar[] = []
 
 	constructor(){
-        //this._initializeDrawingTools()
+
     }
 
     get currentToolType(): DrawingToolType {return this._currentToolType }//?.toolType ?? DrawingToolType.None}
@@ -50,22 +50,4 @@ export class ChartDrawingsToolbarManager {
     setCurrentToolType(toolType: DrawingToolType){
         this._currentToolType = toolType;
     }
-
-
-/*
-    private _initializeDrawingTools(): void {
-		//if(this._initialized) return; // only initialize once, or we will have multiple listeners on the same button
-
-		AVAILABLE_TOOLS.forEach(tool => {
-			const toolClass = this._toolFactory.get(tool.type);
-			if(!toolClass || tool.type === DrawingToolType.None) 
-				return;
-
-			// if its not a general tool, that its a tool
-			const ToolClass = toolClass//this._generalToolMap[tool.type] ?? toolClass;
-			const t = new ToolClass(this.toolbarId, tool.name, tool.description, tool.icon, tool.type);
-			t.addToolButtonToContainer(this._drawingsToolbarContainer!);
-			this._tools.set(tool.type, t);
-		});
-	}*/
 }

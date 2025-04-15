@@ -24,6 +24,9 @@ export class ChartDrawingsToolbar {
 		this._drawingsToolbarContainer = drawingsToolbarContainer;
 		this._drawingsSubToolbarContainer = drawingsSubToolbarContainer;
 
+		// In the future we can initialize different buttons for different toolbars, 
+		// although there might be a conflict when moving between chart
+		
 		this._initializeToolbar();
 		this._initializeMouseEvents();
 	}

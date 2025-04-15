@@ -142,7 +142,7 @@ export class ChartDrawingsManager {
         document.body.style.cursor = 'default';
     }
 
-    public destroy(): void {
+    public dispose(): void {
        this._charts.clear();
        this._drawings.clear();
        for(const chartContainer of this._chartContainers.values()){
@@ -160,7 +160,7 @@ export class ChartDrawingsManager {
             const previousCurrentContainer = this._currentChartContainer
             this._currentChartContainer = container
 
-            // flip tool bars
+            // close previous toolbar, open current
             if(previousCurrentContainer?.chartId)
                 this.toolbarManager.unsetToolbar(previousCurrentContainer.chartId)
             if( this._currentChartContainer?.chartId)
@@ -172,6 +172,7 @@ export class ChartDrawingsManager {
             previousCurrentContainer?.reDrawChartDrawings(previousChartDrawings)
 
             // set all drawings to current chart, so it will update primates on the correct chart
+            // TODO, a bit of a hack, we might just have the manager control the active drawing primatives
             const currentChartDrawings = this._getDrawingsForChartContainer(this._currentChartContainer)
             this.currentChartContainer?.setChartDrawingsToThisChart(currentChartDrawings)
 
@@ -189,9 +190,6 @@ export class ChartDrawingsManager {
     }
 
     public startNewDrawing(tool: Tool): void {
-        // if(!tool || !this._currentChartContainer) 
-         //    return;
-
          this._selectedDrawing?.stopDrawing();
          this._creatingNewDrawingFromToolbar = true;
          this._currentDrawingTool = tool;

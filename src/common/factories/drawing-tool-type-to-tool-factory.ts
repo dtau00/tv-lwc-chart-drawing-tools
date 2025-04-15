@@ -16,9 +16,9 @@ import { ToolText } from "../../chart/toolbar/tools/tool/tool-text";
 export const DrawingToolFactory =  new Map([
     [DrawingToolType.Fibonacci, ToolFibonacci],
     [DrawingToolType.Rectangle, ToolRectangle],
-    [DrawingToolType.RectangleExtended, ToolRectangleExtended],
+    //[DrawingToolType.RectangleExtended, ToolRectangleExtended],
     [DrawingToolType.RectangleLine, ToolRectangleLine],
-    [DrawingToolType.RectangleLineExtended, ToolRectangleLineExtended],
+    //[DrawingToolType.RectangleLineExtended, ToolRectangleLineExtended],
     [DrawingToolType.Line, ToolLine],
     [DrawingToolType.HorizontalLineRay, ToolLineHorizontalRay],
     [DrawingToolType.HorizontalLine, ToolLineHorizontal],

@@ -1,5 +1,5 @@
 import { ChartDrawingsManager } from "../chart-drawings-manager";
-import { eventBus, DrawingEvents, ButtonEvents, ToolButtonEventDetails } from "../../common/event-bus";
+import { eventBus, DrawingEvents, ButtonEvents, ToolButtonEventDetails, DrawingEventDetails } from "../../common/event-bus";
 import { ChartDrawingBase } from "../drawings/chart-drawing-base";
 import { AVAILABLE_TOOLS, DrawingToolType } from "./tools/drawing-tools";
 import { clearDiv, selectDivForGroup, unselectAllDivsForGroup } from "../../common/utils/html";
@@ -15,34 +15,39 @@ const ToolClickMap: Partial<Record<DrawingToolType, () => void>> = {
 // listens on the event bus for toolbar actions
 // we dont need to worry about disposing these since they are tied to the chart manager are long lived
 export function initializeEventBus(chartManager: ChartDrawingsManager){
+
+	// New Drawing Completed
     eventBus.addEventListener(DrawingEvents.NewDrawingCompleted, (event: Event) => {
-        const customEvent = event as CustomEvent<string>;
+        const details = (event as CustomEvent).detail as DrawingEventDetails; 
+		console.log('DrawingEvents.NewDrawingCompleted', details)
 		const selectedDrawing = chartManager.selectedDrawing;
-        console.log(`Chart Manager: Chart ${customEvent.detail} has finished rendering.`, selectedDrawing);
 
 		_processNewDrawing(selectedDrawing!, chartManager);
 		_resetToolbars(chartManager)
     });
 
+	// Drawing Selected
 	eventBus.addEventListener(DrawingEvents.CompletedDrawingSelected, (event: Event) => {
-		const customEvent = event as CustomEvent<string>;
+        const details = (event as CustomEvent).detail as DrawingEventDetails; 
+		console.log('DrawingEvents.CompletedDrawingSelected', details)
 		const selectedDrawing = chartManager.selectedDrawing;
-		console.log('DrawingEvents.CompletedDrawingSelected', customEvent.detail)
 
 		if(selectedDrawing){ // open the toolbar for the selected drawing
 			_activateToolbar(chartManager, selectedDrawing.toolType)
 		}
 	});
 
+	// Drawing Unselected
 	eventBus.addEventListener(DrawingEvents.CompletedDrawingUnSelected, (event: Event) => {
-		const customEvent = event as CustomEvent<string>;
-		console.log('DrawingEvents.CompletedDrawingUnSelected', customEvent.detail)
+        const details = (event as CustomEvent).detail as DrawingEventDetails; 
+		console.log('DrawingEvents.CompletedDrawingUnSelected', details)
 
 		const toolbarId = chartManager.currentChartContainer?.chartId ?? ''
 		_unselectTool(chartManager, toolbarId);
 		_removeSubToolFromView(chartManager)
 	});
 
+	// Tool Button Clicked
 	eventBus.addEventListener(ButtonEvents.ToolClicked, (event: Event) => {
         const details = (event as CustomEvent).detail as ToolButtonEventDetails; 
 		console.log('DrawingEvents.ToolClicked', details)
@@ -50,6 +55,7 @@ export function initializeEventBus(chartManager: ChartDrawingsManager){
         _toolClicked(details.toolType, details.toolbarId, chartManager);
     });
 
+	// Sub Tool Button Clicked
     eventBus.addEventListener(ButtonEvents.SubToolClicked, (event: Event) => {
         const details = (event as CustomEvent).detail as ToolButtonEventDetails; 
 		console.log('DrawingEvents.ToolClicked', details)

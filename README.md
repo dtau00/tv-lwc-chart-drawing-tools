@@ -41,13 +41,16 @@ This is an early release build.  Most of the basic drawings and funcitonality ar
 
 
 ## Features
-* Toolbar for selecting drawings
+* Toolbar for selecting different drawing tools
 * Sub-tool bar for styling the drawing (color, opacity, thickness, line style, etc..)
 * Draw, Select, Delete, Edit
 * Auto save/load configuration and drawings
 * Synced toolbar control between charts
 * Synced drawings of the same symbol
 * Support for basic shapes : line, ray, vertical, horizontal, rectangle, etc...
+
+## Using
+See /src/examples/example-adding-data-html for an exaample of adding live data.  Basically, dont add directly add new bars to the chart, update the plugin instead.  This is needed to pad the chart for extended drawings. 
 
 Things to finish for v1 Release
 ---------------------------------

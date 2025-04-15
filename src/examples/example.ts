@@ -8,17 +8,26 @@ const dataStream : CandlestickData[] = JSON.parse(dataSampleStream) //hard coded
 //const data = generateCandlestickData(); // or use randomized data each time on load
 
 const secondsPerBar : number = 86400
-const plugin1 = generateChart('chartId1', 'AAPL', secondsPerBar, 'chart1', 'toolbar1', 'subtoolbar1', data);
-const plugin2 = generateChart('chartId2', 'AAPL', secondsPerBar, 'chart2', 'toolbar2', 'subtoolbar2', data);
+try{
+	const plugin1 = generateChart('chartId1', 'AAPL', secondsPerBar, 'chart1', 'toolbar1', 'subtoolbar1', data);
+}catch{}
 
-//const plugin3 = generateChart('chartId3', 'BTC', 5, 'chart3', 'toolbar3', 'subtoolbar3', data);
+try{
+	const plugin2 = generateChart('chartId2', 'AAPL', secondsPerBar, 'chart2', 'toolbar2', 'subtoolbar2', data);
+}catch{}
 
-// test, adding new bars to chart
-setInterval(()=>{
-	const nextBar = dataStream.shift()
-	//if(nextBar)
-	//	plugin2.updateData(nextBar)
-},1000)
+try{
+	const plugin3 = generateChart('chartId3', 'BTC', secondsPerBar, 'chart3', 'toolbar3', 'subtoolbar3', data);
+
+	// test, adding new bars to chart
+	setInterval(()=>{
+		const nextBar = dataStream.shift()
+		if(nextBar)
+			plugin3.updateData(nextBar)
+	},1000)
+}
+catch{}
+
 
 
 function generateChart(id: string, symbol: string, secondsPerBar: number, chartContainerId : string, toolbarContainerId : string, subToolbarContainerId : string, data: CandlestickData[]) : ChartDrawingToolsPlugin {
@@ -30,27 +39,15 @@ function generateChart(id: string, symbol: string, secondsPerBar: number, chartC
 		},
 		grid: {
 			vertLines: {
-			  visible: false,
+				visible: false,
 			},
 			horzLines: {
-			  visible: false,
+				visible: false,
 			},
-		  },
+			},
 	}));
 	
 	const candlestickSeries = chart.addSeries(CandlestickSeries);
-	//candlestickSeries.setData(data)
-
-	//candlestickSeries.setData(data ? data : generateCandlestickData())
-
-	// add the symbol as a header above the chart
-	/*
-	const div = document.querySelector<HTMLDivElement>(`#${toolbarContainerId}`);
-	if (div) {
-		const headerDiv = document.createElement('h1');
-		headerDiv.innerHTML = symbol; // Set the text of the header
-		div.parentNode?.insertBefore(headerDiv, div);
-	}*/
 
 	// create the plugin
 	return new ChartDrawingToolsPlugin(

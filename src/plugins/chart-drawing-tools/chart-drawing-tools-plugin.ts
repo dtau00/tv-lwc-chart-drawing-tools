@@ -39,17 +39,18 @@ export class ChartDrawingToolsPlugin {
 			this._chartDrawingsManager.registerToolbar(drawingsToolbarContainer, subToolbarContainer, chartId)
 	}
 
-	// Expose the event bus so others can listen for chart and drawing events
+	setData(data: CandlestickData[]) : boolean{
+		return this._chartContainer?.setData(data) ?? false
+	}
+
+	updateData(bar : CandlestickData){
+		this._chartContainer?.updateData(bar)
+	}
+
+		// Expose the event bus so others can listen for chart and drawing events
 	/*
 	get eventBus(): EventTarget {
 		return eventBus;
 	}*/
 
-	setData(data: CandlestickData[]) : boolean{
-		return this._chartContainer?.setData(data) ?? false
-	}
-
-	public updateData(bar : CandlestickData){
-		this._chartContainer?.updateData(bar)
-	}
 }

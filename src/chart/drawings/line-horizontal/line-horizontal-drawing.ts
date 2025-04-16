@@ -72,8 +72,7 @@ export class LineHorizontalDrawing extends ChartDrawingBase{
 
 	// update the position of the drawing, based on how its being resized
 	private _updatePosition(startPoint: Point, endPoint: Point): void {
-		if (!this._chart || this._isDrawing || !this._series || this.drawingPoints.length < 2) 
-			return;
+		if (!this._chart || this._isDrawing || !this._series || this.drawingPoints.length < 2) return;
 
 		// we only change the second price.  All other values are the same
 		const price = this._series.coordinateToPrice(endPoint.y)!

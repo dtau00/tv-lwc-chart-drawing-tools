@@ -1,4 +1,4 @@
-import { IChartApi, ISeriesApi, MouseEventParams, Point, SeriesType, Time } from 'lightweight-charts';
+import { IChartApi, ISeriesApi, Point, SeriesType } from 'lightweight-charts';
 import { MousePointAndTime } from '../../common/points';
 import { ViewBase } from './drawing-view-base';
 

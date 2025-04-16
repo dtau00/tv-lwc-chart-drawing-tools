@@ -86,8 +86,7 @@ export class LineHorizontalRayDrawing extends ChartDrawingBase{
 
 	// update the position of the drawing, based on how its being resized
 	private _updatePosition(startPoint: Point, endPoint: Point): void {
-		if (!this._chart || this._isDrawing || !this._series || this.drawingPoints.length < 2) 
-			return;
+		if (!this._chart || this._isDrawing || !this._series || this.drawingPoints.length < 2) return;
 
 		let p1 :Point, p2 : Point
 		[p1, p2] = convertAndNormalizeDrawingPointsToPoint( this.drawingPoints[0], this.drawingPoints[1], this._chart, this._series)

@@ -151,7 +151,6 @@ export class ChartDrawingsManager {
             this.toolbarManager.deactivateToolbar(previousCurrentContainer.chartId)
         if( this._currentChartContainer?.chartId)
             this.toolbarManager.activateToolbar(this._currentChartContainer.chartId)
-            // this.openToolbars(this._currentChartContainer.chartId, this._currentDrawingTool?.toolType || DrawingToolType.None);
 
         // redraw all drawings for the last current chart container, before switching
         const previousChartDrawings = this._getDrawingsForChartContainer(previousCurrentContainer)

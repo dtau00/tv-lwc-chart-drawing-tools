@@ -2,7 +2,7 @@ import { isValidDashFormat } from "../../../../common/utils/dash-format-string";
 import { DrawingSubToolType } from "../drawing-sub-tools";
 import SubTool from "../sub-tool-base";
 
-const dotValues = ['[1,1]','[1,2]','[1,3]','[1,4]','[1,5]','[2,2]','[2,3]','[2,4]','[2,5]']
+const DOT_VALUES = ['[1,1]','[1,2]','[1,3]','[1,4]','[1,5]','[2,2]','[2,3]','[2,4]','[2,5]']
 
 export class SubToolDotted extends SubTool {
     constructor(toolbarId: string, propertyName: string, parentTool: string, name: string, description: string, icon: string, index: number, valueUpdatedCallback?: (value: any) => void) {
@@ -45,8 +45,8 @@ export class SubToolDotted extends SubTool {
     }
 
     private _getNextValue(){
-        let index = dotValues.indexOf(this.getValue())
-        index = (index < 0 || index >= dotValues.length - 1) ? 0 : index + 1
-        return dotValues[index]
+        let index = DOT_VALUES.indexOf(this.getValue())
+        index = (index < 0 || index >= DOT_VALUES.length - 1) ? 0 : index + 1
+        return DOT_VALUES[index]
     }
 }

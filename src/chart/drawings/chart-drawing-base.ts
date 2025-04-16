@@ -1,4 +1,4 @@
-import { IChartApi, ISeriesApi, SeriesType, MouseEventParams, Point, Time, Coordinate } from 'lightweight-charts';
+import { IChartApi, ISeriesApi, SeriesType, Point, Time } from 'lightweight-charts';
 import { DrawingToolType } from '../toolbar/tools/drawing-tools';
 import { IChartDrawing } from './chart-drawing-interface';
 import { generateUniqueId } from '../../common/utils/id-generator';
@@ -7,7 +7,7 @@ import { ensureDefined } from '../../common/utils/assertions';
 import { DrawingPoint, MousePointAndTime } from '../../common/points';
 
 import { DrawingEvents, createDrawingEventDetails, eventBus } from '../../common/event-bus';
-import { containsPoints, leftRightPoints, pointToDrawingPoints, topBottomPoints } from '../../common/points';
+import { leftRightPoints, pointToDrawingPoints, topBottomPoints } from '../../common/points';
 import { ViewBase } from '../drawings/drawing-view-base';
 
  // base properties that are common to all drawings, to make it cleaner to serialize and save/load

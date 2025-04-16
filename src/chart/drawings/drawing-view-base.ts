@@ -42,8 +42,6 @@ export class ViewBase extends PluginBase {
 
     get drawingId(): string {return this._drawingId}
 
-    //abstract  updateInitialPoint(p: DrawingPoint, param: MousePointAndTime): void;
-
     getOverrideOptions(toolType: DrawingToolType, styleOptions: {}): any {
         const keyName = toolKeyName(toolType);
         //const overrides = isEmpty(styleOptions) ? ConfigStorage.loadConfig(keyName, {}) as Partial<T> : styleOptions;

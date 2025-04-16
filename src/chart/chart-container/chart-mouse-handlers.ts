@@ -5,14 +5,11 @@ import { ChartDrawingsManager } from '../chart-drawings-manager';
 import { ChartDrawingBase } from '../drawings/chart-drawing-base';
 import { AVAILABLE_TOOLS, DrawingToolType } from '../toolbar/tools/drawing-tools';
 import { unselectAllDivsForGroup } from '../../common/utils/html';
-
-//private static readonly MouseHoldTimeMs = 10;
-//private static readonly MouseHoldMaxOffsetPoints = 3;
+import { hasMouseMoved } from '../../common/utils/mouse';
 
 export function initializeListeners(handlers: ReturnType<typeof createChartMouseHandlers>, chartContainer: ChartContainer): void {
     const divContainer = chartContainer.chartDivContainer;
 
-    //chart.subscribeCrosshairMove(this._onCrosshairMoveChartHandler);
     divContainer.addEventListener('mousemove', handlers.onMouseMove);
     divContainer.addEventListener('mousedown', handlers.onMouseDown);
     divContainer.addEventListener('mousemove', handlers.onMouseMove);
@@ -22,8 +19,7 @@ export function initializeListeners(handlers: ReturnType<typeof createChartMouse
 
 export function removeListeners(handlers: ReturnType<typeof createChartMouseHandlers>, chartContainer: ChartContainer): void {
     const divContainer = chartContainer.chartDivContainer;
-
-    //chart.unsubscribeCrosshairMove(this._onCrosshairMoveChartHandler)    
+  
     divContainer.removeEventListener('mousemove', handlers.onMouseMove);
     divContainer.removeEventListener('mousedown', handlers.onMouseDown);
     divContainer.removeEventListener('mousemove', handlers.onMouseMove);
@@ -34,8 +30,6 @@ export function removeListeners(handlers: ReturnType<typeof createChartMouseHand
 export function createChartMouseHandlers(chartContainer: ChartContainer) {
     const mouseHoldTimeMs = 350;
     let isMouseDragging = false;
-    let isMouseInitiallyHeldStillI = false;
-    let heldTriggered = false;
     let mouseDownStartPoint: Point | null = null
     let mousePosition: Point | null = null;
     let mouseHoldTimer: NodeJS.Timeout
@@ -43,33 +37,18 @@ export function createChartMouseHandlers(chartContainer: ChartContainer) {
     return {
         onMouseDown: (evt: MouseEvent) => {
             if (evt.button !== 0) return;
-
-            // get variables
-            const mgr: ChartDrawingsManager = chartContainer.chartManager;
+        
+            const mgr = chartContainer.chartManager;
             const p1 = mgr.selectedDrawing?.drawingPoints[0];
             const p2 = mgr.selectedDrawing?.drawingPoints[1];
-            mouseDownStartPoint = getChartPointFromMouseEvent(evt, chartContainer.chartDivContainer); // set original mouse down position
-
-            // validate parameters
-            if (!mgr.selectedDrawing) return;// only check if a drawing is selected
-            if (!mouseDownStartPoint || !p1 || !p2) return
-
-            // process if clicked over a drawing
-            if (mgr.selectedDrawing.containsPoint(chartContainer.chart, chartContainer.series, mouseDownStartPoint, mgr.selectedDrawing.drawingPoints)) {
-                // set off timer to wait for mouse being held, before setting to dragging
-                isMouseInitiallyHeldStillI = true;
-                isMouseDragging = true;
-                chartContainer.setChartDraggable(false);
-                clearTimeout(mouseHoldTimer)
-                mouseHoldTimer = setTimeout(() => {
-                    if (!mouseDownStartPoint) return;
-                    //mgr.selectedDrawing?.onHoverWhenSelected(mouseDownStartPoint); // sets the cursor
-                    isMouseInitiallyHeldStillI = false;
-                    heldTriggered = true;
-                    document.body.style.cursor = 'move';
-                    mgr.selectedDrawing?.setToMoving();
-                }, mouseHoldTimeMs)
-            }
+            mouseDownStartPoint = getChartPointFromMouseEvent(evt, chartContainer.chartDivContainer);
+        
+            if (!mgr.selectedDrawing || !mouseDownStartPoint || !p1 || !p2) return;
+            if (!mgr.selectedDrawing.containsPoint(chartContainer.chart, chartContainer.series, mouseDownStartPoint, mgr.selectedDrawing.drawingPoints)) return;
+        
+            isMouseDragging = true;
+            chartContainer.setTradingViewChartDraggable(false);
+            mouseHoldTimer = _startMouseHoldDetection(mouseHoldTimeMs, mouseDownStartPoint, mgr, mouseHoldTimer);
         },
 
         onMouseMove: (evt: MouseEvent) => {
@@ -78,13 +57,15 @@ export function createChartMouseHandlers(chartContainer: ChartContainer) {
             if (!param.time || !param.point) return
 
             mousePosition = param.point
+            
             if(mouseDownStartPoint){
-                if(isMouseInitiallyHeldStillI && _hasMouseMoved(mousePosition, mouseDownStartPoint)) {
-                    isMouseInitiallyHeldStillI = false;
+                // checking if mouse has moved while being held
+                if(mouseHoldTimer && hasMouseMoved(mousePosition, mouseDownStartPoint)) {
                     clearTimeout(mouseHoldTimer)
                 }
 
-                if(mgr.selectedDrawing && !isMouseDragging){
+                // check if hovering over selected drawing, but not dragging
+                if(!isMouseDragging && mgr.selectedDrawing){
                     mgr.selectedDrawing?.onHoverWhenSelected(mouseDownStartPoint); // sets the cursor
                 }
             }
@@ -101,7 +82,7 @@ export function createChartMouseHandlers(chartContainer: ChartContainer) {
             _processOnMouseUp(evt, chartContainer, isMouseDragging)
 
             // reset mouse drag  properties (no longer dragging on mouseUp)
-            chartContainer.chartManager.currentChartContainer?.setChartDraggable(true)
+            chartContainer.chartManager.currentChartContainer?.setTradingViewChartDraggable(true)
             isMouseDragging = false;
             mouseDownStartPoint = null;
         },
@@ -125,28 +106,28 @@ function _processOnMouseMove(mgr: ChartDrawingsManager, param: MousePointAndTime
     }
     else if (isMouseDraggingWithDrawingSelected) { // move drawing
         mgr.selectedDrawing.onDrag(param, mouseDownStartPoint!, param.point);
-        // this._selectedDrawing?.updatePosition(this._mouseDownStartPoint, param.point, this._isMouseDragging);
     }
     else if (isDrawingSelected) {
         mgr.selectedDrawing.onHoverWhenSelected(param.point); // sets the cursor
     }
 }
 
+// cancel all drawing processes
+// TODO in the future we open a context window when hovering over drawing
 function _processOnRightClick(chartContainer: ChartContainer) {
-    // dispose all  subtools
-    // TODO in the future we open a context window when hovering over drawing
     const chartManager = chartContainer.chartManager;
     const toolbarManager = chartManager.toolbarManager
     const toolbar = toolbarManager.getToolbar(chartContainer.chartId)
-    if (toolbarManager.currentToolType !== DrawingToolType.None) {
-        if (toolbar) {
+
+    // dispose subButtons
+    if (toolbar && toolbarManager.currentToolType !== DrawingToolType.None) {
         const tool = toolbar.tools.get(toolbarManager.currentToolType)
         tool?.disposeSubButtons();
         toolbarManager.unsetToolbar(chartContainer.chartId);
         unselectAllDivsForGroup(toolbar.toolbarContainer!, AVAILABLE_TOOLS.map(t => t.name));
-        }
     }
 
+    // reset drawing values
     toolbarManager.setCurrentToolType(DrawingToolType.None)
     chartManager.unselectDrawing();
     chartManager.unselectTool();
@@ -164,7 +145,7 @@ function _processOnMouseUp(evt: MouseEvent, chartContainer: ChartContainer, isMo
     else if (param.point) { // mouse clicked
         mgr.switchCurrentContainerIfChanged(chartContainer);
 
-        if (mgr.creatingNewDrawingFromToolbar) {
+        if (mgr.creatingNewDrawingFromToolbar) { 
             _processNewToolbarDrawingOnChartMouseEvent(chartContainer, param)
         }
         else if (!mgr.selectedDrawing || mgr.selectedDrawing.isCompleted) {
@@ -193,19 +174,6 @@ function _processSelectedDrawings(selectedDrawings: ChartDrawingBase[], chartCon
     }
 }
 
-function _findDrawingsWithinPoint(point: Point, chartContainer: ChartContainer): ChartDrawingBase[] {
-    let foundDrawings: ChartDrawingBase[] = []
-    const mgr = chartContainer.chartManager;
-    const drawings = mgr.drawings.get(chartContainer.symbolName) || [];
-
-    for (const drawing of drawings) {
-        if (drawing.containsPoint(chartContainer.chart, chartContainer.series, point, drawing.drawingPoints)) {
-            foundDrawings.push(drawing)
-        }
-    }
-    return foundDrawings
-}
-
 function _processNewToolbarDrawingOnChartMouseEvent(chartContainer: ChartContainer, param: MousePointAndTime): void {
     const mgr = chartContainer.chartManager;
 
@@ -219,13 +187,32 @@ function _processNewToolbarDrawingOnChartMouseEvent(chartContainer: ChartContain
     mgr.selectedDrawing?.onClick(param);
 }
 
-// check if mouse is being held, allow for some movement before starting drag (if the mouse jitters due to high dpi)
-function _hasMouseMoved(mousePosition: Point, mouseDownStartPoint: Point): boolean {
-    if (!mousePosition || !mouseDownStartPoint) return false;
+function _startMouseHoldDetection(
+    delay: number,
+    startPoint: Point | null,
+    mgr: ChartDrawingsManager,
+    existingTimer?: NodeJS.Timeout
+): NodeJS.Timeout {
+    if (existingTimer) clearTimeout(existingTimer);
 
-    // TODO there's a conversion issue since we use MouseEvent for mousedown and MouseEventParams for mousemove, on y
-    const yDiff = 0//Math.abs(this._mousePosition.y - this._mouseDownStartPoint.y);
-    const xDiff = Math.abs(mousePosition.x - mouseDownStartPoint.x);
-    const offset = 0//ChartDrawingsManager.MouseHoldMaxOffsetPoints;
-    return (xDiff > offset || yDiff > offset)
+    return setTimeout(() => {
+        if (!startPoint) return;
+
+        document.body.style.cursor = 'move';
+        mgr.selectedDrawing?.setToMoving();
+        clearTimeout(existingTimer)
+    }, delay);
+}
+
+function _findDrawingsWithinPoint(point: Point, chartContainer: ChartContainer): ChartDrawingBase[] {
+    let foundDrawings: ChartDrawingBase[] = []
+    const mgr = chartContainer.chartManager;
+    const drawings = mgr.drawings.get(chartContainer.symbolName) || [];
+
+    for (const drawing of drawings) {
+        if (drawing.containsPoint(chartContainer.chart, chartContainer.series, point, drawing.drawingPoints)) {
+            foundDrawings.push(drawing)
+        }
+    }
+    return foundDrawings
 }

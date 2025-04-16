@@ -170,7 +170,7 @@ export class ChartContainer {
      * 
      * @param enable 
      */
-    setChartDraggable(enable: boolean): void {
+    setTradingViewChartDraggable(enable: boolean): void {
         this._chart.applyOptions({
             handleScroll: enable,  // Toggle scroll behavior
         });

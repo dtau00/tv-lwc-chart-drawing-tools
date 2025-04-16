@@ -1,5 +1,7 @@
 import { Coordinate, IChartApi, ISeriesApi, Point, SeriesType, Time } from "lightweight-charts";
 import { coordinateToTimeMax, timeToCoordinateMax } from "./utils/time";
+import { ChartDrawingBase } from "../chart/drawings/chart-drawing-base";
+import { ChartContainer } from "../chart/chart-container/chart-container";
 
 export interface DrawingPoint {
 	time: Time;

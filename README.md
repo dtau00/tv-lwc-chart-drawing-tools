@@ -57,6 +57,8 @@ You can right click the sub buttons, and it'll cycle through different values.
 Things to finish for v1 Release
 ---------------------------------
 - Verify handlers are properly disposed (mem leak)
+- Complete function comments
+- Clean up Interfaces
 - Add test cases
 
 ## License

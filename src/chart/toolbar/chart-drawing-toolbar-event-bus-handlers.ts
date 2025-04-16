@@ -29,8 +29,8 @@ export function initializeEventBus(chartManager: ChartDrawingsManager){
 	// Drawing Selected
 	eventBus.addEventListener(DrawingEvents.CompletedDrawingSelected, (event: Event) => {
         const details = (event as CustomEvent).detail as DrawingEventDetails; 
-		console.log('DrawingEvents.CompletedDrawingSelected', details)
 		const selectedDrawing = chartManager.selectedDrawing
+		console.log('DrawingEvents.CompletedDrawingSelected', details)
 		if(!selectedDrawing) return;
 
 		_activateToolbar(chartManager, selectedDrawing.toolType)
@@ -39,8 +39,8 @@ export function initializeEventBus(chartManager: ChartDrawingsManager){
 	// Drawing Unselected
 	eventBus.addEventListener(DrawingEvents.CompletedDrawingUnSelected, (event: Event) => {
         const details = (event as CustomEvent).detail as DrawingEventDetails; 
-		console.log('DrawingEvents.CompletedDrawingUnSelected', details)
 		const currentChartContainer = chartManager.currentChartContainer
+		console.log('DrawingEvents.CompletedDrawingUnSelected', details)
 		if(!currentChartContainer) return;
 
 		const toolbarId = currentChartContainer.chartId
@@ -68,7 +68,7 @@ export function initializeEventBus(chartManager: ChartDrawingsManager){
 function _activateToolbar(chartManager: ChartDrawingsManager, toolType: DrawingToolType){
 	const chartId = chartManager.currentChartContainer?.chartId
 	if(!chartId) return;
-
+	
 	chartManager.toolbarManager.getToolbar(chartId)?.activateTool(toolType)
 }
 

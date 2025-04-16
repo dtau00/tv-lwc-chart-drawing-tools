@@ -7,45 +7,8 @@ const toolButtonWidth = '15px';
 const toolButtonHeight = '20px;'
 
 export function createSubToolbarButton(name: string, description: string, icon: string, className: string, type: ToolbarButton, container?: HTMLDivElement): HTMLDivElement | HTMLInputElement {
-  //return createToolbarButton(name, description, icon, type, () => void 0, '', container);
     return createToolbarButton(name, description, icon, className, type, container!);
 }
-/*
-export function createToolbarButton_(name: string, description: string, icon: string, type: ToolbarButton, listener: (evt: MouseEvent) => void, eventType: 'click' | 'mousedown' | 'mouseup' | '' = '', container?: HTMLDivElement): HTMLDivElement | HTMLInputElement {
-  let div : HTMLInputElement | HTMLDivElement
-
-  if(type === 'color'){
-      div = document.createElement('input') as HTMLInputElement;
-      if (div instanceof HTMLInputElement) { // make sure TS knows the type
-        div.type = 'color';
-        div.style.border = 'none';
-        if(eventType) {// TODO move this down to base properties.  There's a type issue
-          div.addEventListener(eventType, listener);
-        }
-      }
-  }
-  else if(type === 'div'){
-      div = document.createElement('div') as HTMLDivElement;
-      div.innerHTML = icon;
-      if(eventType){ // TODO move this down to base properties.  There's a type issue
-        div.addEventListener(eventType, listener);
-      }
-  }
-  else
-    throw Error(`unknown type while creating toolbar: ${type}`)
-
-  // set base properties
-  div.className = `toolbar-item ${name}`;
-  div.title = description;
-  div.style.width = toolButtonWidth;
-  div.style.height = toolButtonHeight;
-  div.style.display = 'flex';
-  div.style.alignItems = 'center';
-  div.style.justifyContent = 'center';
-  container?.appendChild(div);
-  
-  return div
-}*/
 
 export function createToolbarButton(name: string, description: string, icon: string, className: string, type: ToolbarButton, container: HTMLDivElement): HTMLDivElement | HTMLInputElement {
   let div : HTMLInputElement | HTMLDivElement

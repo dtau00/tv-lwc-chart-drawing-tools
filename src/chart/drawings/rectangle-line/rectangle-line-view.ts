@@ -16,9 +16,7 @@ export class RectangleLine extends ViewBase {
 		options: Partial<DrawingOptions> = {},
 		drawingPoints?: DrawingPoint[]
 	) {
-
 		super(chart, series, toolType, defaultOptions, options, drawingId);
-
 		this.initializeDrawingViews(drawingPoints);
 	}
 
@@ -29,7 +27,6 @@ export class RectangleLine extends ViewBase {
 		this._paneViews = [new PaneView(this)];
 	}
 
-	// override the base class method to extend the vertical line
 	updateInitialPoint(p: DrawingPoint, param: MousePointAndTime) {
 		this.updateInitialPointForRectangle(p, param)
 	}

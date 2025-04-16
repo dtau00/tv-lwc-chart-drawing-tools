@@ -17,20 +17,17 @@ export class LineHorizontal extends ViewBase {
 		options: Partial<DrawingOptions> = {},
 		drawingPoints?: DrawingPoint[]
 	) {
-
 		super(chart, series, toolType, defaultOptions, options, drawingId);
-
 		this.initializeDrawingViews(drawingPoints);
 	}
 
 	initializeDrawingViews(points?: DrawingPoint[]): void {
 		if (!points?.length || this.paneViews.length > 0) return;
-	
+		
 		this.points = points;
 		this._paneViews = [new PaneView(this)];
 	}
 
-	// override the base class method to extend the vertical line
 	updateInitialPoint(p: DrawingPoint, param: MousePointAndTime) {
 		if(!this.points[0]) return
 		

@@ -17,9 +17,7 @@ export class RectangleLineExtendedView extends ViewBase {
 		options: Partial<DrawingOptions> = {},
 		drawingPoints?: DrawingPoint[]
 	) {
-
 		super(chart, series, toolType, defaultOptions, options, drawingId);
-
 		this.initializeDrawingViews(drawingPoints);
 	}
 

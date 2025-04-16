@@ -25,12 +25,10 @@ export class RectangleExtendedView extends ViewBase {
 
 	initializeDrawingViews(points?: DrawingPoint[]): void {
 		if (!points?.length || this.paneViews.length > 0) return;
-	
 		this.points = points;
 		this._paneViews = [new PaneView(this)];
 	}
 
-	// override the base class method to extend the rectangle to the end of the chart
 	updateInitialPoint(p: DrawingPoint, param: MousePointAndTime) {
 		if(!this.points[0] || !this.points[1]) return
 

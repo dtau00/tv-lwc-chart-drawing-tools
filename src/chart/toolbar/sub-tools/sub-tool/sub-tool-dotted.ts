@@ -13,19 +13,17 @@ export class SubToolDotted extends SubTool {
 
     init(): void {
         if (!(this.div instanceof HTMLDivElement)) return;
-
         this.div.addEventListener('mousedown', this._onMouseDown);
     }
     
     dispose(): void {
         if (!(this.div instanceof HTMLDivElement)) return;
-        
         this.div.removeEventListener('mousedown', this._onMouseDown);
     }
 
     setButtonStyling(): void {
         if (!this.div) return
-
+        
         this.div.style.width = '20px';
         this.div.style.height = '20px';
     }

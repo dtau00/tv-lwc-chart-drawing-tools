@@ -10,13 +10,11 @@ export class SubToolThickness extends SubTool {
 
     init(): void {
         if (!(this.div instanceof HTMLDivElement)) return;
-
          this.div.addEventListener('mousedown', this._onMouseDown);
     }
     
     dispose(): void {
         if (!(this.div instanceof HTMLDivElement)) return;
-
         this.div.removeEventListener('mousedown', this._onMouseDown);
     }
 

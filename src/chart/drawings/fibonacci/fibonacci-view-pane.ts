@@ -23,10 +23,7 @@ class FibonacciPaneRenderer implements IPrimitivePaneRenderer {
 
 	draw(target: CanvasRenderingTarget2D) {
 		target.useBitmapCoordinateSpace(scope => {
-			if (
-				this._p1.x === null || this._p1.y === null ||
-				this._p2.x === null || this._p2.y === null
-			) return;
+			if (this._p1.x === null || this._p1.y === null || this._p2.x === null || this._p2.y === null) return;
 
 			const ctx = scope.context;
 			const x1 = this._p1.x;
@@ -71,11 +68,9 @@ export class FibonacciPaneView extends PaneViewBase implements IPrimitivePaneVie
     update() {
         const { series, points, chart } = this._source;
         const timeScale = chart.timeScale();
-    
         if (points.length < 2) return;
     
         const [rawPoint1, rawPoint2] = points;
-    
         // Flip: always make p1 the later time (right side)
         const isReverseChronological = rawPoint1.time >= rawPoint2.time;
         const p1 = isReverseChronological ? rawPoint1 : rawPoint2;

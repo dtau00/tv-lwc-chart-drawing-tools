@@ -26,13 +26,7 @@ class RectanglePaneRenderer implements IPrimitivePaneRenderer {
 
 	draw(target: CanvasRenderingTarget2D) {
 		target.useBitmapCoordinateSpace(scope => {
-			if (
-				this._p1.x === null ||
-				this._p1.y === null ||
-				this._p2.x === null ||
-				this._p2.y === null
-			)
-				return;
+			if (this._p1.x === null || this._p1.y === null || this._p2.x === null || this._p2.y === null) return;
 
 			const xRatio = scope.horizontalPixelRatio;
 			const yRatio = scope.verticalPixelRatio;

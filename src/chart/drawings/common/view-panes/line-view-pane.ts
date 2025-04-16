@@ -27,12 +27,7 @@ class LinePaneRenderer implements IPrimitivePaneRenderer {
 
 	draw(target: CanvasRenderingTarget2D) {
 		target.useBitmapCoordinateSpace(scope => {
-			if (
-				this._p1.x === null ||
-				this._p1.y === null ||
-				this._p2.x === null ||
-				this._p2.y === null
-			) return;
+			if (this._p1.x === null || this._p1.y === null || this._p2.x === null || this._p2.y === null) return;
 
 			const ctx = scope.context;
 			ctx.save();

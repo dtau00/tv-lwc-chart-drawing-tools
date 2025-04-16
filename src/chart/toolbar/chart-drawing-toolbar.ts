@@ -6,28 +6,24 @@ import { DrawingToolFactory } from '../../common/factories/drawing-tool-type-to-
 import { generateUniqueId } from '../../common/utils/id-generator.ts';
 
 export class ChartDrawingsToolbar {
-	private _drawingsToolbarContainer: HTMLDivElement | undefined;
-	private _drawingsSubToolbarContainer: HTMLDivElement | undefined;
 	private _tools: Map<DrawingToolType, Tool> = new Map();
-	private _toolbarId: string; // chartId is often used here to link with chart
 	private _currentTool: Tool | null; // current tool selected on the toolbar.  We keep a ref to this to use later, because it holds all the divs for the buttons
 
 	constructor(
-		drawingsToolbarContainer: HTMLDivElement,
-		drawingsSubToolbarContainer: HTMLDivElement,
-		toolbarId?: string,
+		private _drawingsToolbarContainer: HTMLDivElement,
+		private _drawingsSubToolbarContainer: HTMLDivElement,
+		private _toolbarId?: string,
 		// TODO: in the future a user can pass a list of tools they want activated for this toolbar
 	) {
-		this._toolbarId = toolbarId ?? generateUniqueId('toolbarId-');
-		this._drawingsToolbarContainer = drawingsToolbarContainer;
-		this._drawingsSubToolbarContainer = drawingsSubToolbarContainer;
+		// genearte an id if one isn't provided.  the toolbar is usually tied to the chartid, but can also be floating
+		this._toolbarId = _toolbarId ?? generateUniqueId('toolbarId-');
 		
 		this._initializeToolbar();
 		this._initializeMouseEvents();
 	}
 
 	get initialized() {return this._tools.size > 0}
-	get toolbarId() {return this._toolbarId}
+	get toolbarId() {return this._toolbarId ?? ''}
 	get toolbarContainer() { return this._drawingsToolbarContainer}
 	get subToolbarContainer() { return this._drawingsSubToolbarContainer}
 	get tools(){ return this._tools}

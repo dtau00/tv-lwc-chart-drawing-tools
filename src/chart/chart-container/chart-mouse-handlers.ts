@@ -198,7 +198,6 @@ function _startMouseHoldDetection(
     return setTimeout(() => {
         if (!startPoint) return;
 
-        document.body.style.cursor = 'move';
         mgr.selectedDrawing?.setToMoving();
         clearTimeout(existingTimer)
     }, delay);

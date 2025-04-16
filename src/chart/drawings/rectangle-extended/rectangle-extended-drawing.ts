@@ -50,6 +50,7 @@ export class RectangleExtendedDrawing extends ChartDrawingBase{
 
 	setToMoving(): void{
 		this._side = 'inside';
+		document.body.style.cursor = 'move';
 	}
 	
 	onDrag(param: MousePointAndTime, startPoint: Point, endPoint: Point): void {

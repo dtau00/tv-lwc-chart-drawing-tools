@@ -1,7 +1,7 @@
-
+import { CandlestickData, Time } from "lightweight-charts";
 
 export function generateLineData() {
-    const res = [];
+    const res: any = [];
     const time = new Date(Date.UTC(2018, 0, 1, 0, 0, 0, 0));
     for (let i = 0; i < 500; ++i) {
         res.push({
@@ -14,7 +14,7 @@ export function generateLineData() {
 } 
 
 export function generateCandlestickData() {
-    const res = [];
+    const res: any = [];
     const time = new Date(Date.UTC(2018, 0, 1, 0, 0, 0, 0));
     
     let basePrice = 100; // Starting price
@@ -31,7 +31,7 @@ export function generateCandlestickData() {
             high: parseFloat(high.toFixed(2)),
             low: parseFloat(low.toFixed(2)),
             close: parseFloat(close.toFixed(2)),
-        });
+        }) as CandlestickData<Time>;
 
         time.setUTCDate(time.getUTCDate() + 1);
         basePrice = close; // Use close price as the base for the next day
@@ -39,3 +39,4 @@ export function generateCandlestickData() {
 
     return res;
 }
+

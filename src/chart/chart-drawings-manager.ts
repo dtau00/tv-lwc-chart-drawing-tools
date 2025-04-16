@@ -174,7 +174,7 @@ export class ChartDrawingsManager {
             // set all drawings to current chart, so it will update primates on the correct chart
             // TODO, a bit of a hack, we might just have the manager control the active drawing primatives
             const currentChartDrawings = this._getDrawingsForChartContainer(this._currentChartContainer)
-            this.currentChartContainer?.setChartDrawingsToThisChart(currentChartDrawings)
+            this.currentChartContainer?.setAsActiveChart(currentChartDrawings)
 
             // if we are creating a new drawing...
             if(this._creatingNewDrawingFromToolbar){
@@ -212,7 +212,7 @@ export class ChartDrawingsManager {
         for(const chart of charts){
             const dontSkip = (!skipCurrentChart || chart.chartId !== this._currentChartContainer?.chartId)
             if(chart.symbolName === symbol && dontSkip)
-                chart.setChartDrawings(drawings)
+                chart.setChartDrawingPrimatives(drawings)
         }
     }
 
@@ -230,7 +230,7 @@ export class ChartDrawingsManager {
                     if (factory) {
                         const drawing = factory(chartContainer.chart, chartContainer.series, symbolName, item);
                         this._drawings.get(symbolName)?.push(drawing);
-                        chartContainer.setChartDrawing(drawing);
+                        chartContainer.setChartDrawingPrimative(drawing);
                     } else {
                         console.warn(`No factory found for drawing type: ${item.type}`);
                     }
@@ -240,7 +240,7 @@ export class ChartDrawingsManager {
             console.log("drawings already loaded for chart, just adding primatives ", symbolName);
             const drawings = this._drawings.get(symbolName) || [];
             for (const drawing of drawings) {
-                chartContainer.setChartDrawing(drawing);
+                chartContainer.setChartDrawingPrimative(drawing);
             }
         }
     

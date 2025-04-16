@@ -70,7 +70,7 @@ export class ViewBase extends PluginBase {
     public getRgbaOverrideColorFromOptions<T>(toolType: DrawingToolType, colorPropertyName: string, opacityPropertyName: string, defaultOptions: Partial<T>, overrideOptions?: Partial<T>){
         let overrides = overrideOptions ?? this.getOverrideOptions(toolType, this._baseStyleOptions)
         if((overrides as any)[colorPropertyName] && (overrides as any)[opacityPropertyName]){
-            console.log('mergeOpacityIntoRgba', (overrides as any)[colorPropertyName], (overrides as any)[opacityPropertyName])
+            //console.log('mergeOpacityIntoRgba', (overrides as any)[colorPropertyName], (overrides as any)[opacityPropertyName])
             overrides[colorPropertyName] = mergeOpacityIntoRgba((overrides as any)[colorPropertyName], (overrides as any)[opacityPropertyName]);
         }
         return overrides[colorPropertyName] || defaultOptions[colorPropertyName];

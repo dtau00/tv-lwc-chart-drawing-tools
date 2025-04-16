@@ -1,5 +1,5 @@
 import { createChart, ColorType, CandlestickSeries, CandlestickData, Time, LineSeries } from 'lightweight-charts';
-//import { generateCandlestickData } from './helpers/sample-data';
+//=import { generateCandlestickData } from './helpers/sample-data';
 import { ChartDrawingToolsPlugin } from '../plugins/chart-drawing-tools/chart-drawing-tools-plugin.ts';
 import {dataSampleInit, dataSampleStream} from './data-sample.ts';
 

@@ -1,23 +1,19 @@
-import { CandlestickData, ISeriesApi, LineSeries, MouseEventParams, SeriesType, Time } from "lightweight-charts";
-
+import { CandlestickData, ISeriesApi, SeriesType, Time } from "lightweight-charts";
 import { IChartApi } from "lightweight-charts";
-import { PluginBase } from "../../plugins/plugin-base.ts";
 import { ensureDefined } from "../../common/utils/assertions.ts";
 import { ChartDrawingsManager } from "../chart-drawings-manager.ts";
 import { ChartDrawingBase } from "../drawings/chart-drawing-base.ts";
 import { createChartMouseHandlers, initializeListeners, removeListeners } from "./chart-mouse-handlers.ts";
-import { removeListener } from "process";
 import { ViewBase } from "../drawings/drawing-view-base.ts";
+import { autoScrollToPosition } from "../../common/chart.ts";
+import { generateDummyBars, initWhitespaceSeries } from "../../common/utils/whitespace-series.ts";
 
-type DummyBar = {
-    time : Time,
-    value : number
-}
-
-// container of IChartApi and ISeriesApi, extends to include some additional properties
-// The main purpose of this is to track the drawing primatives on a chart, 
-// and to manage the event handlers (we are not using the provided ones by IChartApi since they are limited))
-// since a ChartDrawing can be applied to multiple charts, but a primate (the actual drawing object on the chart) can only be applied to one chart.
+/** 
+ * container forIChartApi and ISeriesApi, extends to include some additional properties
+* The main purpose of this is to track the drawing primatives on a chart, manage the chart whitespace
+* and to manage the event handlers (we are not using the provided ones by IChartApi since they are limited))
+* since a ChartDrawing can be applied to multiple charts, but a primate (the actual drawing object on the chart) can only be applied to one chart.
+ */
 export class ChartContainer {
     private _chartManager: ChartDrawingsManager;
     private _chartDivContainer: HTMLDivElement;
@@ -29,11 +25,8 @@ export class ChartContainer {
     private _series: ISeriesApi<SeriesType>;
     private _primatives : Map<string, ViewBase> = new Map();  
     private _handlers: ReturnType<typeof createChartMouseHandlers>;
-
     private _whiteSpaceTotal: number = 100;
     private _whiteSpaceSeries: ISeriesApi<SeriesType>;
-    private _lastSeriesDate : Time;
-    private _lastWhiteSpaceSeriesDate : Time;
     private _dataInitialized = false;
     private _autoScrollBars : number = 5; // todo make this configurable
 
@@ -64,60 +57,66 @@ export class ChartContainer {
     public get series(): ISeriesApi<SeriesType> { return this._series;} 
     public get symbolName(): string { return this._symbolName;}
     public get secondsPerBar(): number { return this._secondsPerBar;}
-    //public get primatives(): PluginBase[] { return this._primatives;}
     public get chartId(): string { return this._chartId;}
     public get tags(): string[] { return this._tags;}
     public get chartDivContainer(): HTMLDivElement { return this._chartDivContainer;}
     public get chartManager(): ChartDrawingsManager { return this._chartManager;  }
 
+    private get lastWhitespaceDate(): Time {return this._whiteSpaceSeries.data()?.at(-1)!.time }
+    private get lastSeriesDate(): Time { return this._series.data()?.at(-1)!.time }
+
+    /**
+     * Must call before destroying the object.  removes listeners.
+     */
     dispose() : void{
         removeListeners(this._handlers, this);
         this._chart.remove();
     }
 
-    	// needs to be set on init, or here
+    /**
+     * Sets initial data for the chart, and initializes whitespace data to expand the drawable area for the chart.
+     * 
+     * @param data CandleStickData[]:  initial CandleStick data
+     * @returns boolean: success
+     */
 	setData(data: CandlestickData[]) : boolean{
-		if(!data.length) 
-			return false
+		if(!data.length) return false
 
 		this._dataInitialized = true
-		this._lastSeriesDate = data[data.length - 1].time;
-		this._whiteSpaceSeries = this._initWhitespaceSeries(data)
-		this._series.setData(data)
 
-		// scroll to position
-		this._autoScrollToPosition(true)
+        // initialize data and whitespace
+        this._series.setData(data)
+		this._whiteSpaceSeries = initWhitespaceSeries(data, this._secondsPerBar, this._whiteSpaceTotal, this._chart)
+
+        autoScrollToPosition(true, this._autoScrollBars, this._whiteSpaceTotal, this._chart, this._series )
 
         return true;
 	}
 
-	// this must be called when new data is added
-	public updateData(bar : CandlestickData){
-		if(!this._dataInitialized)
-			throw new Error('Cant updateData before initializing base data')
+	/**
+     * update current bar for series and expands whitespace
+     * 
+     * @param bar 
+     */
+	updateData(bar : CandlestickData): void{
+		if(!this._dataInitialized) throw new Error('Cant updateData before initializing base data')
+        if(!this.lastWhitespaceDate) return;
 
 		this._series.update(bar) // update series with new data.  track number of new bars
 
-		if(bar.time > this._lastSeriesDate){ // if we have new bars, generate same amount of dummy bars to keep the whitespacing
-			this._lastSeriesDate = bar.time
-			const dummyBars = this._generateDummyBars(this._lastWhiteSpaceSeriesDate, this._secondsPerBar, 1)
-			this._whiteSpaceSeries.update(dummyBars[0])
-			this._lastWhiteSpaceSeriesDate = dummyBars[dummyBars.length - 1].time
-			this._autoScrollToPosition(false)
+        // if we have new bars, generate same amount of dummy bars to keep the whitespacing
+		if(bar.time > this.lastSeriesDate){ 
+            this._updateSyncSeriesAndDummySeries(bar);
+			autoScrollToPosition(false, this._autoScrollBars, this._whiteSpaceTotal, this._chart, this._series )
 		}
 	}
 
-    isValid(symbolName: string, secondsPerBar: number, tags: string[]) : boolean{
-        if(this._symbolName !== symbolName ||
-            this._secondsPerBar !== secondsPerBar ||
-            this._tags.length !== tags.length ||
-            this._tags.some((tag, index) => tag !== tags[index]) // the chart should match at least one of these tags.  Is that the correct behavior we want?
-        )
-            return false;
-        return true;
-    }
-
-    setChartDrawing(chartDrawing: ChartDrawingBase){
+    /**
+     * Adds or redraws the chart drawing primative
+     * 
+     * @param chartDrawing 
+     */
+    setChartDrawingPrimative(chartDrawing: ChartDrawingBase): void{
         this.removePrimative(chartDrawing.id)
 
         const primative = chartDrawing.createNewView(this._chart, this._series)
@@ -125,152 +124,83 @@ export class ChartContainer {
         ensureDefined(this._series).attachPrimitive(primative); // add to series, draws on the chart
     }
 
-    setChartDrawings(chartDrawings: ChartDrawingBase[]){
+    /**
+     * Adds or redraws the list of chart drawing primatives
+     * 
+     * @param chartDrawings
+     */
+    setChartDrawingPrimatives(chartDrawings: ChartDrawingBase[]): void{
         for(const drawing of chartDrawings)
-            this.setChartDrawing(drawing)
+            this.setChartDrawingPrimative(drawing)
     }
 
+    /**
+     * Switches all the chart drawing primatives to this chart, allowing drawing to be manipulated
+     * @param chartDrawings 
+     */
+    
+    setAsActiveChart(chartDrawings: ChartDrawingBase[]): void{
+        this.clearPrimatives() 
 
-    removeAllPrimatives(){
+         // change the view of the chart drawing to this chart.  This goes through a different rendering pipeline 
+        for(const drawing of chartDrawings){
+            drawing.setNewView(this._chart, this._series)
+        }
+    }
+
+    /**
+     * Clears and redraws list of chart drawing primatives.  Drawings not in the list will not be redrawn.
+     * 
+     * @param chartDrawings 
+     */
+    reDrawChartDrawings(chartDrawings: ChartDrawingBase[]): void{
+        this.clearPrimatives()
+        this.setChartDrawingPrimatives(chartDrawings)
+    }
+
+    /**
+     * Clears all drawing primatives from the chart
+     */   
+    clearPrimatives(): void{
         for(const prim of this._primatives.values()){
             ensureDefined(this._series).detachPrimitive(prim);
         }
         this._primatives.clear();
     }
 
-    removePrimative(drawingId: string){
-        if(this._primatives.has(drawingId)){
-            const prim = this._primatives.get(drawingId)
-            if(prim){
-                ensureDefined(this._series).detachPrimitive(prim);
-                this._primatives.delete(drawingId)
-            }
-        }
+    /**
+     * Remove drawing primative from the chart
+     * 
+     * @param drawingId 
+     */
+    removePrimative(drawingId: string): void{
+        const prim = this._primatives.get(drawingId);
+        if(!prim) return;
+
+        ensureDefined(this._series).detachPrimitive(prim);
+        this._primatives.delete(drawingId);
     }
 
-    reDrawChartDrawings(chartDrawings: ChartDrawingBase[]){
-        this.removeAllPrimatives()
-        this.setChartDrawings(chartDrawings)
-    }
-
-    // sets this as the 'active' chart, for drawing manipulation of the primative
-    setChartDrawingsToThisChart(chartDrawings: ChartDrawingBase[]){
-        this.removeAllPrimatives() // remove all previous primates
-        for(const drawing of chartDrawings){ // change the view of the chart drawing to this chart.  This goes through a different rendering pipeline 
-            drawing.setNewView(this._chart, this._series)
-        }
-    }
-
-    /*
-    // adds a new primative to the series
-    private _addDrawingPrimative(primative: ViewBase) : void{
-        console.log('addDrawingPrimative', primative);
-        this._primatives.set(primative.drawingId, primative)
-        ensureDefined(this._series).attachPrimitive(primative); // add to series, draws on the chart
-    }
-
-    // updates a primative by replacing it
-    setDrawingPrimative(primative: ViewBase) : void{
-        //const primative = drawing.primative;
-        //this.removeDrawingPrimative(drawing.drawingView?.baseId ?? "");
-        //this.addDrawingPrimative(drawing.drawingView as PluginBase);
-        this.removeDrawingPrimative(primative.drawingId)
-        this._addDrawingPrimative(primative)
-    }
-
-    // removes a primative from the series
-    removeDrawingPrimative(drawingId: string) : void{
-        if(this._primatives.has(drawingId)){
-            const prim = this._primatives.get(drawingId)
-            if(prim){
-                ensureDefined(this._series).detachPrimitive(prim);
-                this._primatives.delete(drawingId)
-            }
-        }
-    }
-
-    remPrim(primative?: PluginBase) : void{
-        if(!primative)
-            return
-        console.log('remPrim', primative);
-        ensureDefined(this._series).detachPrimitive(primative);
-    }
-*/
-    // re-syncs all primatives with the chartDrawings
-    // this is not ideal, its slow, so use sparingly
-    // better to call the individual updates
-    updatePrimatives(primatives: PluginBase[]) : void{
-        /*
-        console.log('updatePrimatives', primatives);
-        // remove all primatives
-       for(const primate of this._primatives)
-            ensureDefined(this._series).detachPrimitive(primate);
-        
-        // re-add all primatives
-        for(const primative of primatives)
-            this.addDrawingPrimative(primative);*/
-    }
-
+    /**
+     * Sets the IChartApi as draggable or not.  Use this to override drag behavior when manipulating a drawing
+     * 
+     * @param enable 
+     */
     setChartDraggable(enable: boolean): void {
         this._chart.applyOptions({
             handleScroll: enable,  // Toggle scroll behavior
         });
     }
 
-    private _initWhitespaceSeries(data : CandlestickData[]): ISeriesApi<SeriesType>{
-        const whitespaceSeries = this._chart.addSeries(LineSeries);
-    
-        // apply initial bar data to whitespace series
-        const whiteSpaceData = data.map(candle => ({
-            time: candle.time,
-            value: 0,
-        } as DummyBar));
-    
-        // generate data padding to whitespace series,
-        const dummyBars = this._generateDummyBars(data[data.length - 1].time, this._secondsPerBar, this._whiteSpaceTotal)
-        whiteSpaceData.push(...dummyBars);
-    
-        // apply  whitespace data to series
-        whitespaceSeries.setData(whiteSpaceData) 
-        this._lastWhiteSpaceSeriesDate = whiteSpaceData[whiteSpaceData.length - 1].time
-        
-        return whitespaceSeries
-    }
-    
-    private _generateDummyBars(startTime: Time, secondsPerBar: number, totalToGenerate: number): DummyBar[] {
-        const newTimes: DummyBar[] = [];
-        let timeNum = Number(startTime); 
-    
-        for (let i = 0; i < totalToGenerate; i++) {
-            timeNum += secondsPerBar;
-            newTimes.push({
-                time: timeNum as Time,
-                value: 0,
-            } as DummyBar);
+    /**
+     * Replace series.update().  Updates the series data and expands the whitespace as necessary
+     * @param bar 
+     */
+    private _updateSyncSeriesAndDummySeries(bar: CandlestickData<Time>): void{
+        if(bar.time > this.lastSeriesDate){ 
+            const dummyBars = generateDummyBars(this.lastWhitespaceDate, this._secondsPerBar, 1)
+            this._whiteSpaceSeries.update(dummyBars[0])
         }
-    
-        return newTimes;
-    }
-
-    private _autoScrollToPosition(forceToPosition : boolean){
-        const barsToEndOfChart : number = this._barsFromLastBarToEnd(this._chart, this._series)
-        const withinRange = barsToEndOfChart <= this._autoScrollBars && barsToEndOfChart > 0
-
-        if(forceToPosition || withinRange)
-            this._chart.timeScale().scrollToPosition(-(this._whiteSpaceTotal - this._autoScrollBars), false);
-	}
-
-    private _barsFromLastBarToEnd(chart: IChartApi, series: ISeriesApi<any>): number {
-        const logicalRange = chart.timeScale().getVisibleLogicalRange();
-        if (!logicalRange) return 0;
-    
-        const data = series.data();
-        if (!data || data.length === 0) return 0;
-
-        const lastDataIndex = data.length - 1; 
-
-        const visibleTo = Math.floor(logicalRange.to);
-        return Math.max(0, visibleTo - lastDataIndex);
     }
 }
 

@@ -1,8 +1,6 @@
 import { CandlestickData, IChartApi, ISeriesApi, SeriesType } from 'lightweight-charts';
 import { generateUniqueId } from '../../common/utils/id-generator.ts';
 import { ChartDrawingsManager } from '../../chart/chart-drawings-manager.ts';
-import { eventBus } from '../../common/event-bus';
-import { ChartDrawingsToolbar } from '../../chart/toolbar/chart-drawing-toolbar.ts';
 import { ChartContainer } from '../../chart/chart-container/chart-container.ts';
 
 export class ChartDrawingToolsPlugin {

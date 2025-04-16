@@ -102,7 +102,7 @@ function _addDrawingToChartContainers(symbolName: string, chartDrawing: ChartDra
     const containers = chartManager.getChartContainersForSymbol(symbolName)
     for(const container of containers){
         if(container.chartId !== chartManager.currentChartContainer?.chartId)
-            container.setChartDrawing(chartDrawing)
+            container.setChartDrawingPrimative(chartDrawing)
     }
 }
 

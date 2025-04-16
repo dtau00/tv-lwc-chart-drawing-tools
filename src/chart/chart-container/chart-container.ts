@@ -15,40 +15,23 @@ import { generateDummyBars, initWhitespaceSeries } from "../../common/utils/whit
 * since a ChartDrawing can be applied to multiple charts, but a primate (the actual drawing object on the chart) can only be applied to one chart.
  */
 export class ChartContainer {
-    private _chartManager: ChartDrawingsManager;
-    private _chartDivContainer: HTMLDivElement;
-    private _chartId: string;
-    private _symbolName: string;
-    private _secondsPerBar: number;
-    private _tags: string[] = [];
-    private _chart: IChartApi;
-    private _series: ISeriesApi<SeriesType>;
-    private _primatives : Map<string, ViewBase> = new Map();  
-    private _handlers: ReturnType<typeof createChartMouseHandlers>;
-    private _whiteSpaceTotal: number = 100;
-    private _whiteSpaceSeries: ISeriesApi<SeriesType>;
+    private _primatives = new Map<string, ViewBase>();
+    private _whiteSpaceTotal = 100;
     private _dataInitialized = false;
-    private _autoScrollBars : number = 5; // todo make this configurable
+    private _autoScrollBars = 5; // todo make this configurable
+    private _handlers: ReturnType<typeof createChartMouseHandlers>;
+    private _whiteSpaceSeries!: ISeriesApi<SeriesType>;
 
     constructor(
-        chartManager: ChartDrawingsManager,
-        chartDivContainer: HTMLDivElement,
-        chart: IChartApi,
-        series: ISeriesApi<SeriesType>,
-        chartId: string,
-        symbolName: string,
-        secondsPerBar: number,
-        tags?: string[],
-    ){
-        this._chartManager = chartManager;
-        this._chartDivContainer = chartDivContainer;
-        this._chartId = chartId;
-        this._symbolName = symbolName;
-        this._secondsPerBar = secondsPerBar;
-        this._tags = tags || [];
-        this._chart = chart;
-        this._series = series;
-
+        private _chartManager: ChartDrawingsManager,
+        private _chartDivContainer: HTMLDivElement,
+        private _chart: IChartApi,
+        private _series: ISeriesApi<SeriesType>,
+        private _chartId: string,
+        private _symbolName: string,
+        private _secondsPerBar: number,
+        private _tags: string[] = []
+    ) {
         this._handlers = createChartMouseHandlers(this);
         initializeListeners(this._handlers, this);
     }
@@ -62,7 +45,7 @@ export class ChartContainer {
     public get chartDivContainer(): HTMLDivElement { return this._chartDivContainer;}
     public get chartManager(): ChartDrawingsManager { return this._chartManager;  }
 
-    private get lastWhitespaceDate(): Time {return this._whiteSpaceSeries.data()?.at(-1)!.time }
+    private get lastWhitespaceDate(): Time { return this._whiteSpaceSeries.data()?.at(-1)!.time }
     private get lastSeriesDate(): Time { return this._series.data()?.at(-1)!.time }
 
     /**
@@ -136,6 +119,7 @@ export class ChartContainer {
 
     /**
      * Switches all the chart drawing primatives to this chart, allowing drawing to be manipulated
+     * 
      * @param chartDrawings 
      */
     
@@ -194,6 +178,7 @@ export class ChartContainer {
 
     /**
      * Replace series.update().  Updates the series data and expands the whitespace as necessary
+     * 
      * @param bar 
      */
     private _updateSyncSeriesAndDummySeries(bar: CandlestickData<Time>): void{

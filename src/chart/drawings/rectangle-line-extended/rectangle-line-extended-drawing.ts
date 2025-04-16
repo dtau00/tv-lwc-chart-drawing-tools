@@ -43,8 +43,17 @@ export class RectangleLineExtendedDrawing extends ChartDrawingBase{
 		super.selected();
 	}
 
+	containsPoint(chart: IChartApi, series: ISeriesApi<SeriesType>, point: Point, points: DrawingPoint[]): boolean {
+		const side = getBoxHoverTarget(chart!, series!, points[0], points[1], point);
+		return (side && side !== 'inside') ? true : false;
+	}
+	
 	onHoverWhenSelected(point: Point) : void {
 		this._setCursor(point);
+	}
+
+	setToMoving(): void{
+		this._side = 'inside';
 	}
 
 	onDrag(param: MousePointAndTime, startPoint: Point, endPoint: Point): void {
@@ -68,7 +77,7 @@ export class RectangleLineExtendedDrawing extends ChartDrawingBase{
 	}
 
 	private _setCursor(point: Point): void {
-		this._side = getBoxHoverTarget(this._chart!, this._series!, this.drawingPoints[0], this.drawingPoints[1], point);
+		this._side = getBoxHoverTarget(this._chart!, this._series!, this.drawingPoints[0], this.drawingPoints[1], point, undefined, true);
 		document.body.style.cursor = getCursorForBoxSide(this._side);
 	}
 

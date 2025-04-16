@@ -42,6 +42,10 @@ export class FibonacciDrawing extends ChartDrawingBase{
 		this._setCursor(point);
 	}
 
+	setToMoving(): void{
+		this._side = 'inside';
+	}
+
 	onDrag(param: MousePointAndTime, startPoint: Point, endPoint: Point): void {
 		if(param.point){
 			this._updatePosition(startPoint, endPoint, this._side);

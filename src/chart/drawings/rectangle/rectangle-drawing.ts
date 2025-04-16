@@ -4,7 +4,7 @@ import { rectangleFillDrawingToolDefaultOptions as drawingToolDefaultOptions, no
 import { IChartApi, ISeriesApi, Point, SeriesType,} from 'lightweight-charts';
 import { ChartDrawingBase, ChartDrawingBaseProps } from '../../../chart/drawings/chart-drawing-base';
 import { DrawingToolType } from '../../toolbar/tools/drawing-tools';
-import { BoxSide, getBoxHoverTarget, getCursorForBoxSide, getUpdateBoxPosition, MousePointAndTime  } from '../../../common/points';
+import { BoxSide, DrawingPoint, getBoxHoverTarget, getCursorForBoxSide, getUpdateBoxPosition, MousePointAndTime  } from '../../../common/points';
 import { ViewBase } from '../drawing-view-base';
 
 export class RectangleDrawing extends ChartDrawingBase{
@@ -46,6 +46,10 @@ export class RectangleDrawing extends ChartDrawingBase{
 		this._setCursor(point);
 	}
 
+	setToMoving(): void{
+		this._side = 'inside';
+	}
+
 	onDrag(param: MousePointAndTime, startPoint: Point, endPoint: Point): void {
 		if(param.point){
 			this._updatePosition(startPoint, endPoint, this._side);
@@ -57,7 +61,7 @@ export class RectangleDrawing extends ChartDrawingBase{
 	}
 
 	private _setCursor(point: Point): void {
-		this._side = getBoxHoverTarget(this._chart!, this._series!, this.drawingPoints[0], this.drawingPoints[1], point);
+		this._side = getBoxHoverTarget(this._chart!, this._series!, this.drawingPoints[0], this.drawingPoints[1], point, undefined, true);
 		document.body.style.cursor = getCursorForBoxSide(this._side);
 	}
 

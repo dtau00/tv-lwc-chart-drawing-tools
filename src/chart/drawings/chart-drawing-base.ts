@@ -136,7 +136,8 @@ export abstract class ChartDrawingBase implements IChartDrawing {
     abstract select(): void;
     abstract onDrag(param: MousePointAndTime, startPoint: Point, endPoint: Point): void;
     abstract onHoverWhenSelected(point: Point): void;   
-    abstract normalizeStyleOptions(options: {}): void;  
+    abstract normalizeStyleOptions(options: {}): void;
+    abstract setToMoving(): void;  
 	abstract createNewView(chart: IChartApi, series: ISeriesApi<SeriesType>): ViewBase;
     protected abstract finalizeDrawingPoints(): void;
 

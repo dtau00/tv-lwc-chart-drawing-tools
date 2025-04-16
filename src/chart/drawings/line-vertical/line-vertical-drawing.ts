@@ -47,6 +47,10 @@ export class LineVerticalDrawing extends ChartDrawingBase{
 		this._setCursor(point);
 	}
 
+	setToMoving(): void{
+		// this drawing only moves
+	}
+
 	onDrag(param: MousePointAndTime, startPoint: Point, endPoint: Point): void {
 		if(param.point){
 			this._updatePosition(startPoint, endPoint);

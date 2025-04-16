@@ -48,6 +48,10 @@ export class RectangleExtendedDrawing extends ChartDrawingBase{
 		this._setCursor(point);
 	}
 
+	setToMoving(): void{
+		this._side = 'inside';
+	}
+	
 	onDrag(param: MousePointAndTime, startPoint: Point, endPoint: Point): void {
 		if(param.point){
 			this._updatePosition(startPoint, endPoint, this._side);
@@ -69,7 +73,7 @@ export class RectangleExtendedDrawing extends ChartDrawingBase{
 	}
 
 	private _setCursor(point: Point): void {
-		this._side = getBoxHoverTarget(this._chart!, this._series!, this.drawingPoints[0], this.drawingPoints[1], point);
+		this._side = getBoxHoverTarget(this._chart!, this._series!, this.drawingPoints[0], this.drawingPoints[1], point, undefined, true);
 		document.body.style.cursor = getCursorForBoxSide(this._side);
 	}
 

@@ -48,6 +48,10 @@ export class LineDrawing extends ChartDrawingBase{
 		this._setCursor(point);
 	}
 
+	setToMoving(): void{
+		this._side = 'middle' 
+	}
+
 	onDrag(param: MousePointAndTime, startPoint: Point, endPoint: Point): void {
 		if(param.point){
 			this._updatePosition(startPoint, endPoint, this._side);
@@ -61,12 +65,15 @@ export class LineDrawing extends ChartDrawingBase{
 	private _setCursor(point: Point): void {
 		// todo offset to handle thickness
 		this._side = getClosestHandleOnLine(this._chart!, this._series!, this.drawingPoints[0], this.drawingPoints[1], point);
-		if(this._side === null)
+		if(this._side === null){
 			document.body.style.cursor = 'default';
-		else if(this._side === 'middle')
-			document.body.style.cursor = 'move';
-		else
+		}
+		else if(this._side === 'middle'){
+			// document.body.style.cursor = 'move';
+		}
+		else{
 			document.body.style.cursor = 'col-resize';
+		}
 	}
 
 	// update the position of the drawing, based on how its being resized

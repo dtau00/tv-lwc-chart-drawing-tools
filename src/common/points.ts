@@ -202,7 +202,8 @@ export function getBoxHoverTarget(
   p1: DrawingPoint,
   p2: DrawingPoint,
   mouse: Point,
-  offset = 3
+  offset = 3,
+  ignoreInside: boolean = false
 ): BoxSide {
   const timeScale = chart.timeScale();
   const priceScale = series;
@@ -245,7 +246,7 @@ export function getBoxHoverTarget(
   }
 
   // Check inside box
-  if (mx >= left && mx <= right && my >= top && my <= bottom) {
+  if (!ignoreInside && mx >= left && mx <= right && my >= top && my <= bottom) {
     return 'inside';
   }
 

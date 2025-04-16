@@ -1,12 +1,11 @@
 import { Fibonacci as View} from './fibonacci-view';
 import { fibonacciDrawingToolDefaultOptions as drawingToolDefaultOptions, normalizeFibonacciDrawingToolOptions } from './fibonacci-options';
 
-import { IChartApi, ISeriesApi, MouseEventParams, Point, SeriesType,} from 'lightweight-charts';
+import { IChartApi, ISeriesApi, Point, SeriesType,} from 'lightweight-charts';
 import { ChartDrawingBase, ChartDrawingBaseProps } from '../../../chart/drawings/chart-drawing-base';
 import { DrawingToolType } from '../../toolbar/tools/drawing-tools';
-import { BoxSide, getBoxHoverTarget, getCursorForBoxSide, getUpdateBoxPosition, MousePointAndTime } from '../../../common/points';
+import { BoxSide, containsPoints, DrawingPoint, getBoxHoverTarget, getCursorForBoxSide, getUpdateBoxPosition, MousePointAndTime } from '../../../common/points';
 import { ViewBase } from '../drawing-view-base';
-import { ensureDefined } from '../../../common/utils/assertions';
 
 export class FibonacciDrawing extends ChartDrawingBase{
 	private static readonly TOTAL_DRAWING_POINTS = 2; // Set the drawing points for this type of drawing.  A box will have 2, a line ray will have 1, etc...
@@ -29,6 +28,10 @@ export class FibonacciDrawing extends ChartDrawingBase{
 	
 	normalizeStyleOptions(options : any){
 		this.basePropsStyleOptions = normalizeFibonacciDrawingToolOptions(options)
+	}
+
+	containsPoint(chart: IChartApi, series: ISeriesApi<SeriesType>, point: Point, points: DrawingPoint[]): boolean {
+		return containsPoints(chart, series, point, points);
 	}
 	
 	// TODO dont make this hard coded

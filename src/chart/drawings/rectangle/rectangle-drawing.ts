@@ -1,10 +1,10 @@
-import { Rectangle, Rectangle as View } from './rectangle-view';
+import { Rectangle as View } from './rectangle-view';
 import { rectangleFillDrawingToolDefaultOptions as drawingToolDefaultOptions, normalizeRectangleDrawingToolOptions } from '../common/options/rectangle-options';
 
 import { IChartApi, ISeriesApi, Point, SeriesType,} from 'lightweight-charts';
 import { ChartDrawingBase, ChartDrawingBaseProps } from '../../../chart/drawings/chart-drawing-base';
 import { DrawingToolType } from '../../toolbar/tools/drawing-tools';
-import { BoxSide, DrawingPoint, getBoxHoverTarget, getCursorForBoxSide, getUpdateBoxPosition, MousePointAndTime  } from '../../../common/points';
+import { BoxSide, containsPoints, DrawingPoint, getBoxHoverTarget, getCursorForBoxSide, getUpdateBoxPosition, MousePointAndTime  } from '../../../common/points';
 import { ViewBase } from '../drawing-view-base';
 
 export class RectangleDrawing extends ChartDrawingBase{
@@ -29,6 +29,10 @@ export class RectangleDrawing extends ChartDrawingBase{
 	
 	normalizeStyleOptions(options : any){
 		this.basePropsStyleOptions =normalizeRectangleDrawingToolOptions(options)
+	}
+
+	containsPoint(chart: IChartApi, series: ISeriesApi<SeriesType>, point: Point, points: DrawingPoint[]): boolean {
+		return containsPoints(chart, series, point, points);
 	}
 
 	// TODO dont make this hard coded

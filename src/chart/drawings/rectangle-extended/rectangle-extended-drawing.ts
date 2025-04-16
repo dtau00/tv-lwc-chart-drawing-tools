@@ -1,10 +1,10 @@
 import { RectangleExtendedView as View} from './rectangle-extended-view';
 import { rectangleFillDrawingToolDefaultOptions as drawingToolDefaultOptions, normalizeRectangleDrawingToolOptions } from '../common/options/rectangle-options';
 
-import { IChartApi, ISeriesApi, MouseEventParams, Point, SeriesType, Time} from 'lightweight-charts';
+import { IChartApi, ISeriesApi, Point, SeriesType, Time} from 'lightweight-charts';
 import { ChartDrawingBase, ChartDrawingBaseProps } from '../../../chart/drawings/chart-drawing-base';
 import { DrawingToolType } from '../../toolbar/tools/drawing-tools';
-import { BoxSide, DrawingPoint, getBoxHoverTarget, getCursorForBoxSide, getUpdateBoxPosition, MousePointAndTime, pointToDrawingPoints } from '../../../common/points';
+import { BoxSide, containsPoints, DrawingPoint, getBoxHoverTarget, getCursorForBoxSide, getUpdateBoxPosition, MousePointAndTime, pointToDrawingPoints } from '../../../common/points';
 import { MAX_TIME } from '../../../common/utils/time';
 import { ViewBase } from '../drawing-view-base';
 
@@ -33,6 +33,9 @@ export class RectangleExtendedDrawing extends ChartDrawingBase{
 		this.basePropsStyleOptions = normalizeRectangleDrawingToolOptions(options)
 	}
 	
+	containsPoint(chart: IChartApi, series: ISeriesApi<SeriesType>, point: Point, points: DrawingPoint[]): boolean {
+		return containsPoints(chart, series, point, points);
+	}
 	// TODO dont make this hard coded
 	// set the style when drawing is selected
 	select(): void {

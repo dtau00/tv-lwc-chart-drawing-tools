@@ -2,7 +2,7 @@ import { mergeOpacityIntoRgba } from '../../common/utils/rgba-string';
 import { DrawingPoint, MousePointAndTime } from '../../common/points';
 import {  removeUndefinedKeys } from '../../common/utils/objects'
 import { toolKeyName } from '../../common/tool-key'
-import { IChartApi, ISeriesApi, MouseEventParams, SeriesType } from 'lightweight-charts';
+import { IChartApi, ISeriesApi, SeriesType } from 'lightweight-charts';
 import { PluginBase } from '../../plugins/plugin-base';
 import { DrawingToolType } from '../toolbar/tools/drawing-tools';
 import { ConfigStorage } from '../../common/storage';
@@ -42,32 +42,34 @@ export class ViewBase extends PluginBase {
 
     get drawingId(): string {return this._drawingId}
 
-    public getOverrideOptions(toolType: DrawingToolType, styleOptions: {}): any {
+    //abstract  updateInitialPoint(p: DrawingPoint, param: MousePointAndTime): void;
+
+    getOverrideOptions(toolType: DrawingToolType, styleOptions: {}): any {
         const keyName = toolKeyName(toolType);
         //const overrides = isEmpty(styleOptions) ? ConfigStorage.loadConfig(keyName, {}) as Partial<T> : styleOptions;
         const overrides = this.isEmpty(styleOptions) ? ConfigStorage.loadConfig(keyName, {}) : styleOptions;
         return overrides;
     }
 
-    public applyOptions(options: {}) {
+    applyOptions(options: {}) {
         this._options = { ...this._options, ...options };
         this.requestUpdate();
     }
 
-    public setBaseStyleOptions(options?: {}) : {} {
+    setBaseStyleOptions(options?: {}) : {} {
         this._baseStyleOptions = { ...this._baseStyleOptions, ...options };
         this.applyOptions(this._baseStyleOptions);
         return  this._baseStyleOptions
     }
 
-    public setBaseStyleOptionsFromConfig() : {} {
+    setBaseStyleOptionsFromConfig() : {} {
         const options = this.transformRgbaOptions({});
         return this.setBaseStyleOptions(options);
     }
 
     // internal system often uses rgba to apply opacity, rather than the opacity property, so heres
     // a helper to merge the two color and opacity values into rgba, or returns default
-    public getRgbaOverrideColorFromOptions<T>(toolType: DrawingToolType, colorPropertyName: string, opacityPropertyName: string, defaultOptions: Partial<T>, overrideOptions?: Partial<T>){
+    getRgbaOverrideColorFromOptions<T>(toolType: DrawingToolType, colorPropertyName: string, opacityPropertyName: string, defaultOptions: Partial<T>, overrideOptions?: Partial<T>){
         let overrides = overrideOptions ?? this.getOverrideOptions(toolType, this._baseStyleOptions)
         if((overrides as any)[colorPropertyName] && (overrides as any)[opacityPropertyName]){
             //console.log('mergeOpacityIntoRgba', (overrides as any)[colorPropertyName], (overrides as any)[opacityPropertyName])
@@ -76,7 +78,7 @@ export class ViewBase extends PluginBase {
         return overrides[colorPropertyName] || defaultOptions[colorPropertyName];
     }
 
-    public transformRgbaOptions(styleOptions: {}): any {
+    transformRgbaOptions(styleOptions: {}): any {
         let overrides = this.getOverrideOptions(this._toolType, styleOptions);
     
         // Automatically update all rgba-style fields based on associated opacity keys
@@ -102,17 +104,9 @@ export class ViewBase extends PluginBase {
         return overrides;
     }
 
-    updateInitialPoint(p: DrawingPoint, param: MousePointAndTime) {
-        if(this.points[0]){
-            this.points[0] = p;
-            this._paneViews[0].update();
-            super.requestUpdate();
-        }
-    }
-
     // update the points for the drawing, make sure you pass in the correct number of points
     // TODO enforce the proper number of points
-    public updatePoints(points: DrawingPoint[]) {
+    updatePoints(points: DrawingPoint[]) {
         this.points = points;
         this._paneViews[0].update();
         super.requestUpdate();
@@ -126,11 +120,23 @@ export class ViewBase extends PluginBase {
         return this._paneViews;
     }
 
-    public getStyleOptions(): any {
+    getStyleOptions(): any {
         return this.transformRgbaOptions(this._baseStyleOptions);
     }
 
-    public initializeDrawingViews(points: DrawingPoint[]): void{
-        throw new Error("Method not implemented.  Overrite this methods in your class.");
+    initializeDrawingViews(points: DrawingPoint[]): void{
+        throw new Error("Method not implemented.  Overwrite this methods in your class.");
+    }
+
+    updateInitialPoint(p: DrawingPoint, param: MousePointAndTime){
+        throw new Error("Method not implemented.  Overwrite this methods in your class.");
+    }
+
+    protected updateInitialPointForRectangle(p: DrawingPoint, param: MousePointAndTime) {
+        if(!this.points[0]) return;
+
+        this.points[0] = p;
+        this._paneViews[0].update();
+        super.requestUpdate();
     }
 }

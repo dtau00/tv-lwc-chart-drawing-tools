@@ -1,10 +1,10 @@
 import { LineHorizontal as View } from './line-horizontal-view';
 import { lineDrawingToolDefaultOptions as drawingToolDefaultOptions, LineDrawingToolOptions, normalizeLineDrawingToolOptions } from '../common/options/line-options';
 
-import { IChartApi, ISeriesApi, MouseEventParams, Point, SeriesType,Coordinate} from 'lightweight-charts';
+import { IChartApi, ISeriesApi, Point, SeriesType} from 'lightweight-charts';
 import { ChartDrawingBase, ChartDrawingBaseProps } from '../../../chart/drawings/chart-drawing-base';
 import { DrawingToolType } from '../../toolbar/tools/drawing-tools';
-import { isPointNearLine, convertAndNormalizeDrawingPointsToPoint, MousePointAndTime } from '../../../common/points';
+import { isPointNearLine, MousePointAndTime } from '../../../common/points';
 import { DrawingPoint } from '../../../common/points';
 import { MAX_TIME } from '../../../common/utils/time';
 import { ViewBase } from '../drawing-view-base';

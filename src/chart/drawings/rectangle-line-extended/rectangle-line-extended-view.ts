@@ -23,18 +23,16 @@ export class RectangleLineExtendedView extends ViewBase {
 		this.initializeDrawingViews(drawingPoints);
 	}
 
-	initializeDrawingViews(points?: DrawingPoint[]) {
-		if(points?.length && this.paneViews.length === 0){
-			this.points = points;
-			this._paneViews = [new PaneView(this)];
-		}
+	initializeDrawingViews(points?: DrawingPoint[]): void {
+		if (!points?.length || this.paneViews.length > 0) return;
+	
+		this.points = points;
+		this._paneViews = [new PaneView(this)];
 	}
 
 	// override the base class method to extend the rectangle to the end of the chart
 	updateInitialPoint(p: DrawingPoint, param: MousePointAndTime) {
-		if(!this.points[0] || !this.points[1]){
-			return
-		}
+		if(!this.points[0] || !this.points[1]) return
 
 		this.points[0] = p;
 		let p2 = this.points[1];	

@@ -139,6 +139,7 @@ export abstract class ChartDrawingBase implements IChartDrawing {
     abstract normalizeStyleOptions(options: {}): void;
     abstract setToMoving(): void;  
 	abstract createNewView(chart: IChartApi, series: ISeriesApi<SeriesType>): ViewBase;
+    abstract containsPoint(chart: IChartApi, series: ISeriesApi<SeriesType>, point: Point, points: DrawingPoint[]): boolean;
     protected abstract finalizeDrawingPoints(): void;
 
     setNewView(chart: IChartApi, series: ISeriesApi<SeriesType>){
@@ -155,10 +156,6 @@ export abstract class ChartDrawingBase implements IChartDrawing {
     setBaseStyleOptionsFromConfig() {    
         this.styleOptions = this.drawingView?.setBaseStyleOptionsFromConfig()!;
     }
-
-    containsPoint(chart: IChartApi, series: ISeriesApi<SeriesType>, point: Point, points: DrawingPoint[]): boolean {
-		return containsPoints(chart, series, point, points);
-	}
     
     getBasePropsForLoading(){
         return this._baseProps

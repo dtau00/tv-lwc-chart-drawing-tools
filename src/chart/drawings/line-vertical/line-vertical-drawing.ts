@@ -1,4 +1,4 @@
-import { IChartApi, ISeriesApi, MouseEventParams, Point, SeriesType,Coordinate} from 'lightweight-charts';
+import { IChartApi, ISeriesApi, Point, SeriesType,Coordinate} from 'lightweight-charts';
 import { LineVertical as View } from './line-vertical-view';
 import { lineDrawingToolDefaultOptions as drawingToolDefaultOptions, LineDrawingToolOptions, normalizeLineDrawingToolOptions } from '../common/options/line-options';
 import { ChartDrawingBase, ChartDrawingBaseProps } from '../../../chart/drawings/chart-drawing-base';

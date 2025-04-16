@@ -129,7 +129,7 @@ function _onClickDrawingTool(toolType: DrawingToolType, toolbarId: string, chart
 
 // remove/delete drawing
 function _onClickRemoveDrawingTool(chartManager: ChartDrawingsManager): void {
-	chartManager.removeSelectedDrawing();
+	chartManager.deleteSelectedDrawing();
 	_removeSubToolFromView(chartManager);
 }
 
@@ -137,7 +137,7 @@ function _onClickRemoveDrawingTool(chartManager: ChartDrawingsManager): void {
 function _onClickRemoveAllDrawingTool(chartManager: ChartDrawingsManager): void {
 	if(confirm('Are you sure you want to remove all drawings from this symbol?')){
 		chartManager.removeDrawingsForCurrentChartSymbol();
-		chartManager.removeSelectedDrawing();
+		chartManager.deleteSelectedDrawing();
 		_removeSubToolFromView(chartManager);
 		_resetToolbars(chartManager)
 	}

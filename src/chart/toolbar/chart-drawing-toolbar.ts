@@ -1,5 +1,5 @@
 import { DrawingToolType, AVAILABLE_TOOLS } from '../toolbar/tools/drawing-tools.ts';
-import { clearDiv, unselectAllDivsForGroup } from '../../common/utils/html.ts';
+import { clearDiv } from '../../common/utils/html.ts';
 import Tool from '../toolbar/tools/tool-base.ts';
 import { ChartDrawingBase } from '../drawings/chart-drawing-base.ts';
 import { DrawingToolFactory } from '../../common/factories/drawing-tool-type-to-tool-factory.ts';
@@ -9,28 +9,24 @@ export class ChartDrawingsToolbar {
 	private _drawingsToolbarContainer: HTMLDivElement | undefined;
 	private _drawingsSubToolbarContainer: HTMLDivElement | undefined;
 	private _tools: Map<DrawingToolType, Tool> = new Map();
-	private _toolButtons: Map<HTMLDivElement, EventListener> = new Map();
-	private _initialized: boolean = false;
 	private _toolbarId: string; // chartId is often used here to link with chart
-	private _toolFactory = DrawingToolFactory;
 	private _currentTool: Tool | null; // current tool selected on the toolbar.  We keep a ref to this to use later, because it holds all the divs for the buttons
 
 	constructor(
 		drawingsToolbarContainer: HTMLDivElement,
 		drawingsSubToolbarContainer: HTMLDivElement,
 		toolbarId?: string,
+		// TODO: in the future a user can pass a list of tools they want activated for this toolbar
 	) {
 		this._toolbarId = toolbarId ?? generateUniqueId('toolbarId-');
 		this._drawingsToolbarContainer = drawingsToolbarContainer;
 		this._drawingsSubToolbarContainer = drawingsSubToolbarContainer;
-
-		// In the future we can initialize different buttons for different toolbars, 
-		// although there might be a conflict when moving between chart
 		
 		this._initializeToolbar();
 		this._initializeMouseEvents();
 	}
 
+	get initialized() {return this._tools.size > 0}
 	get toolbarId() {return this._toolbarId}
 	get toolbarContainer() { return this._drawingsToolbarContainer}
 	get subToolbarContainer() { return this._drawingsSubToolbarContainer}
@@ -42,12 +38,9 @@ export class ChartDrawingsToolbar {
 		this._drawingsToolbarContainer?.removeEventListener("contextmenu", this._disableRightClick);
 		this._drawingsSubToolbarContainer?.removeEventListener("contextmenu", this._disableRightClick);
 		
-		// todo verify events are being removed
-		this._toolButtons.forEach((handler, button) => {
-			button.removeEventListener('click', handler);
-		});
-	
-		this._toolButtons.clear();
+		for(const tool of this._tools.values()){
+			tool.dispose();
+		}
 		this._tools.clear();
 	}
 
@@ -76,14 +69,13 @@ export class ChartDrawingsToolbar {
 		if (!this._drawingsToolbarContainer) return;
 		
 		this._initializeDrawingTools();
-		this._initialized = true;
 	}
 
 	private _initializeDrawingTools(): void {
-		if(this._initialized) return; // only initialize once, or we will have multiple listeners on the same button
+		if(this.initialized) return; // only initialize once, or we will have multiple listeners on the same button
 
 		AVAILABLE_TOOLS.forEach(tool => {
-			const toolClass = this._toolFactory.get(tool.type);
+			const toolClass = DrawingToolFactory.get(tool.type);
 			if(!toolClass || tool.type === DrawingToolType.None) 
 				return;
 

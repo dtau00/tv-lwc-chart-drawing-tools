@@ -56,7 +56,7 @@ export class ChartDrawingsManager {
     }
 
     registerToolbar(toolbarDivContainer: HTMLDivElement, subToolbarDivContainer: HTMLDivElement, chartId?: string){
-        this.toolbarManager.addToolbar(toolbarDivContainer, subToolbarDivContainer, chartId)
+        this.toolbarManager.registerToolbar(toolbarDivContainer, subToolbarDivContainer, chartId)
     }
 
     dispose(): void {
@@ -148,9 +148,9 @@ export class ChartDrawingsManager {
 
         // close previous toolbar, open current
         if(previousCurrentContainer?.chartId)
-            this.toolbarManager.unsetToolbar(previousCurrentContainer.chartId)
+            this.toolbarManager.deactivateToolbar(previousCurrentContainer.chartId)
         if( this._currentChartContainer?.chartId)
-            this.toolbarManager.setToolbar(this._currentChartContainer.chartId)
+            this.toolbarManager.activateToolbar(this._currentChartContainer.chartId)
             // this.openToolbars(this._currentChartContainer.chartId, this._currentDrawingTool?.toolType || DrawingToolType.None);
 
         // redraw all drawings for the last current chart container, before switching

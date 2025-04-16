@@ -123,7 +123,7 @@ function _processOnRightClick(chartContainer: ChartContainer) {
     if (toolbar && toolbarManager.currentToolType !== DrawingToolType.None) {
         const tool = toolbar.tools.get(toolbarManager.currentToolType)
         tool?.disposeSubButtons();
-        toolbarManager.unsetToolbar(chartContainer.chartId);
+        toolbarManager.deactivateToolbar(chartContainer.chartId);
         unselectAllDivsForGroup(toolbar.toolbarContainer!, AVAILABLE_TOOLS.map(t => t.name));
     }
 

@@ -9,34 +9,27 @@ import { DrawingToolType } from "./drawing-tools";
 import { eventBus, ButtonEvents, createToolButtonEventDetails } from "../../../common/event-bus";
 
 abstract class Tool implements ITool {
-    private _toolbarId: string;
-    toolType: DrawingToolType;
-    name: string;
-    description: string;
-    icon: string;
-    button: HTMLDivElement;
-    private _isGeneralButtonType: boolean;  // a general button type doesnt draw, but does other things, like delete a drawing
-    private _immediatelyStartDrawing: boolean; // immediately starts drawing after first chart is selected.  Often used for single user input drawings, like vertical line.
-    protected subTools: SubTool[] = [];
+	protected subTools: SubTool[] = [];
+	button: HTMLDivElement;
 
-    constructor(toolbarId: string, name: string, description: string, icon: string, toolType: DrawingToolType, immediatelyStartDrawing? : boolean, isGeneralButtonType?: boolean) {
-        this._toolbarId = toolbarId;
-        this.name = name;
-        this.description = description;
-        this.icon = icon;
-        this.toolType = toolType;
-        this._isGeneralButtonType = isGeneralButtonType ?? false
-        this._immediatelyStartDrawing = immediatelyStartDrawing ?? false
-
-        this.onClick = this.onClick.bind(this);
-    }
+	constructor(
+		private _toolbarId: string,
+		public name: string,
+		public description: string,
+		public icon: string,
+		public toolType: DrawingToolType,
+		private _immediatelyStartDrawing: boolean = false,
+		private _isGeneralButtonType: boolean = false,
+	) {
+		this.onClick = this.onClick.bind(this);
+	}
 
     get toolbarId() {return this._toolbarId}
     get immediatelyStartDrawing(){ return this._immediatelyStartDrawing }
     get isGeneralButtonType(){ return this._isGeneralButtonType }
 
     abstract getNewDrawingObject(chart: IChartApi, series: ISeriesApi<SeriesType>, symbolName: string): any;
-    abstract setSubToolbarButtons(container: HTMLDivElement): HTMLDivElement[];
+    abstract setSubToolbarButtons(container: HTMLDivElement): void;
 
     dispose(): void {
         this.button.removeEventListener('click', this.onClick);
@@ -60,10 +53,6 @@ abstract class Tool implements ITool {
     protected onClick(evt: MouseEvent): void {
         console.log('tool button onClick, sending event', this.toolType)
         eventBus.dispatchEvent(new CustomEvent(ButtonEvents.ToolClicked, createToolButtonEventDetails(this._toolbarId, this.toolType)))
-    }
-
-    private _loadProps(): void {
-        //this.options = ConfigStorage.loadConfig(this._keyName(), this.options);
     }
 
     private _setToolStyleProperties(value: any): void {

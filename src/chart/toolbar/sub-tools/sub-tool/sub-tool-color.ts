@@ -15,39 +15,39 @@ export class SubToolColor extends SubTool {
     }
 
     init(): void {
-        if (this.div instanceof HTMLInputElement) {
-            this.div.addEventListener('change', this._onChange);
-            this.div.addEventListener('click', this._onClick);
-            this.div.addEventListener('mousedown', this._onMouseDown);
-        }
+        if (!(this.div instanceof HTMLInputElement)) return;
+
+        this.div.addEventListener('change', this._onChange);
+        this.div.addEventListener('click', this._onClick);
+        this.div.addEventListener('mousedown', this._onMouseDown);
     }
     
     dispose(): void {
-        if (this.div instanceof HTMLInputElement) {
-            this.div.removeEventListener('change', this._onChange);
-            this.div.removeEventListener('click', this._onClick);
-            this.div.removeEventListener('mousedown', this._onMouseDown);
-        }
+        if (!(this.div instanceof HTMLInputElement)) return;
+
+        this.div.removeEventListener('change', this._onChange);
+        this.div.removeEventListener('click', this._onClick);
+        this.div.removeEventListener('mousedown', this._onMouseDown);
     }
     
     setButtonStyling(): void {
-        if (this.div && this.div instanceof HTMLInputElement) {
-            //this.div.style.borderRadius = '50%';
-            this.div.style.width = '22px';
-            this.div.style.height = '20px';
-            this.div.value = rgbaStringToColorInputHex(this.value) || '';
-        }
+        if (!this.div || !(this.div instanceof HTMLInputElement)) return;
+
+        //this.div.style.borderRadius = '50%';
+        this.div.style.width = '22px';
+        this.div.style.height = '20px';
+        this.div.value = rgbaStringToColorInputHex(this.value) || '';
     }
 
     private _onChange(evt: Event): void {
-        if (this.div instanceof HTMLInputElement) {
-            const colorValue = this.div.value;
-            const rgba = hexToRgba(colorValue);
-           console.log('rgba',colorValue, rgba)
-            this.setValue(rgba);
-            this.setSelectedTool(this._lastSelectedIndex);
-            this.setButtonStyling();
-        }
+        if (!(this.div instanceof HTMLInputElement)) return;
+
+        const colorValue = this.div.value;
+        const rgba = hexToRgba(colorValue);
+        console.log('rgba',colorValue, rgba)
+        this.setValue(rgba);
+        this.setSelectedTool(this._lastSelectedIndex);
+        this.setButtonStyling();
     }
 
     private _onClick(evt: MouseEvent): void {

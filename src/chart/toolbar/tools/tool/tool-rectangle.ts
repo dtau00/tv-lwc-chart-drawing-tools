@@ -17,14 +17,10 @@ export class ToolRectangle extends Tool {
         return new RectangleDrawing(chart, series, symbolName);
     }
     
-    setSubToolbarButtons(container: HTMLDivElement): HTMLDivElement[] {
-        let buttons: HTMLDivElement[] = [];
-
+    setSubToolbarButtons(container: HTMLDivElement): void {
         createColorSubTools(this.toolbarId, 'fillColor', this.name, this._totalSubToolsPerType,  container, this.subTools, this.valueUpdatedCallback)
         container.appendChild(createSpacer());
 
         createOpacitySubTools(this.toolbarId, 'fillColorOpacity', this.name, this._totalSubToolsPerType, container, this.subTools, this.valueUpdatedCallback)
-
-        return buttons; 
     }
 }

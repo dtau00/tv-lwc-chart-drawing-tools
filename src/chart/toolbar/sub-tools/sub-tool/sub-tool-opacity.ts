@@ -9,19 +9,20 @@ export class SubToolOpacity extends SubTool {
     }
 
     init(): void {
-        if (this.div instanceof HTMLDivElement) {
-            this.div.addEventListener('mousedown', this._onMouseDown);
-        }
+        if (!(this.div instanceof HTMLInputElement)) return;
+
+         this.div.addEventListener('mousedown', this._onMouseDown);
     }
     
     dispose(): void {
-        if (this.div instanceof HTMLDivElement) {
-            this.div.removeEventListener('mousedown', this._onMouseDown);
-        }
+        if (!(this.div instanceof HTMLInputElement)) return;
+            
+        this.div.removeEventListener('mousedown', this._onMouseDown);
     }
 
     setButtonStyling(): void {
         if (!this.div) return
+
         this.div.style.borderRadius = '50%';
         this.div.style.width = '20px';
         this.div.style.height = '20px';
@@ -32,6 +33,7 @@ export class SubToolOpacity extends SubTool {
 
     private _onMouseDown(evt: MouseEvent): void {
         const index = this.index;
+        
         if (evt.button === 2) { // rclick, TODO open slider
             this.setValue(this._getNextOpacity());
             this.setSelectedTool(index);

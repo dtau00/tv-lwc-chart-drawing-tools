@@ -8,21 +8,27 @@ import { subToolKeyName, subToolValueKeyName } from "../../../common/tool-key.ts
 import { DrawingToolType } from "../tools/drawing-tools.ts";
 
 abstract class SubTool implements ISubTool {
-    private _toolbarId: string;
     private _div: HTMLDivElement | HTMLInputElement;
-    private _name: string;
-    private _description: string;
-    private _icon: string;
-    private _index: number;
-    private _value: any;
-    private _parentTool: string;
-    private _type: DrawingSubToolType;
-    private _propertyName: string;
     private _container: HTMLDivElement;
-    private _valueUpdatedCallback?: (value: any) => void;
-    private _buttonType: ToolbarButton;
+    private _value: any;
 
-    get toolbarId(): string {return this._toolbarId }
+    constructor(
+        private _toolbarId: string,
+        private _propertyName: string,
+        private _parentTool: string,
+        private _buttonType: ToolbarButton,
+        private _name: string,
+        private _description: string,
+        private _icon: string,
+        private _index: number,
+        private _type: DrawingSubToolType,
+        private _valueUpdatedCallback?: (value: any) => void
+    ) {
+        this._loadValue();
+        this.setValue(this._value, false);
+    }
+
+    get toolbarId(): string { return this._toolbarId; }
     get value(): any { return this._value; }
     get name(): string { return this._name; }
     get description(): string { return this._description; }
@@ -32,22 +38,6 @@ abstract class SubTool implements ISubTool {
     get parentTool(): string { return this._parentTool; }
     get buttonType(): ToolbarButton { return this._buttonType; }
     get index(): number { return this._index; }
-
-    constructor(toolbarId: string, propertyName: string, parentTool: string, buttonType: ToolbarButton, name: string, description: string, icon: string, index: number, type: DrawingSubToolType, valueUpdatedCallback?: (value: any) => void) {
-        this._toolbarId = toolbarId;
-        this._name = name;
-        this._description = description;
-        this._icon = icon;
-        this._index = index;
-        this._type = type;
-        this._parentTool = parentTool;
-        this._propertyName = propertyName;
-        this._buttonType = buttonType;
-        this._valueUpdatedCallback = valueUpdatedCallback;
-
-        this._loadValue();
-        this.setValue(this._value, false);
-    }
 
     abstract init(): void;
     abstract dispose(): void
@@ -75,7 +65,7 @@ abstract class SubTool implements ISubTool {
         return ConfigStorage.loadConfig(this._keyName(), this._value);
     }
 
-    public setSelectedStyling(): void {
+    setSelectedStyling(): void {
         const key = this._subToolKeyName()
         const selectIndex = Number(localStorage.getItem(key))
         if (!isNaN(selectIndex) && selectIndex === this._index) {
@@ -99,13 +89,13 @@ abstract class SubTool implements ISubTool {
 
     // send selected values back to parent tool
     private _initiateValueUpdatedCallback = (): void => {
-        if (this._valueUpdatedCallback) {
-            const val = {
-                property: this._propertyName,
-                value: this.value,
-            }
-            this._valueUpdatedCallback(val);
+        if(!this._valueUpdatedCallback) return;
+
+        const val = {
+            property: this._propertyName,
+            value: this.value,
         }
+        this._valueUpdatedCallback(val);
     }
 
     private _saveSelectedSubToolIndex(index : number){
@@ -138,4 +128,5 @@ abstract class SubTool implements ISubTool {
         return subToolKeyName(this._parentTool,this._propertyName)
     }
 }
+
 export default SubTool;

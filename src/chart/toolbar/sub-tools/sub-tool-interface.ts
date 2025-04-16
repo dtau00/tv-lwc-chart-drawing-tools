@@ -10,7 +10,6 @@ interface ISubTool {
     dispose(): void;
     setButtonStyling: () => void;
     addToolButtonToContainer: (container: HTMLDivElement) => void;
-
 }
 
 export default ISubTool;

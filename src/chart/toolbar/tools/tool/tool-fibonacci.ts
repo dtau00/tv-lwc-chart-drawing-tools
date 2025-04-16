@@ -15,14 +15,10 @@ export class ToolFibonacci extends Tool {
         return new FibonacciDrawing(chart, series, symbolName);
     }
     
-    setSubToolbarButtons(container: HTMLDivElement): HTMLDivElement[] {
-        let buttons: HTMLDivElement[] = [];
-
+    setSubToolbarButtons(container: HTMLDivElement): void {
         createColorSubTools(this.toolbarId, 'color', this.name, TOTAL_SUBTOOLS_PER_TYPE,  container, this.subTools, this.valueUpdatedCallback)
         container.appendChild(createSpacer());
 
         createOpacitySubTools(this.toolbarId, 'colorOpacity', this.name, TOTAL_SUBTOOLS_PER_TYPE, container, this.subTools, this.valueUpdatedCallback)
-
-        return buttons; 
     }
 }

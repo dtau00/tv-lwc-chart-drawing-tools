@@ -9,7 +9,7 @@ export class ToolText extends Tool {
     }
 
     // not needed for this tool
-    setSubToolbarButtons(container: HTMLDivElement): HTMLDivElement[] {
+    setSubToolbarButtons(container: HTMLDivElement): void {
         throw new Error("Method not implemented.");
     }
 

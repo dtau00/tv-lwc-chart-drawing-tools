@@ -17,9 +17,7 @@ export class ToolLine extends Tool {
         return new LineDrawing(chart, series, symbolName);
     }
     
-    setSubToolbarButtons(container: HTMLDivElement): HTMLDivElement[] {
-        let buttons: HTMLDivElement[] = [];
-
+    setSubToolbarButtons(container: HTMLDivElement): void {
         createColorSubTools(this.toolbarId, 'lineColor', this.name, this._totalSubToolsPerType,  container, this.subTools, this.valueUpdatedCallback)
         container.appendChild(createSpacer());
 
@@ -30,7 +28,5 @@ export class ToolLine extends Tool {
         container.appendChild(createSpacer());
 
         createLineStyleSubTools(this.toolbarId, 'lineDash', this.name, container, this.subTools, this.valueUpdatedCallback)
-
-        return buttons; 
     }
 }

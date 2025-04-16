@@ -10,13 +10,13 @@ export class SubToolSolid extends SubTool {
     }
 
     init(): void {
-        if (!(this.div instanceof HTMLInputElement)) return;
+        if (!(this.div instanceof HTMLDivElement)) return;
 
         this.div.addEventListener('mousedown', this._onMouseDown);
     }
     
     dispose(): void {
-        if (!(this.div instanceof HTMLInputElement)) return;
+        if (!(this.div instanceof HTMLDivElement)) return;
 
          this.div.removeEventListener('mousedown', this._onMouseDown);
     }
@@ -30,7 +30,7 @@ export class SubToolSolid extends SubTool {
 
     private _onMouseDown(evt: MouseEvent): void {
         const index = this.index;
-        
+
         if (evt.button === 2) { // rclick, TODO open slider
             this.setValue('');
             this.setSelectedTool(index);

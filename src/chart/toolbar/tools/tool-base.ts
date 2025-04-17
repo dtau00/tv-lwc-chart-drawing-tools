@@ -3,14 +3,14 @@ import { IChartApi, ISeriesApi, SeriesType } from "lightweight-charts";
 import ITool from "./tool-interface";
 import { createToolbarButton } from "../../../chart/toolbar/common";
 import SubTool from "../sub-tools/sub-tool-base";
-import { ConfigStorage } from "../../../common/storage";
+import { DataStorage } from "../../../common/storage";
 import { toolKeyName } from "../../../common/tool-key";
 import { DrawingToolType } from "./drawing-tools";
 import { eventBus, ButtonEvents, createToolButtonEventDetails } from "../../../common/event-bus";
 
 abstract class Tool implements ITool {
+    button!: HTMLDivElement;
 	protected subTools: SubTool[] = [];
-	button: HTMLDivElement;
 
 	constructor(
 		private _toolbarId: string,
@@ -57,9 +57,9 @@ abstract class Tool implements ITool {
 
     private _setToolStyleProperties(value: any): void {
         const keyName = toolKeyName(this.name);
-        let overrideOptions = ConfigStorage.loadConfig(keyName, {}) || {};
+        let overrideOptions: Record<string, any> = DataStorage.loadData(keyName, {}) || {};
         overrideOptions[value.property] = value.value;
-        ConfigStorage.saveConfig(keyName, overrideOptions)
+        DataStorage.saveData(keyName, overrideOptions)
     }
 }
 

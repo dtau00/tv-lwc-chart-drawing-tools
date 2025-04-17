@@ -12,7 +12,7 @@ export class RectangleExtendedDrawing extends ChartDrawingBase{
 	private static readonly TOTAL_DRAWING_POINTS = 2; // Set the drawing points for this type of drawing.  A box will have 2, a line ray will have 1, etc...
 	private static readonly TOOL_TYPE = DrawingToolType.RectangleExtended // MAKE SURE TO UPDATE THIS WHEN CREATING NEW DRAWING TOOLS
 
-	private _side: BoxSide;
+	private _side!: BoxSide;
 
 	constructor(
 		chart: IChartApi,

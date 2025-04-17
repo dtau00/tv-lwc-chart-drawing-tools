@@ -1,0 +1,13 @@
+// tsconfig.json
+{
+    "compilerOptions": {
+      "target": "ESNext",
+      "module": "ESNext",
+      "moduleResolution": "Node",
+      "strict": true,
+      "esModuleInterop": true,
+      "skipLibCheck": true,
+      "types": ["vitest"]
+    },
+    "include": ["src", "tests", "vitest.config.ts"]
+  }

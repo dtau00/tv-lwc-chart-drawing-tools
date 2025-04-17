@@ -11,7 +11,7 @@ export default defineConfig({
     test: {
         globals: true,
         environment: 'jsdom', // or 'node' depending on your needs
-        //setupFiles: './test/setup.ts', // optional
+        setupFiles: ['./tests/setup.ts'], 
     },
     resolve: {
         alias: {
@@ -20,5 +20,4 @@ export default defineConfig({
             'plugins': resolve(__dirname, './plugins')
         }
     },
-
 }); 

@@ -25,16 +25,16 @@ export interface ChartDrawingBaseProps{
 }
 
 export abstract class ChartDrawingBase implements IChartDrawing {
-    private _drawingFinishedCallback: () => void | undefined;
+    private _drawingFinishedCallback!: () => void | undefined;
     
     protected _baseProps: ChartDrawingBaseProps;
     protected _chart: IChartApi | undefined;
     protected _series: ISeriesApi<SeriesType> | undefined;
     protected _defaultOptions: {};//RectangleDrawingToolOptions;
 
-    protected _isDrawing: boolean;
-    protected _isCompleted: boolean;
-    protected _isSelected: boolean;
+    protected _isDrawing!: boolean;
+    protected _isCompleted!: boolean;
+    protected _isSelected!: boolean;
     //protected toolType : DrawingToolType;
     //protected _baseDrawing: PluginBase | undefined;
     //protected _previewDrawing: PluginBase | undefined;

@@ -1,13 +1,13 @@
-import { DrawingToolType, AVAILABLE_TOOLS } from '../toolbar/tools/drawing-tools.ts';
-import { clearDiv } from '../../common/utils/html.ts';
-import Tool from '../toolbar/tools/tool-base.ts';
-import { ChartDrawingBase } from '../drawings/chart-drawing-base.ts';
-import { DrawingToolFactory } from '../../common/factories/drawing-tool-type-to-tool-factory.ts';
-import { generateUniqueId } from '../../common/utils/id-generator.ts';
+import { DrawingToolType, AVAILABLE_TOOLS } from '../toolbar/tools/drawing-tools';
+import { clearDiv } from '../../common/utils/html';
+import Tool from '../toolbar/tools/tool-base';
+import { ChartDrawingBase } from '../drawings/chart-drawing-base';
+import { DrawingToolFactory } from '../../common/factories/drawing-tool-type-to-tool-factory';
+import { generateUniqueId } from '../../common/utils/id-generator';
 
 export class ChartDrawingsToolbar {
 	private _tools: Map<DrawingToolType, Tool> = new Map();
-	private _currentTool: Tool | null; // current tool selected on the toolbar.  We keep a ref to this to use later, because it holds all the divs for the buttons
+	private _currentTool!: Tool | null; // current tool selected on the toolbar.  We keep a ref to this to use later, because it holds all the divs for the buttons
 
 	constructor(
 		private _drawingsToolbarContainer: HTMLDivElement,

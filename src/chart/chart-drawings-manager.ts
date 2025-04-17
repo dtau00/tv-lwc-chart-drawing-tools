@@ -1,20 +1,20 @@
-import Tool from './toolbar/tools/tool-base.ts';
+import Tool from './toolbar/tools/tool-base';
 import { IChartApi, ISeriesApi, SeriesType } from 'lightweight-charts';
-import { ChartDrawingBase, ChartDrawingBaseProps } from './drawings/chart-drawing-base.ts';
-import { DataStorage } from '../common/storage.ts';
-import { ChartContainer } from './chart-container/chart-container.ts';
-import { DrawingObjectFactory } from '../common/factories/drawing-tool-to-object-factory.ts';
-import { ChartDrawingsToolbarManager } from './toolbar/chart-drawing-toolbar-manager.ts';
-import { initializeEventBus } from './toolbar/chart-drawing-toolbar-event-bus-handlers.ts';
+import { ChartDrawingBase, ChartDrawingBaseProps } from './drawings/chart-drawing-base';
+import { DataStorage } from '../common/storage';
+import { ChartContainer } from './chart-container/chart-container';
+import { DrawingObjectFactory } from '../common/factories/drawing-tool-to-object-factory';
+import { ChartDrawingsToolbarManager } from './toolbar/chart-drawing-toolbar-manager';
+import { initializeEventBus } from './toolbar/chart-drawing-toolbar-event-bus-handlers';
 
 export class ChartDrawingsManager {
     private static instance: ChartDrawingsManager;
 
     private _drawings: Map<string, ChartDrawingBase[]> = new Map(); // symbolName -> drawings
     private _chartContainers: Map<string, ChartContainer>= new Map();
-    private _currentDrawingTool: Tool | null; // currently selected drawing tool
-    private _selectedDrawing: ChartDrawingBase | null;
-    private _currentChartContainer: ChartContainer | null; // current chart mouse is hovering over
+    private _currentDrawingTool!: Tool | null; // currently selected drawing tool
+    private _selectedDrawing!: ChartDrawingBase | null;
+    private _currentChartContainer!: ChartContainer | null; // current chart mouse is hovering over
     private _creatingNewDrawingFromToolbar: boolean = false;
     private _initalized: boolean = false
     private _drawingFactoryMap = DrawingObjectFactory;

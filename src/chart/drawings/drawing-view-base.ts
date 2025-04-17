@@ -5,7 +5,7 @@ import { toolKeyName } from '../../common/tool-key'
 import { IChartApi, ISeriesApi, SeriesType } from 'lightweight-charts';
 import { PluginBase } from '../../plugins/plugin-base';
 import { DrawingToolType } from '../toolbar/tools/drawing-tools';
-import { ConfigStorage } from '../../common/storage';
+import { DataStorage } from '../../common/storage';
 import { PaneViewBase } from './drawing-pane-view-base';
 
 // Base class for all drawing views, handles the style options and updates
@@ -45,7 +45,7 @@ export class ViewBase extends PluginBase {
     getOverrideOptions(toolType: DrawingToolType, styleOptions: {}): any {
         const keyName = toolKeyName(toolType);
         //const overrides = isEmpty(styleOptions) ? ConfigStorage.loadConfig(keyName, {}) as Partial<T> : styleOptions;
-        const overrides = this.isEmpty(styleOptions) ? ConfigStorage.loadConfig(keyName, {}) : styleOptions;
+        const overrides = this.isEmpty(styleOptions) ? DataStorage.loadData(keyName, {}) : styleOptions;
         return overrides;
     }
 
@@ -73,7 +73,8 @@ export class ViewBase extends PluginBase {
             //console.log('mergeOpacityIntoRgba', (overrides as any)[colorPropertyName], (overrides as any)[opacityPropertyName])
             overrides[colorPropertyName] = mergeOpacityIntoRgba((overrides as any)[colorPropertyName], (overrides as any)[opacityPropertyName]);
         }
-        return overrides[colorPropertyName] || defaultOptions[colorPropertyName];
+
+        return overrides[colorPropertyName] || defaultOptions[colorPropertyName as keyof T];
     }
 
     transformRgbaOptions(styleOptions: {}): any {

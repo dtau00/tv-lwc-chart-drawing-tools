@@ -69,9 +69,9 @@ export function rgbaStringToColorInputHex(rgbaString:string): string | null {
     const a = match[4] !== undefined ? parseFloat(match[4]) : 1;
   
     // Clamp values to avoid errors
-    const clamp = (val, max = 255) => Math.min(max, Math.max(0, val));
+    const clamp = (val: any, max = 255) => Math.min(max, Math.max(0, val));
   
-    const toHex = (val) => clamp(val).toString(16).padStart(2, '0');
+    const toHex = (val: any) => clamp(val).toString(16).padStart(2, '0');
   
     const rHex = toHex(r); 
     const gHex = toHex(g);

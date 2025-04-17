@@ -1,15 +1,15 @@
-import { ConfigStorage } from "../../../common/storage.ts";
+import { DataStorage } from "../../../common/storage";
 import { DrawingSubTools, DrawingSubToolType } from "./drawing-sub-tools";
-import { unselectAllDivsForGroup } from "../../../common/utils/html.ts";
-import { createSubToolbarButton, ToolbarButton } from "../../../chart/toolbar/common.ts";
+import { unselectAllDivsForGroup } from "../../../common/utils/html";
+import { createSubToolbarButton, ToolbarButton } from "../../../chart/toolbar/common";
 import ISubTool from "./sub-tool-interface";
 import { ButtonEvents, createSubToolButtonEventDetails, eventBus } from '../../../common/event-bus';
-import { subToolKeyName, subToolValueKeyName } from "../../../common/tool-key.ts";
-import { DrawingToolType } from "../tools/drawing-tools.ts";
+import { subToolKeyName, subToolValueKeyName } from "../../../common/tool-key";
+import { DrawingToolType } from "../tools/drawing-tools";
 
 abstract class SubTool implements ISubTool {
-    private _div: HTMLDivElement | HTMLInputElement;
-    private _container: HTMLDivElement;
+    private _div!: HTMLDivElement | HTMLInputElement;
+    private _container!: HTMLDivElement;
     private _value: any;
 
     constructor(
@@ -62,7 +62,7 @@ abstract class SubTool implements ISubTool {
     }
 
     getValue(){
-        return ConfigStorage.loadConfig(this._keyName(), this._value);
+        return DataStorage.loadData(this._keyName(), this._value);
     }
 
     setSelectedStyling(): void {
@@ -77,7 +77,8 @@ abstract class SubTool implements ISubTool {
         this._setSelectedSubToolStylingForTool(); // set styling
         this._saveSelectedSubToolIndex(index!); // save the selected index for future ref
         this._initiateValueUpdatedCallback(); // send the value back to the parent tool
-        const eventDetails = createSubToolButtonEventDetails(this.toolbarId, DrawingToolType[this._parentTool], this._type, this._name, this._propertyName, this._index)
+        const toolType = DrawingToolType[this._parentTool  as keyof typeof DrawingToolType] // TODO i should just be passing the DrawingToolType rather than a string
+        const eventDetails = createSubToolButtonEventDetails(this.toolbarId, toolType, this._type, this._name, this._propertyName, this._index)
         eventBus.dispatchEvent(new CustomEvent(ButtonEvents.SubToolClicked, eventDetails));
     }
 
@@ -104,11 +105,10 @@ abstract class SubTool implements ISubTool {
 
     private _saveValue(value: any): void {
         this._value = value;
-        ConfigStorage.saveConfig(this._keyName(), this._value);
+        DataStorage.saveData(this._keyName(), this._value);
     }
 
     private _loadValue(): void {
-       // this._value = ConfigStorage.loadConfig(this._keyName(), this._value);
        this._value = this.getValue()
     }
 

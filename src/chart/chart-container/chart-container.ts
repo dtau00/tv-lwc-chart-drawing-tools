@@ -1,12 +1,12 @@
 import { CandlestickData, ISeriesApi, SeriesType, Time } from "lightweight-charts";
 import { IChartApi } from "lightweight-charts";
-import { ensureDefined } from "../../common/utils/assertions.ts";
-import { ChartDrawingsManager } from "../chart-drawings-manager.ts";
-import { ChartDrawingBase } from "../drawings/chart-drawing-base.ts";
-import { createChartMouseHandlers, initializeListeners, removeListeners } from "./chart-mouse-handlers.ts";
-import { ViewBase } from "../drawings/drawing-view-base.ts";
-import { autoScrollToPosition } from "../../common/chart.ts";
-import { generateDummyBars, initWhitespaceSeries } from "../../common/utils/whitespace-series.ts";
+import { ensureDefined } from "../../common/utils/assertions";
+import { ChartDrawingsManager } from "../chart-drawings-manager";
+import { ChartDrawingBase } from "../drawings/chart-drawing-base";
+import { createChartMouseHandlers, initializeListeners, removeListeners } from "./chart-mouse-handlers";
+import { ViewBase } from "../drawings/drawing-view-base";
+import { autoScrollToPosition } from "../../common/chart";
+import { generateDummyBars, initWhitespaceSeries } from "../../common/utils/whitespace-series";
 
 /** 
  * container forIChartApi and ISeriesApi, extends to include some additional properties

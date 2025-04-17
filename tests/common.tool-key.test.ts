@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { toolKeyName, subToolKeyName, subToolValueKeyName } from '../src/common/tool-key.ts' // adjust path as needed
+import { toolKeyName, subToolKeyName, subToolValueKeyName } from '../src/common/tool-key.js' // adjust path as needed
 
 describe('toolKeyName', () => {
     it('should return correct key', () => {

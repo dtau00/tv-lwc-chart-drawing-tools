@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite';
+import { defineConfig } from 'vitest/config'
 import { resolve } from 'path';
 
 export default defineConfig({
@@ -8,6 +8,11 @@ export default defineConfig({
         port: 5173,
         open: '/src/'
     },
+    test: {
+        globals: true,
+        environment: 'jsdom', // or 'node' depending on your needs
+        //setupFiles: './test/setup.ts', // optional
+    },
     resolve: {
         alias: {
             '@': resolve(__dirname, './'),
@@ -15,4 +20,5 @@ export default defineConfig({
             'plugins': resolve(__dirname, './plugins')
         }
     },
+
 }); 

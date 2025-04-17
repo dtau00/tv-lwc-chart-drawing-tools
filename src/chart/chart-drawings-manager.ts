@@ -21,7 +21,6 @@ export class ChartDrawingsManager {
     public toolbarManager = new ChartDrawingsToolbarManager()
 
     private constructor() {
-        this._drawings = new Map();
         initializeEventBus(this);
     }
 

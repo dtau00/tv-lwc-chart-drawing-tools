@@ -1,7 +1,7 @@
 import { createChart, ColorType, CandlestickSeries, CandlestickData, Time, LineSeries } from 'lightweight-charts';
 //=import { generateCandlestickData } from './helpers/sample-data';
-import { ChartDrawingToolsPlugin } from '../plugins/chart-drawing-tools/chart-drawing-tools-plugin.ts';
-import {dataSampleInit, dataSampleStream} from './data-sample.ts';
+import { ChartDrawingToolsPlugin } from '../plugins/chart-drawing-tools/chart-drawing-tools-plugin';
+import {dataSampleInit, dataSampleStream} from './data-sample';
 
 const data : CandlestickData[] = JSON.parse(dataSampleInit) // using hard coded data for consistency
 const dataStream : CandlestickData[] = JSON.parse(dataSampleStream) //hard coded data for streaming new bars

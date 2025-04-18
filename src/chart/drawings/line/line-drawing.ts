@@ -49,7 +49,8 @@ export class LineDrawing extends ChartDrawingBase{
 	}
 
 	setToMoving(): void{
-		this._side = 'middle' 
+		document.body.style.cursor = 'move';
+		this._side = 'middle';
 	}
 
 	onDrag(param: MousePointAndTime, startPoint: Point, endPoint: Point): void {
